@@ -50,8 +50,7 @@
                 { href: '/catalog', label: 'Catalog', icon: Icons.Palette, activeIconColor: 'text-white', defaultIconColor: 'text-[#ff7ab8]' },
                 { href: '#', label: 'AI OC Planner', icon: Icons.Sparkles, activeIconColor: 'text-white', defaultIconColor: 'text-[#f08967]' },
                 { href: '/commissions', label: 'Commissions', icon: Icons.Calendar, activeIconColor: 'text-white', defaultIconColor: 'text-[#60a5fa]' },
-                { href: '#', label: 'Order Tracker', icon: Icons.Sliders, activeIconColor: 'text-white', defaultIconColor: 'text-[#4ade80]' },
-                { href: '/login', label: 'Sign In', icon: Icons.User, activeIconColor: 'text-white', defaultIconColor: 'text-[#a78bfa]' },
+                { href: '/order-tracker', label: 'Order Tracker', icon: Icons.Sliders, activeIconColor: 'text-white', defaultIconColor: 'text-[#4ade80]' },
             ];
 
             return (

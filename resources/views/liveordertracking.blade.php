@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catalog - ToffeeBean</title>
+    <title>Order Tracker - ToffeeBean</title>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,15 +19,39 @@
     
     <!-- Babel -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        .progress-bar-track {
+            background: #e8d5c0;
+            border-radius: 9999px;
+            height: 8px;
+            width: 100%;
+        }
+        .progress-bar-fill-sketching {
+            background: linear-gradient(90deg, #ff7ab8, #f08967);
+            border-radius: 9999px;
+            height: 8px;
+            width: 40%;
+        }
+        .progress-bar-fill-coloring {
+            background: linear-gradient(90deg, #ff7ab8, #f08967);
+            border-radius: 9999px;
+            height: 8px;
+            width: 70%;
+        }
+        .step-label-active {
+            color: #ff7ab8;
+            font-weight: 700;
+        }
+    </style>
 </head>
 <body>
     <div id="root"></div>
 
     @verbatim
     <script type="text/babel">
-        const { useState, useEffect } = React;
+        const { useState } = React;
 
-        // Custom Inline SVGs to replace emoticons
         const Icons = {
             Home: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
             Palette: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>,
@@ -36,12 +60,14 @@
             Sliders: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" {...props}><line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/><line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/><line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/><line x1="14" x2="14" y1="2" y2="6"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="16" x2="16" y1="18" y2="22"/></svg>,
             User: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
             ShoppingBag: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>,
-            ChevronDown: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m6 9 6 6 6-6"/></svg>,
-            Heart: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+            Award: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"/><circle cx="12" cy="8" r="6"/></svg>,
+            CheckCircle: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>,
+            ClipboardList: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...props}><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>,
+            Box: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>,
         };
 
         function Navbar() {
-            const currentPath = '/catalog'; // Hardcoded for this blade file
+            const currentPath = '/order-tracker';
 
             const links = [
                 { href: '/', label: 'Home', icon: Icons.Home, activeIconColor: 'text-white', defaultIconColor: 'text-[#f08967]' },
@@ -66,7 +92,6 @@
                         {links.map((link) => {
                             const isActive = currentPath === link.href;
                             const Icon = link.icon;
-                            
                             return (
                                 <a 
                                     key={link.label}
@@ -101,8 +126,7 @@
                         backgroundRepeat: 'repeat-x',
                         backgroundPosition: 'center bottom'
                     }}></div>
-                    
-                    <footer className="bg-[#161413] text-gray-400 py-16 px-8 border-t-[4px] border-[#4a2c11] border-opacity-0">
+                    <footer className="bg-[#161413] text-gray-400 py-16 px-8">
                         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
                             <div className="space-y-4">
                                 <div className="flex items-center gap-1 text-2xl font-bold tracking-tight text-white">
@@ -112,7 +136,6 @@
                                     Cute kemono character illustrations, customized stickers, and reference guides matching warm, rustic autumn colors.
                                 </p>
                             </div>
-                            
                             <div className="flex flex-col items-start md:items-end gap-4">
                                 <button className="bg-transparent border border-gray-700 text-white px-5 py-2 rounded-full text-[12px] font-bold hover:bg-gray-800 transition">
                                     Philippines | PHP ₱
@@ -124,7 +147,6 @@
                                 </div>
                             </div>
                         </div>
-                        
                         <div className="max-w-6xl mx-auto mt-16 pt-6 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center text-[11px] font-medium text-gray-500 gap-4">
                             <p>© 2026 ToffeeBean Digital Workshop. All rights of illustrations maintained strictly by the artist.</p>
                             <div className="flex gap-4">
@@ -137,43 +159,27 @@
             );
         }
 
-        const products = [
-            {
-                id: 1,
-                title: "Acorn Acrylic Shaker Keychain",
-                description: "Double-sided acrylic keychain filled with tiny rolling pieces of acorns, leaves, and a sleepy squirrel character. Shakable an...",
-                price: "650.00",
-                category: "Keychains",
-                isNew: false,
-                image: "https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=500&h=500&fit=crop",
-                buttonText: "Add to cart",
-                buttonVariant: "orange"
-            },
-            {
-                id: 2,
-                title: "Toffee's Autumn Sticker Sheet",
-                description: "Cute customized kiss-cut sticker pack with hand-drawn illustrations of fat foxes, cozy maple cups, and fallen leaves....",
-                price: "800.00",
-                category: "Stickers",
-                isNew: true,
-                image: "https://images.unsplash.com/photo-1603808033192-082d6919d3e1?w=500&h=500&fit=crop",
-                buttonText: "Preorder",
-                buttonVariant: "pink"
-            },
-            {
-                id: 3,
-                title: "Rolo Plushie 2.0",
-                description: "The official soft, cuddly 20cm plushie of our squirrel mascot in a warm oversized pumpkin-themed hoodie. Perfect cozy...",
-                price: "2,400.00",
-                category: "Plushies",
-                isNew: true,
-                image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=500&h=500&fit=crop",
-                buttonText: "Preorder",
-                buttonVariant: "pink"
-            }
-        ];
+        // Empty state — no commissions yet
+        const activeOrders = [];
 
-        function CatalogApp() {
+        function EmptySlots() {
+            return (
+                <div className="bg-white border-[3px] border-dashed border-[#d1baa3] rounded-[2rem] p-12 flex flex-col items-center justify-center text-center gap-4">
+                    <div className="w-16 h-16 rounded-full bg-[#fef1df] border-[3px] border-[#4a2c11] flex items-center justify-center">
+                        <Icons.ClipboardList width={28} height={28} className="text-[#4a2c11]/40" />
+                    </div>
+                    <h3 className="font-bold text-xl text-[#4a2c11]/50">No Active Commissions Yet</h3>
+                    <p className="text-[13px] font-medium text-[#4a2c11]/40 max-w-xs leading-relaxed">
+                        When you submit a commission order, your progress will appear here in real-time so you can track every step!
+                    </p>
+                    <a href="/commissions" className="mt-2 bg-[#ff7ab8] text-white font-bold px-8 py-3 rounded-full border-[3px] border-[#4a2c11] shadow-brutal hover:-translate-y-1 transition-transform text-sm">
+                        Submit a Commission →
+                    </a>
+                </div>
+            );
+        }
+
+        function OrderTrackerApp() {
             return (
                 <div className="min-h-screen flex flex-col font-sans text-[#4a2c11] bg-[#fef1df]">
                     <Navbar />
@@ -184,87 +190,90 @@
                         backgroundPosition: 'center bottom'
                     }}></div>
                     
-                    <main className="max-w-[1200px] mx-auto px-6 w-full flex-1 pt-8 pb-24">
+                    <main className="max-w-[1100px] mx-auto px-6 w-full flex-1 pt-12 pb-24">
                         
-                        {/* Filter Bar */}
-                        <div className="bg-white border-[4px] border-[#4a2c11] rounded-[1.5rem] p-3 shadow-brutal flex flex-col md:flex-row items-center justify-between mb-8">
-                            <div className="flex flex-wrap items-center gap-1 md:gap-2">
-                                <button className="bg-[#ffce54] text-[#4a2c11] px-5 py-2 rounded-full font-bold text-sm tracking-wide border-2 border-transparent">
-                                    All
-                                </button>
-                                <button className="text-[#4a2c11]/60 hover:text-[#4a2c11] hover:bg-[#faead6] px-5 py-2 rounded-full font-bold text-sm tracking-wide transition-colors">
-                                    Stickers
-                                </button>
-                                <button className="text-[#4a2c11]/60 hover:text-[#4a2c11] hover:bg-[#faead6] px-5 py-2 rounded-full font-bold text-sm tracking-wide transition-colors">
-                                    Plushies
-                                </button>
-                                <button className="text-[#4a2c11]/60 hover:text-[#4a2c11] hover:bg-[#faead6] px-5 py-2 rounded-full font-bold text-sm tracking-wide transition-colors">
-                                    Keychains
-                                </button>
-                                <button className="text-[#4a2c11]/60 hover:text-[#4a2c11] hover:bg-[#faead6] px-5 py-2 rounded-full font-bold text-sm tracking-wide transition-colors">
-                                    Reference Sheets
-                                </button>
-                            </div>
-                            
-                            <div className="flex items-center gap-4 mt-4 md:mt-0 px-2">
-                                <span className="text-[#4a2c11]/60 font-bold text-[11px] tracking-wider uppercase">
-                                    6 PRODUCTS FOUND
-                                </span>
-                                <button className="flex items-center gap-2 bg-white border-[3px] border-[#4a2c11] px-4 py-2 rounded-full font-bold text-sm shadow-brutal-sm hover:-translate-y-0.5 transition-transform">
-                                    Price: Low to High
-                                    <Icons.ChevronDown width={16} height={16} />
-                                </button>
-                            </div>
+                        {/* Page Header */}
+                        <div className="text-center mb-12">
+                            <h1 className="text-4xl md:text-5xl font-bold mb-3">
+                                ToffeeBean Live Queue Tracker 🍂
+                            </h1>
+                            <p className="text-[15px] font-medium text-[#4a2c11]/70 max-w-lg mx-auto leading-relaxed">
+                                Monitor your ongoing illustration progress. See exactly where your order stands under Toffee's waitlist slots below!
+                            </p>
                         </div>
 
-                        {/* Products Grid */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {products.map((product) => (
-                                <div key={product.id} className="bg-white border-[4px] border-[#4a2c11] rounded-[2rem] p-4 shadow-brutal-lg flex flex-col h-full group">
-                                    
-                                    <div className="rounded-2xl border-[3px] border-[#4a2c11] overflow-hidden aspect-[4/3] relative mb-5 bg-[#fffcf7]">
-                                        <img src={product.image} alt={product.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                                        
-                                        <div className="absolute top-3 left-3">
-                                            <span className="bg-white border-[2.5px] border-[#4a2c11] text-[#4a2c11] px-3 py-1 rounded-full text-[12px] font-bold tracking-wide shadow-brutal-sm">
-                                                {product.category}
-                                            </span>
-                                        </div>
-                                        {product.isNew && (
-                                            <div className="absolute top-3 right-3">
-                                                <span className="bg-[#faead6] border-[2.5px] border-[#4a2c11] text-[#4a2c11] px-3 py-1 rounded-full text-[12px] font-bold tracking-wide shadow-brutal-sm flex items-center gap-1">
-                                                    <Icons.Sparkles width={12} height={12} className="text-[#f08967]" />
-                                                    NEW
-                                                </span>
-                                            </div>
-                                        )}
-                                    </div>
-                                    
-                                    <div className="flex flex-col flex-1 px-1">
-                                        <h3 className="font-bold text-xl leading-tight mb-2">{product.title}</h3>
-                                        <p className="text-[13px] font-medium text-[#4a2c11]/70 leading-relaxed mb-4 line-clamp-2">
-                                            {product.description}
-                                        </p>
-                                        
-                                        <div className="mt-auto mb-4">
-                                            <span className="font-bold text-xl">₱{product.price}</span>
-                                            <span className="text-[11px] font-bold ml-1 text-[#4a2c11]/60">PHP</span>
-                                        </div>
-                                        
-                                        <div className="flex items-center gap-3 w-full">
-                                            <button className={`flex-1 font-bold rounded-full py-3 transition-transform hover:-translate-y-1 active:translate-y-0 border-[3px] border-[#4a2c11] shadow-brutal text-white text-sm tracking-wide ${
-                                                product.buttonVariant === 'orange' ? 'bg-[#f08967]' : 'bg-[#ff7ab8]'
-                                            }`}>
-                                                {product.buttonText}
-                                            </button>
-                                            <button className="w-[50px] h-[50px] shrink-0 bg-[#fef1df] rounded-2xl border-[3px] border-[#4a2c11] shadow-brutal flex items-center justify-center hover:-translate-y-1 transition-transform">
-                                                <Icons.Heart width={20} height={20} className="text-[#ff7ab8]" />
-                                            </button>
-                                        </div>
-                                    </div>
-                                    
+                        <div className="flex flex-col lg:flex-row gap-8 items-start">
+                            
+                            {/* LEFT COLUMN: Active Slots */}
+                            <div className="flex-1 min-w-0">
+                                
+                                <div className="flex items-center gap-3 mb-5">
+                                    <Icons.Sliders width={20} height={20} className="text-[#ff7ab8]" />
+                                    <h2 className="font-bold text-[15px] tracking-widest uppercase">
+                                        Active Commission Slots ({activeOrders.length})
+                                    </h2>
                                 </div>
-                            ))}
+
+                                {activeOrders.length === 0 ? (
+                                    <EmptySlots />
+                                ) : (
+                                    <div className="space-y-6">
+                                        {/* Order cards would go here */}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* RIGHT COLUMN: Status + Rights */}
+                            <div className="w-full lg:w-[340px] shrink-0 space-y-5">
+                                
+                                {/* Waitlist Live Status */}
+                                <div className="bg-white border-[4px] border-[#4a2c11] rounded-[2rem] p-6 shadow-brutal-lg">
+                                    <h2 className="font-bold text-[13px] tracking-widest uppercase mb-5">
+                                        Waitlist Live Status
+                                    </h2>
+
+                                    <div className="space-y-4">
+                                        <div className="flex items-start gap-3">
+                                            <div className="w-3 h-3 rounded-full bg-[#4ade80] mt-1 shrink-0 shadow-[0_0_6px_rgba(74,222,128,0.6)]"></div>
+                                            <div>
+                                                <p className="font-bold text-[13px]">Studio Intake Status: <span className="text-[#4ade80]">OPEN</span></p>
+                                                <p className="text-[11px] font-medium text-[#4a2c11]/60 mt-0.5">Toffee currently accepting new custom characters or sticker aresel!</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-start gap-3">
+                                            <div className="w-3 h-3 rounded-full bg-[#ffce54] mt-1 shrink-0 shadow-[0_0_6px_rgba(255,206,84,0.6)]"></div>
+                                            <div>
+                                                <p className="font-bold text-[13px]">Active Slots Filling: <span className="text-[#f08967]">0 / 5</span></p>
+                                                <p className="text-[11px] font-medium text-[#4a2c11]/60 mt-0.5">Average waitlist processing duration is 12 days per design.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="mt-6 pt-5 border-t-2 border-[#fef1df]">
+                                        <h3 className="font-bold text-[11px] tracking-widest uppercase mb-3 text-[#4a2c11]/70">Queue Policy Guidelines:</h3>
+                                        <ul className="space-y-2 text-[11px] font-medium text-[#4a2c11]/60 leading-relaxed">
+                                            <li>* Toffee updates working slots every Tuesday and Friday.</li>
+                                            <li>* Sketches are revealed directly to customers for feedback before rendering colors.</li>
+                                            <li>* Finished high-definition downloads are provided through a private storage drive link.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                {/* Certified Workshop Rights */}
+                                <div className="bg-[#fef1df]/60 border-[3px] border-dashed border-[#c4a882] rounded-[2rem] p-6 relative">
+                                    <div className="flex justify-center mb-3">
+                                        <div className="w-10 h-10 rounded-full bg-white border-[2.5px] border-[#4a2c11] flex items-center justify-center shadow-brutal-sm">
+                                            <Icons.Award width={20} height={20} className="text-[#f08967]" />
+                                        </div>
+                                    </div>
+                                    <h3 className="font-bold text-[12px] tracking-widest text-center uppercase mb-4">Certified Workshop Rights</h3>
+                                    <p className="text-[11px] font-medium text-[#4a2c11]/70 text-center leading-relaxed">
+                                        Every design has full personal print rights! Print your custom stickers, include them in digital streams, use them as avatars or print stickers as gifts for your nearest OC friends.
+                                    </p>
+                                </div>
+
+                            </div>
                         </div>
 
                     </main>
@@ -275,7 +284,7 @@
         }
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<CatalogApp />);
+        root.render(<OrderTrackerApp />);
     </script>
     @endverbatim
 </body>

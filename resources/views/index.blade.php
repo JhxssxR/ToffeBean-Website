@@ -63,12 +63,10 @@
                         <a href="/commissions" className="bg-white/40 hover:bg-white px-5 py-2.5 rounded-full transition-colors flex items-center gap-2 text-[#4a2c11]">
                             📅 Commissions
                         </a>
-                        <a href="#" className="bg-white/40 hover:bg-white px-5 py-2.5 rounded-full transition-colors flex items-center gap-2 text-[#4a2c11]">
+                        <a href="/order-tracker" className="bg-white/40 hover:bg-white px-5 py-2.5 rounded-full transition-colors flex items-center gap-2 text-[#4a2c11]">
                             📊 Order Tracker
                         </a>
-                        <a href="#" className="bg-white/40 hover:bg-white px-5 py-2.5 rounded-full transition-colors flex items-center gap-2 text-[#4a2c11]">
-                            👤 Sign In
-                        </a>
+
                     </div>
                     
                     <div>
