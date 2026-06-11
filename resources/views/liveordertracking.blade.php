@@ -70,15 +70,15 @@
             const currentPath = '/order-tracker';
 
             const links = [
-                { href: '/', label: 'Home', icon: Icons.Home, activeIconColor: 'text-white', defaultIconColor: 'text-[#f08967]' },
-                { href: '/catalog', label: 'Catalog', icon: Icons.Palette, activeIconColor: 'text-white', defaultIconColor: 'text-[#ff7ab8]' },
-                { href: '/oc-planner', label: 'OC Planner', icon: Icons.Sparkles, activeIconColor: 'text-white', defaultIconColor: 'text-[#f08967]' },
-                { href: '/commissions', label: 'Commissions', icon: Icons.Calendar, activeIconColor: 'text-white', defaultIconColor: 'text-[#60a5fa]' },
-                { href: '/order-tracker', label: 'Order Tracker', icon: Icons.Sliders, activeIconColor: 'text-white', defaultIconColor: 'text-[#4ade80]' },
+                { href: '/', label: 'Home', icon: Icons.Home, activeIconColor: 'text-white', defaultIconColor: 'text-[#4a2c11]' },
+                { href: '/catalog', label: 'Catalog', icon: Icons.Palette, activeIconColor: 'text-white', defaultIconColor: 'text-[#4a2c11]' },
+                { href: '/oc-planner', label: 'OC Planner', icon: Icons.Sparkles, activeIconColor: 'text-white', defaultIconColor: 'text-[#4a2c11]' },
+                { href: '/commissions', label: 'Commissions', icon: Icons.Calendar, activeIconColor: 'text-white', defaultIconColor: 'text-[#4a2c11]' },
+                { href: '/order-tracker', label: 'Order Tracker', icon: Icons.Sliders, activeIconColor: 'text-white', defaultIconColor: 'text-[#4a2c11]' },
             ];
 
             return (
-                <nav className="flex items-center justify-between px-10 py-5 max-w-7xl mx-auto w-full">
+                <nav className="flex items-center justify-between px-10 py-5 w-full bg-[#fff8f0]">
                     <div className="flex items-center gap-2 text-2xl font-bold tracking-tight">
                         <div className="w-10 h-10 rounded-full border-[3px] border-[#4a2c11] flex items-center justify-center bg-white shadow-brutal-sm">
                             <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -109,10 +109,14 @@
                         })}
                     </div>
                     
-                    <div>
+                    <div className="flex items-center gap-4">
                         <button className="w-11 h-11 bg-white rounded-full border-[3px] border-[#4a2c11] shadow-brutal flex items-center justify-center hover:-translate-y-1 transition-transform">
                             <Icons.ShoppingBag width={20} height={20} className="text-[#4a2c11]" />
                         </button>
+                        <a href="/login" className="flex items-center gap-2 px-6 py-2 bg-white rounded-full border-[3px] border-[#4a2c11] shadow-brutal text-[#4a2c11] font-bold hover:bg-[#fff8f0] hover:text-[#4a2c11] hover:-translate-y-1 transition-all">
+                            <Icons.User width={18} height={18} />
+                            Sign In
+                        </a>
                     </div>
                 </nav>
             );
