@@ -19,6 +19,10 @@ Route::get('/order-tracker', function () {
     return view('liveordertracking');
 })->name('order-tracker');
 
+Route::get('/oc-planner', function () {
+    return view('OcPlanner');
+})->name('oc-planner');
+
 Route::middleware(['auth'])->group(function () {
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');

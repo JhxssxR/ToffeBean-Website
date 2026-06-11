@@ -27,12 +27,20 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        function Button({ children, variant = 'primary', className = '' }) {
-            const base = "font-bold rounded-full px-6 py-3 transition-transform hover:-translate-y-1 active:translate-y-0 border-[3px] border-[#4a2c11] flex items-center justify-center gap-2";
+        function Button({ children, variant = 'primary', className = '', href }) {
+            const base = "font-bold rounded-full px-6 py-3 transition-transform hover:-translate-y-1 active:translate-y-0 border-[3px] border-[#4a2c11] flex items-center justify-center gap-2 inline-flex cursor-pointer";
             const variants = {
                 primary: "bg-[#ff7ab8] text-white shadow-brutal",
                 secondary: "bg-white text-[#4a2c11] shadow-brutal",
             };
+            
+            if (href) {
+                return (
+                    <a href={href} className={`${base} ${variants[variant]} ${className}`}>
+                        {children}
+                    </a>
+                );
+            }
             
             return (
                 <button className={`${base} ${variants[variant]} ${className}`}>
@@ -41,37 +49,63 @@
             );
         }
 
+        const Icons = {
+            Home: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
+            Palette: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>,
+            Sparkles: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg>,
+            Calendar: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" {...props}><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>,
+            Sliders: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" {...props}><line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/><line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/><line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/><line x1="14" x2="14" y1="2" y2="6"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="16" x2="16" y1="18" y2="22"/></svg>,
+            User: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+            ShoppingBag: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>,
+        };
+
         function Navbar() {
+            const currentPath = '/';
+
+            const links = [
+                { href: '/', label: 'Home', icon: Icons.Home, activeIconColor: 'text-white', defaultIconColor: 'text-[#f08967]' },
+                { href: '/catalog', label: 'Catalog', icon: Icons.Palette, activeIconColor: 'text-white', defaultIconColor: 'text-[#ff7ab8]' },
+                { href: '/oc-planner', label: 'OC Planner', icon: Icons.Sparkles, activeIconColor: 'text-white', defaultIconColor: 'text-[#f08967]' },
+                { href: '/commissions', label: 'Commissions', icon: Icons.Calendar, activeIconColor: 'text-white', defaultIconColor: 'text-[#60a5fa]' },
+                { href: '/order-tracker', label: 'Order Tracker', icon: Icons.Sliders, activeIconColor: 'text-white', defaultIconColor: 'text-[#4ade80]' },
+            ];
+
             return (
-                <nav className="flex items-center justify-between px-6 py-5 max-w-7xl mx-auto">
+                <nav className="flex items-center justify-between px-10 py-5 max-w-7xl mx-auto w-full">
                     <div className="flex items-center gap-2 text-2xl font-bold tracking-tight">
-                        <div className="w-10 h-10 rounded-full border-[3px] border-[#4a2c11] flex items-center justify-center text-xl bg-white shadow-brutal-sm">🐾</div>
-                        <span className="ml-2 font-bold">toffeebean_</span><span className="text-[#ff7ab8]">*</span>
+                        <div className="w-10 h-10 rounded-full border-[3px] border-[#4a2c11] flex items-center justify-center bg-white shadow-brutal-sm">
+                            <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                            </svg>
+                        </div>
+                        <span className="ml-2 font-bold">toffeebean_</span><svg width="18" height="18" viewBox="0 0 24 24" className="inline-block ml-1 relative -top-1" xmlns="http://www.w3.org/2000/svg"><path d="M14.5 4.5A2.5 2.5 0 0 0 12 2a2.5 2.5 0 0 0-2.5 2.5c0 .76.35 1.45.89 1.9A3.49 3.49 0 0 0 7.5 5.5 2.5 2.5 0 0 0 5 8c0 .76.35 1.45.89 1.9A3.49 3.49 0 0 0 5 12a2.5 2.5 0 0 0 2.5 2.5c.76 0 1.45-.35 1.9-.89.28.6.68 1.12 1.15 1.54C10.08 15.6 9.5 16.27 9.5 17.06a2.5 2.5 0 0 0 2.5 2.5 2.5 2.5 0 0 0 2.5-2.5c0-.79-.58-1.46-1.05-1.91.47-.42.87-.94 1.15-1.54.45.54 1.14.89 1.9.89A2.5 2.5 0 0 0 19 12a3.49 3.49 0 0 0-.89-2.1c.54-.45.89-1.14.89-1.9A2.5 2.5 0 0 0 16.5 5.5a3.49 3.49 0 0 0-2.89.9A2.5 2.5 0 0 0 14.5 4.5z"/></svg>
                     </div>
                     
                     <div className="hidden lg:flex items-center gap-1 text-sm font-semibold">
-                        <a href="/" className="bg-[#ff7ab8] text-white px-5 py-2.5 rounded-full border-[3px] border-[#4a2c11] shadow-brutal-sm flex items-center gap-2 font-bold">
-                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" /></svg>
-                            Home
-                        </a>
-                        <a href="/catalog" className="bg-white/40 hover:bg-white px-5 py-2.5 rounded-full transition-colors flex items-center gap-2 text-[#4a2c11]">
-                            🎨 Catalog
-                        </a>
-                        <a href="#" className="bg-white/40 hover:bg-white px-5 py-2.5 rounded-full transition-colors flex items-center gap-2 text-[#4a2c11]">
-                            ✨ AI OC Planner
-                        </a>
-                        <a href="/commissions" className="bg-white/40 hover:bg-white px-5 py-2.5 rounded-full transition-colors flex items-center gap-2 text-[#4a2c11]">
-                            📅 Commissions
-                        </a>
-                        <a href="/order-tracker" className="bg-white/40 hover:bg-white px-5 py-2.5 rounded-full transition-colors flex items-center gap-2 text-[#4a2c11]">
-                            📊 Order Tracker
-                        </a>
-
+                        {links.map((link) => {
+                            const isActive = currentPath === link.href;
+                            const Icon = link.icon;
+                            
+                            return (
+                                <a 
+                                    key={link.label}
+                                    href={link.href} 
+                                    className={`px-5 py-2.5 rounded-full transition-colors flex items-center gap-2 font-bold ${
+                                        isActive 
+                                            ? 'bg-[#ff7ab8] text-white border-[3px] border-[#4a2c11] shadow-brutal-sm' 
+                                            : 'bg-white/40 hover:bg-white text-[#4a2c11]'
+                                    }`}
+                                >
+                                    <Icon width={18} height={18} className={isActive ? link.activeIconColor : link.defaultIconColor} />
+                                    {link.label}
+                                </a>
+                            );
+                        })}
                     </div>
                     
                     <div>
                         <button className="w-11 h-11 bg-white rounded-full border-[3px] border-[#4a2c11] shadow-brutal flex items-center justify-center hover:-translate-y-1 transition-transform">
-                            🛍️
+                            <Icons.ShoppingBag width={20} height={20} className="text-[#4a2c11]" />
                         </button>
                     </div>
                 </nav>
@@ -96,8 +130,8 @@
                         </p>
                         
                         <div className="flex flex-wrap gap-4 pt-4">
-                            <Button variant="primary">Browse Sticker Shop</Button>
-                            <Button variant="secondary">AI OC Design Planner &rarr;</Button>
+                            <Button variant="primary" href="/catalog">Browse Shop</Button>
+                            <Button variant="secondary" href="/oc-planner">OC Design Planner &rarr;</Button>
                         </div>
                     </div>
                     
@@ -215,7 +249,7 @@
                         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
                             <div className="space-y-4">
                                 <div className="flex items-center gap-1 text-2xl font-bold tracking-tight text-white">
-                                    <span>toffeebean_</span><span className="text-[#ff7ab8]">*</span>
+                                    <span>toffeebean_</span><svg width="18" height="18" viewBox="0 0 24 24" className="inline-block ml-1 relative -top-1" xmlns="http://www.w3.org/2000/svg"><path d="M14.5 4.5A2.5 2.5 0 0 0 12 2a2.5 2.5 0 0 0-2.5 2.5c0 .76.35 1.45.89 1.9A3.49 3.49 0 0 0 7.5 5.5 2.5 2.5 0 0 0 5 8c0 .76.35 1.45.89 1.9A3.49 3.49 0 0 0 5 12a2.5 2.5 0 0 0 2.5 2.5c.76 0 1.45-.35 1.9-.89.28.6.68 1.12 1.15 1.54C10.08 15.6 9.5 16.27 9.5 17.06a2.5 2.5 0 0 0 2.5 2.5 2.5 2.5 0 0 0 2.5-2.5c0-.79-.58-1.46-1.05-1.91.47-.42.87-.94 1.15-1.54.45.54 1.14.89 1.9.89A2.5 2.5 0 0 0 19 12a3.49 3.49 0 0 0-.89-2.1c.54-.45.89-1.14.89-1.9A2.5 2.5 0 0 0 16.5 5.5a3.49 3.49 0 0 0-2.89.9A2.5 2.5 0 0 0 14.5 4.5z"/></svg>
                                 </div>
                                 <p className="text-[13px] font-medium max-w-sm leading-relaxed text-gray-400">
                                     Cute kemono character illustrations, customized stickers, and reference guides matching warm, rustic autumn colors.
