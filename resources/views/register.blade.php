@@ -214,11 +214,11 @@
                     </p>
 
                     {/* Tab switcher */}
-                    <div className="flex rounded-full border-[3px] border-[#4a2c11] overflow-hidden mb-6 shadow-[3px_3px_0_0_#4a2c11]">
-                        <a href="/login" className="flex-1 py-2.5 text-center font-bold text-[13px] bg-white text-[#4a2c11] hover:bg-[#fff8f0] transition-colors">
+                    <div className="flex rounded-full border-[3px] border-[#4a2c11] p-1 mb-6 bg-[#fff8f0]">
+                        <a href="/login" className="flex-1 py-2 text-center font-bold text-[13px] text-[#4a2c11]/70 hover:text-[#4a2c11] transition-colors flex items-center justify-center">
                             Resident Login
                         </a>
-                        <span className="flex-1 py-2.5 text-center font-bold text-[13px] bg-[#ff7ab8] text-white cursor-default">
+                        <span className="flex-1 py-2 text-center font-bold text-[13px] bg-[#ff7ab8] text-white rounded-full border-[2px] border-[#4a2c11] cursor-default">
                             Create Account
                         </span>
                     </div>
