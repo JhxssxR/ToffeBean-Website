@@ -34,6 +34,41 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
+        function FallingLeaves() {
+            const [leaves, setLeaves] = useState([]);
+
+            useEffect(() => {
+                const newLeaves = Array.from({ length: 15 }).map((_, i) => ({
+                    id: i,
+                    left: Math.random() * 100 + 'vw',
+                    animationDuration: Math.random() * 5 + 5 + 's',
+                    animationDelay: Math.random() * 5 + 's',
+                    emoji: ['🍂', '🍁'][Math.floor(Math.random() * 2)],
+                    size: Math.random() * 10 + 15 + 'px'
+                }));
+                setLeaves(newLeaves);
+            }, []);
+
+            return (
+                <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
+                    {leaves.map(leaf => (
+                        <div
+                            key={leaf.id}
+                            className="leaf"
+                            style={{
+                                left: leaf.left,
+                                animationDuration: leaf.animationDuration,
+                                animationDelay: leaf.animationDelay,
+                                fontSize: leaf.size
+                            }}
+                        >
+                            {leaf.emoji}
+                        </div>
+                    ))}
+                </div>
+            );
+        }
+
         // Icons
         const Icons = {
             Home:        (p) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
@@ -336,6 +371,7 @@
         function RegisterApp() {
             return (
                 <div className="min-h-screen flex flex-col font-sans text-[#4a2c11] bg-[#fef1df]">
+                    <FallingLeaves />
                     <Navbar />
 
                     {/* Wave divider */}

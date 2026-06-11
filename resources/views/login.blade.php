@@ -32,7 +32,42 @@
 
     @verbatim
     <script type="text/babel">
-        const { useState } = React;
+        const { useState, useEffect } = React;
+
+        function FallingLeaves() {
+            const [leaves, setLeaves] = useState([]);
+
+            useEffect(() => {
+                const newLeaves = Array.from({ length: 15 }).map((_, i) => ({
+                    id: i,
+                    left: Math.random() * 100 + 'vw',
+                    animationDuration: Math.random() * 5 + 5 + 's',
+                    animationDelay: Math.random() * 5 + 's',
+                    emoji: ['🍂', '🍁'][Math.floor(Math.random() * 2)],
+                    size: Math.random() * 10 + 15 + 'px'
+                }));
+                setLeaves(newLeaves);
+            }, []);
+
+            return (
+                <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
+                    {leaves.map(leaf => (
+                        <div
+                            key={leaf.id}
+                            className="leaf"
+                            style={{
+                                left: leaf.left,
+                                animationDuration: leaf.animationDuration,
+                                animationDelay: leaf.animationDelay,
+                                fontSize: leaf.size
+                            }}
+                        >
+                            {leaf.emoji}
+                        </div>
+                    ))}
+                </div>
+            );
+        }
 
         // Icons
         const Icons = {
@@ -141,15 +176,6 @@
             const errors = window.__ERRORS__ || {};
             const status = window.__STATUS__;
 
-            function fillAdmin() {
-                setEmail('toffee@toffeebean.art');
-                setPassword('toffeeadmin');
-            }
-            function fillPatron() {
-                setEmail('patron@toffeebean.art');
-                setPassword('patronsandbox');
-            }
-
             function handleSubmit(e) {
                 e.preventDefault();
                 setSubmitting(true);
@@ -178,29 +204,6 @@
                         <a href="/register" className="flex-1 py-2.5 text-center font-bold text-[13px] bg-white text-[#4a2c11] hover:bg-[#fff8f0] transition-colors">
                             Create Account
                         </a>
-                    </div>
-
-                    {/* Developer Sandbox Quick Accounts */}
-                    <div className="mb-6">
-                        <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-[#4a2c11]/50 mb-3">Developer Sandbox Quick Accounts</p>
-                        <div className="grid grid-cols-2 gap-3">
-                            <div className="border-[2px] border-[#d4b896] rounded-xl p-3 space-y-2">
-                                <span className="inline-block bg-[#4ade80] text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Toffee (Admin)</span>
-                                <p className="text-[11px] font-medium text-[#4a2c11]/70">Email: <span className="font-bold text-[#4a2c11]">toffee@toffeebean.art</span></p>
-                                <p className="text-[11px] font-medium text-[#4a2c11]/70">Pass: <span className="font-bold text-[#4a2c11]">toffeeadmin</span></p>
-                                <button type="button" onClick={fillAdmin} className="w-full mt-1 py-1.5 rounded-lg border-[2px] border-[#d4b896] text-[11px] font-bold text-[#4a2c11] hover:bg-[#fff8f0] transition-colors">
-                                    Auto-Fill Artist (Admin)
-                                </button>
-                            </div>
-                            <div className="border-[2px] border-[#d4b896] rounded-xl p-3 space-y-2">
-                                <span className="inline-block bg-[#ff7ab8] text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Patron (Customer)</span>
-                                <p className="text-[11px] font-medium text-[#4a2c11]/70">Client: <span className="font-bold text-[#4a2c11]">patron@toffeebean.art</span></p>
-                                <p className="text-[11px] font-medium text-[#4a2c11]/70">Pass: <span className="font-bold text-[#4a2c11]">patronsandbox</span></p>
-                                <button type="button" onClick={fillPatron} className="w-full mt-1 py-1.5 rounded-lg border-[2px] border-[#d4b896] text-[11px] font-bold text-[#4a2c11] hover:bg-[#fff8f0] transition-colors">
-                                    Auto-Fill Patron (Client)
-                                </button>
-                            </div>
-                        </div>
                     </div>
 
                     {/* Login Form */}
@@ -270,6 +273,7 @@
         function LoginApp() {
             return (
                 <div className="min-h-screen flex flex-col font-sans text-[#4a2c11] bg-[#fef1df]">
+                    <FallingLeaves />
                     <Navbar />
 
                     {/* Wave divider */}

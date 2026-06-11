@@ -27,6 +27,41 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
+        function FallingLeaves() {
+            const [leaves, setLeaves] = useState([]);
+
+            useEffect(() => {
+                const newLeaves = Array.from({ length: 15 }).map((_, i) => ({
+                    id: i,
+                    left: Math.random() * 100 + 'vw',
+                    animationDuration: Math.random() * 5 + 5 + 's',
+                    animationDelay: Math.random() * 5 + 's',
+                    emoji: ['🍂', '🍁'][Math.floor(Math.random() * 2)],
+                    size: Math.random() * 10 + 15 + 'px'
+                }));
+                setLeaves(newLeaves);
+            }, []);
+
+            return (
+                <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
+                    {leaves.map(leaf => (
+                        <div
+                            key={leaf.id}
+                            className="leaf"
+                            style={{
+                                left: leaf.left,
+                                animationDuration: leaf.animationDuration,
+                                animationDelay: leaf.animationDelay,
+                                fontSize: leaf.size
+                            }}
+                        >
+                            {leaf.emoji}
+                        </div>
+                    ))}
+                </div>
+            );
+        }
+
         // Custom Inline SVGs to replace emoticons
         const Icons = {
             Home: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
@@ -101,11 +136,10 @@
             return (
                 <div className="relative pt-8 mt-auto">
                     <div className="absolute top-0 left-0 w-full h-8" style={{
-                        backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='20' viewBox='0 0 40 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0 Q 20 20 40 0 L 40 20 L 0 20 Z' fill='%23161413'/%3E%3Cpath d='M0 0 Q 20 20 40 0' fill='none' stroke='%234a2c11' stroke-width='4'/%3E%3C/svg%3E")`,
-                        backgroundRepeat: 'repeat-x',
-                        backgroundPosition: 'center bottom'
-                    }}></div>
-                    
+                            backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='20' viewBox='0 0 40 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0 Q 20 20 40 0 L 40 20 L 0 20 Z' fill='%23161413'/%3E%3Cpath d='M0 0 Q 20 20 40 0' fill='none' stroke='%234a2c11' stroke-width='4'/%3E%3C/svg%3E")`,
+                            backgroundRepeat: 'repeat-x',
+                            backgroundPosition: 'center bottom'
+                        }}></div>
                     <footer className="bg-[#161413] text-gray-400 py-16 px-8 border-t-[4px] border-[#4a2c11] border-opacity-0">
                         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
                             <div className="space-y-4">
@@ -180,6 +214,7 @@
         function CatalogApp() {
             return (
                 <div className="min-h-screen flex flex-col font-sans text-[#4a2c11] bg-[#fef1df]">
+                    <FallingLeaves />
                     <Navbar />
                     
                     <div className="w-full h-5 relative" style={{

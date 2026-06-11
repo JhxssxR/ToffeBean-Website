@@ -26,7 +26,42 @@
 
     @verbatim
     <script type="text/babel">
-        const { useState } = React;
+        const { useState, useEffect } = React;
+
+        function FallingLeaves() {
+            const [leaves, setLeaves] = useState([]);
+
+            useEffect(() => {
+                const newLeaves = Array.from({ length: 15 }).map((_, i) => ({
+                    id: i,
+                    left: Math.random() * 100 + 'vw',
+                    animationDuration: Math.random() * 5 + 5 + 's',
+                    animationDelay: Math.random() * 5 + 's',
+                    emoji: ['🍂', '🍁'][Math.floor(Math.random() * 2)],
+                    size: Math.random() * 10 + 15 + 'px'
+                }));
+                setLeaves(newLeaves);
+            }, []);
+
+            return (
+                <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
+                    {leaves.map(leaf => (
+                        <div
+                            key={leaf.id}
+                            className="leaf"
+                            style={{
+                                left: leaf.left,
+                                animationDuration: leaf.animationDuration,
+                                animationDelay: leaf.animationDelay,
+                                fontSize: leaf.size
+                            }}
+                        >
+                            {leaf.emoji}
+                        </div>
+                    ))}
+                </div>
+            );
+        }
 
         // Icons
         const Icons = {
@@ -183,7 +218,8 @@
             }
 
             return (
-                <div className="min-h-screen flex flex-col font-sans text-[#4a2c11] bg-[#fef1df]">
+                <div className="min-h-screen flex flex-col bg-[#fef1df]">
+                    <FallingLeaves />
                     <Navbar />
 
                     {/* Wave divider */}

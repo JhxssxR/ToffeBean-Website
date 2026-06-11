@@ -27,6 +27,41 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
+        function FallingLeaves() {
+            const [leaves, setLeaves] = useState([]);
+
+            useEffect(() => {
+                const newLeaves = Array.from({ length: 15 }).map((_, i) => ({
+                    id: i,
+                    left: Math.random() * 100 + 'vw',
+                    animationDuration: Math.random() * 5 + 5 + 's',
+                    animationDelay: Math.random() * 5 + 's',
+                    emoji: ['🍂', '🍁'][Math.floor(Math.random() * 2)],
+                    size: Math.random() * 10 + 15 + 'px'
+                }));
+                setLeaves(newLeaves);
+            }, []);
+
+            return (
+                <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
+                    {leaves.map(leaf => (
+                        <div
+                            key={leaf.id}
+                            className="leaf"
+                            style={{
+                                left: leaf.left,
+                                animationDuration: leaf.animationDuration,
+                                animationDelay: leaf.animationDelay,
+                                fontSize: leaf.size
+                            }}
+                        >
+                            {leaf.emoji}
+                        </div>
+                    ))}
+                </div>
+            );
+        }
+
         function Button({ children, variant = 'primary', className = '', href }) {
             const base = "font-bold rounded-full px-6 py-3 transition-transform hover:-translate-y-1 active:translate-y-0 border-[3px] border-[#4a2c11] flex items-center justify-center gap-2 inline-flex cursor-pointer";
             const variants = {
@@ -287,6 +322,7 @@
         function App() {
             return (
                 <div className="min-h-screen flex flex-col">
+                    <FallingLeaves />
                     <Navbar />
                     
                     {/* Header Wave Divider */}
