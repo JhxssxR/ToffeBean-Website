@@ -292,11 +292,18 @@
                         backgroundPosition: 'center bottom'
                     }}></div>
                     
-                    <main className="max-w-[1100px] mx-auto px-6 w-full flex-1">
-                        <Hero />
-                        <Collections />
-                        <PromoBanner />
-                        <About />
+                    <main className="w-full flex-1">
+                        <div className="max-w-[1100px] mx-auto px-6 w-full">
+                            <Hero />
+                        </div>
+                        
+                        <div className="w-full border-t-[3px] border-[#4a2c11]"></div>
+                        
+                        <div className="max-w-[1100px] mx-auto px-6 w-full pb-12">
+                            <Collections />
+                            <PromoBanner />
+                            <About />
+                        </div>
                     </main>
                     
                     <Footer />
