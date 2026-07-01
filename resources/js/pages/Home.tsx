@@ -1,7 +1,7 @@
 import { ToffeeButton } from '@/components/ToffeeButton';
 import { ToffeeFooter } from '@/components/ToffeeFooter';
 import { ToffeeNavbar } from '@/components/ToffeeNavbar';
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import React from 'react';
 
 function Hero() {
@@ -14,7 +14,7 @@ function Hero() {
                 
                 <h1 className="text-5xl md:text-6xl font-bold leading-[1.15] tracking-tight">
                     <span className="text-[#4a2c11]">Cute illustrations,</span><br/>
-                    <span className="text-[#ff7ab8]">creativity filled!</span>
+                    <span className="text-[#E67E22]">creativity filled!</span>
                 </h1>
                 
                 <p className="text-base font-medium leading-relaxed max-w-md text-[#4a2c11]/80">
@@ -22,8 +22,8 @@ function Hero() {
                 </p>
                 
                 <div className="flex flex-wrap gap-4 pt-4">
-                    <ToffeeButton variant="primary">Browse Sticker Shop</ToffeeButton>
-                    <ToffeeButton variant="secondary">AI OC Design Planner &rarr;</ToffeeButton>
+                    <ToffeeButton variant="primary" onClick={() => router.visit('/catalog')}>Browse Sticker Shop</ToffeeButton>
+                    <ToffeeButton variant="secondary" onClick={() => router.visit('/oc-planner')}>OC Design Planner &rarr;</ToffeeButton>
                 </div>
             </div>
             
@@ -46,7 +46,7 @@ function Collections() {
     return (
         <section className="space-y-6 pt-16 relative">
             <h2 className="text-2xl font-bold flex items-center gap-2">
-                MY COLLECTIONS! <span className="text-[#ff7ab8] text-xl">⭐</span>
+                MY COLLECTIONS! <span className="text-[#E67E22] text-xl">⭐</span>
             </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -60,7 +60,7 @@ function Collections() {
                                 <h3 className="font-bold text-lg">{item.title}</h3>
                                 <p className="text-[13px] font-medium text-[#4a2c11]/60 mt-0.5">{item.desc}</p>
                             </div>
-                            <span className="text-[#ff7ab8] font-bold text-xl leading-none">&rarr;</span>
+                            <span className="text-[#E67E22] font-bold text-xl leading-none">&rarr;</span>
                         </div>
                     </div>
                 ))}
@@ -105,7 +105,7 @@ function About() {
             </div>
             
             <div className="space-y-5">
-                <h2 className="text-3xl font-bold uppercase text-[#ff7ab8] flex items-center gap-2">
+                <h2 className="text-3xl font-bold uppercase text-[#E67E22] flex items-center gap-2">
                     HEY THERE! I'M TOFFEE! <span className="text-2xl">🧑‍🎨</span>
                 </h2>
                 <div className="space-y-4 text-[15px] font-medium text-[#4a2c11]/80 leading-relaxed">

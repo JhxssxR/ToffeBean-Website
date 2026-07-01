@@ -14,7 +14,7 @@ export function ToffeeFooter() {
                 <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
                     <div className="space-y-4">
                         <div className="flex items-center gap-1 text-2xl font-bold tracking-tight text-white">
-                            <span>toffeebean_</span><span className="text-[#ff7ab8]">*</span>
+                            <span>toffeebean_</span><span className="text-[#E67E22]">*</span>
                         </div>
                         <p className="text-[13px] font-medium max-w-sm leading-relaxed text-gray-400">
                             Cute kemono character illustrations, customized stickers, and reference guides matching warm, rustic autumn colors.

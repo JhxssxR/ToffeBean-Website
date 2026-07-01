@@ -1,3 +1,4 @@
+import { ToffeeNavbar } from '@/components/ToffeeNavbar';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { Home, Palette, Sparkles, Calendar, SlidersHorizontal, ShoppingBag, User, Lock, Mail, LoaderCircle } from 'lucide-react';
 import { FormEventHandler, useState } from 'react';
@@ -14,7 +15,7 @@ const avatarOptions = [
     { emoji: '🐱', label: 'Calico Cat', color: '#f0a860' },
     { emoji: '🐿️', label: 'Squirrel', color: '#c4956a' },
     { emoji: '🦦', label: 'Sea Otter', color: '#60a5fa' },
-    { emoji: '🐼', label: 'Red Panda', color: '#ff7ab8' },
+    { emoji: '🐼', label: 'Red Panda', color: '#E67E22' },
     { emoji: '🌸', label: 'Sakura', color: '#fca5d0' },
     { emoji: '🐸', label: 'Frog', color: '#4ade80' },
 ];
@@ -40,7 +41,7 @@ export default function Register() {
     const navLinks = [
         { href: '/', label: 'Home', icon: Home },
         { href: '/catalog', label: 'Catalog', icon: Palette },
-        { href: '/oc-planner', label: 'AI OC Planner', icon: Sparkles },
+        { href: '/oc-planner', label: 'OC Planner', icon: Sparkles },
         { href: '/commissions', label: 'Commissions', icon: Calendar },
         { href: '/order-tracker', label: 'Order Tracker', icon: SlidersHorizontal },
     ];
@@ -50,38 +51,7 @@ export default function Register() {
             <Head title="Create Account - ToffeeBean" />
             <div className="min-h-screen flex flex-col font-[Fredoka] text-[#4a2c11] bg-[#fef1df]">
                 {/* Navbar */}
-                <nav className="flex items-center justify-between px-10 py-5 w-full bg-[#fff8f0]">
-                    <div className="flex items-center gap-2 text-2xl font-bold tracking-tight">
-                        <div className="w-10 h-10 rounded-full border-[3px] border-[#4a2c11] flex items-center justify-center bg-white" style={{ boxShadow: '2px 2px 0px 0px rgba(74, 44, 17, 1)' }}>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="#4a2c11" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                            </svg>
-                        </div>
-                        <a href="/" className="ml-2 font-bold hover:opacity-80">toffeebean_</a>
-                    </div>
-
-                    <div className="hidden lg:flex items-center gap-1 text-sm font-semibold">
-                        {navLinks.map((link) => {
-                            const Icon = link.icon;
-                            return (
-                                <a key={link.label} href={link.href} className="px-5 py-2.5 rounded-full transition-colors flex items-center gap-2 font-bold bg-white/40 hover:bg-white text-[#4a2c11]">
-                                    <Icon size={18} strokeWidth={3} className="text-[#4a2c11]" />
-                                    {link.label}
-                                </a>
-                            );
-                        })}
-                    </div>
-
-                    <div className="flex items-center gap-4">
-                        <button className="w-11 h-11 bg-white rounded-full border-[3px] border-[#4a2c11] flex items-center justify-center hover:-translate-y-1 transition-transform" style={{ boxShadow: '4px 4px 0px 0px rgba(74, 44, 17, 1)' }}>
-                            <ShoppingBag size={20} strokeWidth={2.5} className="text-[#4a2c11]" />
-                        </button>
-                        <span className="flex items-center gap-2 px-6 py-2 bg-[#ff7ab8] rounded-full border-[3px] border-[#4a2c11] text-white font-bold" style={{ boxShadow: '4px 4px 0px 0px rgba(74, 44, 17, 1)' }}>
-                            <User size={18} strokeWidth={3} />
-                            Sign In
-                        </span>
-                    </div>
-                </nav>
+                <ToffeeNavbar />
 
                 {/* Wave divider */}
                 <div className="w-full h-5 relative" style={{
@@ -118,10 +88,10 @@ export default function Register() {
 
                         {/* Tab switcher */}
                         <div className="flex rounded-full border-[3px] border-[#4a2c11] overflow-hidden mb-6" style={{ boxShadow: '3px 3px 0px 0px rgba(74, 44, 17, 1)' }}>
-                            <Link href={route('login')} className="flex-1 py-2.5 text-center font-bold text-[13px] bg-white text-[#4a2c11] hover:bg-[#fff8f0] transition-colors">
+                            <a href="/login" className="flex-1 py-2.5 text-center font-bold text-[13px] bg-white text-[#4a2c11] hover:bg-[#fff8f0] transition-colors">
                                 Resident Login
-                            </Link>
-                            <span className="flex-1 py-2.5 text-center font-bold text-[13px] bg-[#ff7ab8] text-white cursor-default">
+                            </a>
+                            <span className="flex-1 py-2.5 text-center font-bold text-[13px] bg-[#E67E22] text-white cursor-default">
                                 Create Account
                             </span>
                         </div>
@@ -224,7 +194,7 @@ export default function Register() {
                                     ))}
                                 </div>
                                 <p className="text-[11px] font-medium text-[#4a2c11]/50 mt-2">
-                                    Avatar preview: {avatarOptions[selectedAvatar].emoji} - <span className="text-[#ff7ab8] font-bold">{avatarOptions[selectedAvatar].label}</span>
+                                    Avatar preview: {avatarOptions[selectedAvatar].emoji} - <span className="text-[#E67E22] font-bold">{avatarOptions[selectedAvatar].label}</span>
                                 </p>
                             </div>
 
@@ -235,7 +205,7 @@ export default function Register() {
                                         type="checkbox"
                                         checked={agreedToTerms}
                                         onChange={(e) => setAgreedToTerms(e.target.checked)}
-                                        className="mt-0.5 w-4 h-4 accent-[#ff7ab8] rounded"
+                                        className="mt-0.5 w-4 h-4 accent-[#E67E22] rounded"
                                     />
                                     <p className="text-[11px] font-medium text-[#4a2c11]/70 leading-relaxed">
                                         I agree that this is a simulated workspace sandbox. Registering is stored locally on my browser for high feedback testing! 🍪
@@ -247,7 +217,7 @@ export default function Register() {
                             <button
                                 type="submit"
                                 disabled={processing || !agreedToTerms}
-                                className="w-full bg-[#ff7ab8] text-white font-bold rounded-full py-3.5 border-[3px] border-[#4a2c11] hover:-translate-y-0.5 active:translate-y-0 transition-transform flex items-center justify-center gap-2 text-[14px] disabled:opacity-60"
+                                className="w-full bg-[#E67E22] text-white font-bold rounded-full py-3.5 border-[3px] border-[#4a2c11] hover:-translate-y-0.5 active:translate-y-0 transition-transform flex items-center justify-center gap-2 text-[14px] disabled:opacity-60"
                                 style={{ boxShadow: '3px 3px 0px 0px rgba(74, 44, 17, 1)' }}
                             >
                                 {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}

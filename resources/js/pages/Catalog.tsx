@@ -2,7 +2,7 @@ import { ToffeeButton } from '@/components/ToffeeButton';
 import { ToffeeFooter } from '@/components/ToffeeFooter';
 import { ToffeeNavbar } from '@/components/ToffeeNavbar';
 import { Head } from '@inertiajs/react';
-import { ChevronDown, Heart } from 'lucide-react';
+import { ChevronDown, Heart, Sparkles } from 'lucide-react';
 import React from 'react';
 
 const products = [
@@ -128,12 +128,12 @@ export default function Catalog() {
                                 {/* Actions */}
                                 <div className="flex items-center gap-3 w-full">
                                     <button className={`flex-1 font-bold rounded-full py-3 transition-transform hover:-translate-y-1 active:translate-y-0 border-[3px] border-[#4a2c11] shadow-brutal text-white text-sm tracking-wide ${
-                                        product.buttonVariant === 'orange' ? 'bg-[#f08967]' : 'bg-[#ff7ab8]'
+                                        product.buttonVariant === 'orange' ? 'bg-[#f08967]' : 'bg-[#E67E22]'
                                     }`}>
                                         {product.buttonText}
                                     </button>
                                     <button className="w-[50px] h-[50px] shrink-0 bg-[#fef1df] rounded-2xl border-[3px] border-[#4a2c11] shadow-brutal flex items-center justify-center hover:-translate-y-1 transition-transform">
-                                        <Heart size={20} strokeWidth={3} className="text-[#ff7ab8]" />
+                                        <Heart size={20} strokeWidth={3} className="text-[#E67E22]" />
                                     </button>
                                 </div>
                             </div>
