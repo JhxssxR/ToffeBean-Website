@@ -4,7 +4,7 @@ import { Head } from '@inertiajs/react';
 import React, { useState } from 'react';
 import { Pencil } from 'lucide-react';
 
-function SpeciesPill({ label, selected, onClick }: any) {
+function SpeciesPill({ label, selected, onClick }: { label: string, selected: boolean, onClick: () => void }) {
     return (
         <button
             type="button"
@@ -43,7 +43,7 @@ export default function OcPlanner() {
     const [quirks, setQuirks]   = useState('Carries a small acorn bag, wears big round glasses, and is easily startled but loves cinnamon bread.');
     const [submitted, setSubmitted] = useState(false);
 
-    function handlePlan(e: any) {
+    function handlePlan(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         setSubmitted(true);
     }

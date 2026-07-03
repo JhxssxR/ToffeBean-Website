@@ -12,8 +12,18 @@ const MapleSVG = ({ color }: { color: string }) => (
     </svg>
 );
 
+interface Leaf {
+    id: number;
+    left: string;
+    animationDuration: string;
+    animationDelay: string;
+    type: string;
+    color: string;
+    size: string;
+}
+
 export function FallingLeaves() {
-    const [leaves, setLeaves] = useState<any[]>([]);
+    const [leaves, setLeaves] = useState<Leaf[]>([]);
 
     useEffect(() => {
         const newLeaves = Array.from({ length: 15 }).map((_, i) => {

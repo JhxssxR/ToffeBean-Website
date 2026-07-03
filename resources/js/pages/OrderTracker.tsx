@@ -4,7 +4,11 @@ import { Head } from '@inertiajs/react';
 import React from 'react';
 import { Sliders, Award, ClipboardList } from 'lucide-react';
 
-const activeOrders: any[] = [];
+interface Order {
+    id: string;
+    status: string;
+}
+const activeOrders: Order[] = [];
 
 function EmptySlots() {
     return (

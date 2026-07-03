@@ -8,7 +8,15 @@ export default function Commissions() {
     const [style, setStyle] = useState('sticker');
     const [addons, setAddons] = useState({ print: false, rush: false });
 
-    const styles: any = {
+    interface StyleItem {
+        id: string;
+        title: string;
+        desc: string;
+        price: number;
+        eta: string;
+    }
+
+    const styles: Record<string, StyleItem> = {
         sticker: {
             id: 'sticker',
             title: 'Cute Custom Sticker Sheet',
@@ -78,7 +86,7 @@ export default function Commissions() {
                         <div className="space-y-4">
                             <h3 className="font-bold text-[13px] tracking-wider uppercase">1. ARTWORK STYLE CATEGORY</h3>
                             
-                            {Object.values(styles).map((item: any) => {
+                            {Object.values(styles).map((item) => {
                                 const isSelected = style === item.id;
                                 return (
                                     <div 

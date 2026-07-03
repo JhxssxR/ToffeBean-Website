@@ -38,13 +38,7 @@ export default function Register() {
         });
     };
 
-    const navLinks = [
-        { href: '/', label: 'Home', icon: Home },
-        { href: '/catalog', label: 'Catalog', icon: Palette },
-        { href: '/oc-planner', label: 'OC Planner', icon: Sparkles },
-        { href: '/commissions', label: 'Commissions', icon: Calendar },
-        { href: '/order-tracker', label: 'Order Tracker', icon: SlidersHorizontal },
-    ];
+
 
     return (
         <>
