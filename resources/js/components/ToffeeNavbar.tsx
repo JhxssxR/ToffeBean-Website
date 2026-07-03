@@ -50,20 +50,26 @@ export function ToffeeNavbar() {
                     })}
                 </div>
 
-                <div className="hidden lg:block">
-                    <Link href="/login" className="flex items-center gap-2 px-6 py-2 bg-white rounded-full border-[3px] border-[#4a2c11] shadow-brutal text-[#4a2c11] font-bold hover:bg-[#fffcf7] hover:-translate-y-1 transition-transform">
+                <div className="hidden lg:flex items-center gap-3">
+                    <Link href="/cart" className="flex items-center justify-center w-[46px] h-[46px] bg-white rounded-[16px] border-[3px] border-[#4a2c11] shadow-brutal text-[#4a2c11] hover:-translate-y-1 transition-transform">
+                        <ShoppingBag size={20} strokeWidth={2.5} />
+                    </Link>
+                    <Link href="/login" className="flex items-center gap-2 px-6 h-[46px] bg-white rounded-full border-[3px] border-[#4a2c11] shadow-brutal text-[#4a2c11] font-bold hover:bg-[#fffcf7] hover:-translate-y-1 transition-transform">
                         <User size={18} strokeWidth={3} className="text-[#D2691E]" />
                         Sign In
                     </Link>
                 </div>
 
-                <div className="lg:hidden flex items-center gap-3">
+                <div className="lg:hidden flex items-center gap-2">
+                    <Link href="/cart" className="flex items-center justify-center w-10 h-10 bg-white rounded-[12px] border-[3px] border-[#4a2c11] shadow-brutal-sm text-[#4a2c11]">
+                        <ShoppingBag size={18} strokeWidth={2.5} />
+                    </Link>
                     <Link href="/login" className="flex items-center justify-center w-10 h-10 bg-white rounded-full border-[3px] border-[#4a2c11] shadow-brutal-sm text-[#4a2c11]">
                         <User size={18} strokeWidth={3} className="text-[#D2691E]" />
                     </Link>
                     <button 
                         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                        className="flex items-center justify-center w-10 h-10 bg-white rounded-full border-[3px] border-[#4a2c11] shadow-brutal-sm text-[#4a2c11]"
+                        className="flex items-center justify-center w-10 h-10 bg-white rounded-[12px] border-[3px] border-[#4a2c11] shadow-brutal-sm text-[#4a2c11]"
                     >
                         {isMobileMenuOpen ? <X size={20} strokeWidth={3} /> : <Menu size={20} strokeWidth={3} />}
                     </button>
