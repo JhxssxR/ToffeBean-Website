@@ -35,13 +35,57 @@ export default function OcPlanner() {
         'Bubbly Café Regular',
         'Mischievous Autumn Sprite',
         'Sleepy Cloud Dreamer',
+        'Other custom…',
     ];
 
     const [selectedSpecies, setSelectedSpecies] = useState('Forest Red Fox');
+    const [customSpecies, setCustomSpecies]     = useState('');
     const [vibe, setVibe]       = useState('Pumpkin Spice Barista');
+    const [customVibe, setCustomVibe]           = useState('');
     const [colors, setColors]   = useState('Warm Caramel, Pumpkin Orange, and Butter Cream');
     const [quirks, setQuirks]   = useState('Carries a small acorn bag, wears big round glasses, and is easily startled but loves cinnamon bread.');
+    const [imageRefs, setImageRefs] = useState<File[]>([]);
+    const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+    const [imageError, setImageError] = useState<string | null>(null);
     const [submitted, setSubmitted] = useState(false);
+
+    function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
+        setImageError(null);
+        if (e.target.files && e.target.files.length > 0) {
+            const files = Array.from(e.target.files);
+            
+            if (files.length > 3) {
+                setImageError('You can only upload a maximum of 3 images.');
+                e.target.value = '';
+                return;
+            }
+
+            let totalSize = 0;
+            const validFiles: File[] = [];
+            const validPreviews: string[] = [];
+
+            for (const file of files) {
+                if (!file.type.startsWith('image/')) {
+                    setImageError('Please select only valid image files.');
+                    e.target.value = '';
+                    return;
+                }
+                totalSize += file.size;
+                validFiles.push(file);
+                validPreviews.push(URL.createObjectURL(file));
+            }
+
+            const MAX_TOTAL_SIZE = 3 * 1024 * 1024; // 3MB overall
+            if (totalSize > MAX_TOTAL_SIZE) {
+                setImageError('The total size of all images must be less than 3MB.');
+                e.target.value = '';
+                return;
+            }
+
+            setImageRefs(validFiles);
+            setImagePreviews(validPreviews);
+        }
+    }
 
     function handlePlan(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -93,6 +137,18 @@ export default function OcPlanner() {
                                         <SpeciesPill key={s} label={s} selected={selectedSpecies === s} onClick={() => setSelectedSpecies(s)} />
                                     ))}
                                 </div>
+                                {selectedSpecies === 'Other custom…' && (
+                                    <div className="mt-3 animate-in fade-in slide-in-from-top-1">
+                                        <input
+                                            type="text"
+                                            value={customSpecies}
+                                            onChange={e => setCustomSpecies(e.target.value)}
+                                            placeholder="e.g. Grumpy Frog, Sleepy Sloth..."
+                                            className="w-full border-[2px] border-[#d4b896] rounded-xl px-4 py-2 text-[13px] font-semibold text-[#4a2c11] bg-white focus:outline-none focus:border-[#4a2c11] transition-colors placeholder:text-[#4a2c11]/30"
+                                            autoFocus
+                                        />
+                                    </div>
+                                )}
                             </div>
 
                             <div>
@@ -107,6 +163,18 @@ export default function OcPlanner() {
                                     </select>
                                     <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#4a2c11]/50 text-xs">▼</span>
                                 </div>
+                                {vibe === 'Other custom…' && (
+                                    <div className="mt-3 animate-in fade-in slide-in-from-top-1">
+                                        <input
+                                            type="text"
+                                            value={customVibe}
+                                            onChange={e => setCustomVibe(e.target.value)}
+                                            placeholder="e.g. Cyberpunk Hacker, Fairy Core..."
+                                            className="w-full border-[2px] border-[#d4b896] rounded-xl px-4 py-2 text-[13px] font-semibold text-[#4a2c11] bg-white focus:outline-none focus:border-[#4a2c11] transition-colors placeholder:text-[#4a2c11]/30"
+                                            autoFocus
+                                        />
+                                    </div>
+                                )}
                             </div>
 
                             <div>
@@ -134,6 +202,28 @@ export default function OcPlanner() {
                                 />
                             </div>
 
+                            <div>
+                                <div className="flex items-center justify-between mb-2">
+                                    <label className="text-[11px] font-bold tracking-[0.12em] uppercase text-[#4a2c11]">Image References</label>
+                                    <span className="text-[10px] font-bold text-[#4a2c11]/50 uppercase tracking-wider">Max 3 images (3MB total)</span>
+                                </div>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    multiple
+                                    onChange={handleImageChange}
+                                    className="w-full text-[13px] font-semibold text-[#4a2c11] file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-[2px] file:border-[#4a2c11] file:text-[11px] file:font-bold file:bg-[#faead6] file:text-[#4a2c11] file:shadow-[2px_2px_0_0_#4a2c11] file:cursor-pointer hover:file:bg-[#f0e4d0] cursor-pointer"
+                                />
+                                {imageError && (
+                                    <p className="text-red-500 text-[11px] font-bold mt-2">{imageError}</p>
+                                )}
+                                {imageRefs.length > 0 && !imageError && (
+                                    <p className="text-[#E67E22] text-[11px] font-bold mt-2">
+                                        Selected {imageRefs.length} image{imageRefs.length > 1 ? 's' : ''} ({(imageRefs.reduce((acc, file) => acc + file.size, 0) / (1024 * 1024)).toFixed(2)} MB total)
+                                    </p>
+                                )}
+                            </div>
+
                             <button
                                 type="submit"
                                 className="w-full bg-[#E67E22] text-white font-bold rounded-full py-3.5 border-[3px] border-[#4a2c11] shadow-[3px_3px_0_0_#4a2c11] hover:-translate-y-0.5 active:translate-y-0 transition-transform flex items-center justify-center gap-2 text-[14px]"
@@ -155,13 +245,13 @@ export default function OcPlanner() {
                                 </div>
                                 <div className="text-center">
                                     <span className="inline-block bg-[#E67E22] text-white text-[11px] font-bold px-4 py-1 rounded-full border-[2px] border-[#4a2c11] tracking-wider uppercase shadow-[2px_2px_0_0_#4a2c11]">
-                                        {selectedSpecies}
+                                        {selectedSpecies === 'Other custom…' ? (customSpecies || 'Custom Species') : selectedSpecies}
                                     </span>
                                 </div>
                                 <div className="bg-white border-[2px] border-[#d4b896] rounded-2xl p-4 space-y-3 shadow-[2px_2px_0_0_#d4b896]">
                                     <div>
                                         <p className="text-[10px] font-bold uppercase tracking-wider text-[#4a2c11]/50 mb-0.5">Vibe</p>
-                                        <p className="text-[13px] font-semibold text-[#4a2c11]">{vibe}</p>
+                                        <p className="text-[13px] font-semibold text-[#4a2c11]">{vibe === 'Other custom…' ? (customVibe || 'Custom Vibe') : vibe}</p>
                                     </div>
                                     <div className="border-t border-[#f0e4d0] pt-3">
                                         <p className="text-[10px] font-bold uppercase tracking-wider text-[#4a2c11]/50 mb-0.5">Color Palette</p>
@@ -171,6 +261,16 @@ export default function OcPlanner() {
                                         <p className="text-[10px] font-bold uppercase tracking-wider text-[#4a2c11]/50 mb-0.5">Quirks &amp; Accessories</p>
                                         <p className="text-[13px] font-semibold text-[#4a2c11] leading-relaxed">{quirks}</p>
                                     </div>
+                                    {imagePreviews.length > 0 && (
+                                        <div className="border-t border-[#f0e4d0] pt-3">
+                                            <p className="text-[10px] font-bold uppercase tracking-wider text-[#4a2c11]/50 mb-2">Image References</p>
+                                            <div className="flex gap-2 overflow-x-auto pb-2">
+                                                {imagePreviews.map((src, idx) => (
+                                                    <img key={idx} src={src} alt={`Reference ${idx + 1}`} className="w-24 h-24 object-cover rounded-xl border-[2px] border-[#d4b896] shrink-0" />
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="bg-[#faead6] border-[2px] border-[#4a2c11] rounded-2xl px-4 py-3 text-center shadow-[2px_2px_0_0_#4a2c11]">
                                     <p className="text-[12px] font-bold text-[#4a2c11]">
