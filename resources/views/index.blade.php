@@ -99,7 +99,6 @@
 
             const links = [
                 { href: '/', label: 'Home', icon: Icons.Home, activeIconColor: 'text-white', defaultIconColor: 'text-[#4a2c11]' },
-                { href: '/catalog', label: 'Catalog', icon: Icons.Palette, activeIconColor: 'text-white', defaultIconColor: 'text-[#4a2c11]' },
                 { href: '/oc-planner', label: 'OC Planner', icon: Icons.Sparkles, activeIconColor: 'text-white', defaultIconColor: 'text-[#4a2c11]' },
                 { href: '/commissions', label: 'Commissions', icon: Icons.Calendar, activeIconColor: 'text-white', defaultIconColor: 'text-[#4a2c11]' },
                 { href: '/order-tracker', label: 'Order Tracker', icon: Icons.Sliders, activeIconColor: 'text-white', defaultIconColor: 'text-[#4a2c11]' },
@@ -169,7 +168,6 @@
                         </p>
                         
                         <div className="flex flex-wrap gap-4 pt-4">
-                            <Button variant="primary" href="/catalog">Browse Shop</Button>
                             <Button variant="secondary" href="/oc-planner">OC Design Planner &rarr;</Button>
                         </div>
                     </div>

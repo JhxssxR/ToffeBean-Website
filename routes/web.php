@@ -7,9 +7,6 @@ Route::get('/', function () {
     return Inertia::render('Home');
 })->name('home');
 
-Route::get('/catalog', function () {
-    return Inertia::render('Catalog');
-})->name('catalog');
 
 Route::get('/commissions', function () {
     return Inertia::render('Commissions');

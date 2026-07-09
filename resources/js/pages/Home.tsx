@@ -22,7 +22,6 @@ function Hero() {
                 </p>
                 
                 <div className="flex flex-wrap gap-4 pt-4">
-                    <ToffeeButton variant="primary" onClick={() => router.visit('/catalog')}>Browse Sticker Shop</ToffeeButton>
                     <ToffeeButton variant="secondary" onClick={() => router.visit('/oc-planner')}>OC Design Planner &rarr;</ToffeeButton>
                 </div>
             </div>

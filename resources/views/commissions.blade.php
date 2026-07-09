@@ -82,7 +82,6 @@
 
             const links = [
                 { href: '/', label: 'Home', icon: Icons.Home, activeIconColor: 'text-white', defaultIconColor: 'text-[#4a2c11]' },
-                { href: '/catalog', label: 'Catalog', icon: Icons.Palette, activeIconColor: 'text-white', defaultIconColor: 'text-[#4a2c11]' },
                 { href: '/oc-planner', label: 'OC Planner', icon: Icons.Sparkles, activeIconColor: 'text-white', defaultIconColor: 'text-[#4a2c11]' },
                 { href: '/commissions', label: 'Commissions', icon: Icons.Calendar, activeIconColor: 'text-white', defaultIconColor: 'text-[#4a2c11]' },
                 { href: '/order-tracker', label: 'Order Tracker', icon: Icons.Sliders, activeIconColor: 'text-white', defaultIconColor: 'text-[#4a2c11]' },
@@ -181,13 +180,14 @@
         function CommissionsApp() {
             const [style, setStyle] = useState('sticker');
             const [addons, setAddons] = useState({ print: false, rush: false });
+            const [quantity, setQuantity] = useState(1);
 
             const styles = {
                 sticker: {
                     id: 'sticker',
-                    title: 'Cute Custom Sticker Sheet',
-                    desc: 'Includes 6 dynamic chibi custom sticker doodles of your character in high resolutions, ready to print.',
-                    price: 1500,
+                    title: 'Cute Custom Sticker',
+                    desc: 'Includes 1 dynamic chibi custom sticker doodle of your character in high resolutions, ready to print.',
+                    price: 2.50,
                     eta: '1-2 weeks'
                 },
                 reference: {
@@ -212,13 +212,13 @@
             };
 
             const selectedStyle = styles[style];
-            const basePrice = selectedStyle.price;
+            const basePrice = selectedStyle.price * (style === 'sticker' ? quantity : 1);
             let totalAddons = 0;
             if (addons.print) totalAddons += addonPrices.print;
             if (addons.rush) totalAddons += addonPrices.rush;
             const grandTotal = basePrice + totalAddons;
 
-            const formatMoney = (amount) => amount.toLocaleString();
+            const formatMoney = (amount) => amount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
 
             return (
                 <div className="min-h-screen flex flex-col font-sans text-[#4a2c11] bg-[#fef1df]">
@@ -267,17 +267,33 @@
                                                 <div className="flex justify-between items-start mb-2">
                                                     <h4 className="font-bold text-[17px]">{item.title}</h4>
                                                     <div className="text-right flex items-center gap-2">
-                                                        <span className="font-bold text-[#ff7ab8] text-lg">₱{formatMoney(item.price)} <span className="text-[10px] text-[#4a2c11]/60 uppercase ml-0.5">PHP</span></span>
+                                                        <span className="font-bold text-[#ff7ab8] text-lg">${formatMoney(item.price)} <span className="text-[10px] text-[#4a2c11]/60 uppercase ml-0.5">USD</span></span>
                                                         {isSelected && <Icons.Check width={20} height={20} className="text-[#f08967]" />}
                                                     </div>
                                                 </div>
                                                 <p className="text-[13px] font-medium text-[#4a2c11]/80 leading-relaxed mb-4 max-w-[90%]">
                                                     {item.desc}
                                                 </p>
-                                                <span className="inline-flex items-center gap-1.5 bg-white border-[2px] border-[#4a2c11] px-3 py-1 rounded-full text-[10px] font-bold text-[#4a2c11]/70 tracking-wider">
-                                                    <Icons.Hourglass width={12} height={12} className="text-[#f08967]" />
-                                                    Est. Deliver: {item.eta}
-                                                </span>
+                                                <div className="flex items-center justify-between">
+                                                    <span className="inline-flex items-center gap-1.5 bg-white border-[2px] border-[#4a2c11] px-3 py-1 rounded-full text-[10px] font-bold text-[#4a2c11]/70 tracking-wider">
+                                                        <Icons.Hourglass width={12} height={12} className="text-[#f08967]" />
+                                                        Est. Deliver: {item.eta}
+                                                    </span>
+                                                    {isSelected && item.id === 'sticker' && (
+                                                        <div className="flex items-center gap-2 bg-[#fef1df] border-[2px] border-[#4a2c11] rounded-full px-2 py-0.5">
+                                                            <span className="text-[10px] font-bold uppercase ml-1">QTY:</span>
+                                                            <button 
+                                                                className="w-5 h-5 flex items-center justify-center bg-white rounded-full border-[2px] border-[#4a2c11] font-bold text-[12px] hover:bg-[#fffcf7] transition-colors"
+                                                                onClick={(e) => { e.stopPropagation(); setQuantity(Math.max(1, quantity - 1)); }}
+                                                            >-</button>
+                                                            <span className="font-bold w-4 text-center text-[12px]">{quantity}</span>
+                                                            <button 
+                                                                className="w-5 h-5 flex items-center justify-center bg-white rounded-full border-[2px] border-[#4a2c11] font-bold text-[12px] hover:bg-[#fffcf7] transition-colors"
+                                                                onClick={(e) => { e.stopPropagation(); setQuantity(quantity + 1); }}
+                                                            >+</button>
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
                                         );
                                     })}
@@ -315,7 +331,7 @@
                                         <div className="flex-1">
                                             <div className="flex justify-between items-center mb-1">
                                                 <h4 className="font-bold text-[15px]">Ship High-Res Physical Sticker Prints</h4>
-                                                <span className="font-bold text-[14px]">+ ₱200 <span className="text-[10px] text-[#4a2c11]/60 uppercase ml-0.5">PHP</span></span>
+                                                <span className="font-bold text-[14px]">+$2.00 <span className="text-[10px] text-[#4a2c11]/60 uppercase ml-0.5">USD</span></span>
                                             </div>
                                             <p className="text-[12px] font-medium text-[#4a2c11]/70">We will print, laminate, and pack die-cut vinyl stickers of your delivery. Ships internationally!</p>
                                         </div>
@@ -331,7 +347,7 @@
                                         <div className="flex-1">
                                             <div className="flex justify-between items-center mb-1">
                                                 <h4 className="font-bold text-[15px]">Priority Rush Request ⚡</h4>
-                                                <span className="font-bold text-[14px]">+ ₱500 <span className="text-[10px] text-[#4a2c11]/60 uppercase ml-0.5">PHP</span></span>
+                                                <span className="font-bold text-[14px]">+$5.00 <span className="text-[10px] text-[#4a2c11]/60 uppercase ml-0.5">USD</span></span>
                                             </div>
                                             <p className="text-[12px] font-medium text-[#4a2c11]/70">Bypasses the current waitlist. Sketch finalized within 48 hours, fully complete within 4 days.</p>
                                         </div>
@@ -371,9 +387,9 @@
                                     <div className="space-y-3 mb-6">
                                         <div className="flex justify-between items-start">
                                             <span className="font-bold text-[14px] text-[#4a2c11]/80 max-w-[180px] leading-tight">
-                                                {selectedStyle.title.replace('Cute Custom Sticker Sheet', 'Stickers Base Artwork').replace('Character Reference Sheet', 'Reference Base Artwork').replace('Stylized Character Key Art', 'Key Art Base Artwork')}
+                                                {selectedStyle.title.replace('Cute Custom Sticker', 'Stickers Base Artwork').replace('Character Reference Sheet', 'Reference Base Artwork').replace('Stylized Character Key Art', 'Key Art Base Artwork')} {style === 'sticker' ? `(x${quantity})` : ''}
                                             </span>
-                                            <span className="font-bold text-[15px]">₱{formatMoney(basePrice)} <span className="text-[10px] text-[#4a2c11]/60 uppercase ml-0.5">PHP</span></span>
+                                            <span className="font-bold text-[15px]">${formatMoney(basePrice)} <span className="text-[10px] text-[#4a2c11]/60 uppercase ml-0.5">USD</span></span>
                                         </div>
                                         
                                         {addons.print && (
@@ -381,7 +397,7 @@
                                                 <span className="font-bold text-[14px] text-[#4a2c11]/80 max-w-[180px] leading-tight">
                                                     Physical Prints
                                                 </span>
-                                                <span className="font-bold text-[15px]">₱{formatMoney(addonPrices.print)} <span className="text-[10px] text-[#4a2c11]/60 uppercase ml-0.5">PHP</span></span>
+                                                <span className="font-bold text-[15px]">${formatMoney(addonPrices.print)} <span className="text-[10px] text-[#4a2c11]/60 uppercase ml-0.5">USD</span></span>
                                             </div>
                                         )}
 
@@ -390,7 +406,7 @@
                                                 <span className="font-bold text-[14px] text-[#4a2c11]/80 max-w-[180px] leading-tight">
                                                     Priority Rush
                                                 </span>
-                                                <span className="font-bold text-[15px]">₱{formatMoney(addonPrices.rush)} <span className="text-[10px] text-[#4a2c11]/60 uppercase ml-0.5">PHP</span></span>
+                                                <span className="font-bold text-[15px]">${formatMoney(addonPrices.rush)} <span className="text-[10px] text-[#4a2c11]/60 uppercase ml-0.5">USD</span></span>
                                             </div>
                                         )}
                                     </div>
@@ -399,8 +415,8 @@
                                         <div className="flex justify-between items-end">
                                             <span className="font-bold text-[17px]">Grand Total Price</span>
                                             <div className="text-right">
-                                                <span className="font-black text-3xl text-[#ff7ab8] tracking-tight">₱{formatMoney(grandTotal)}</span>
-                                                <span className="block text-[10px] font-bold text-[#4a2c11]/60 uppercase mt-1 text-right">PHP</span>
+                                                <span className="font-black text-3xl text-[#ff7ab8] tracking-tight">${formatMoney(grandTotal)}</span>
+                                                <span className="block text-[10px] font-bold text-[#4a2c11]/60 uppercase mt-1 text-right">USD</span>
                                             </div>
                                         </div>
                                     </div>

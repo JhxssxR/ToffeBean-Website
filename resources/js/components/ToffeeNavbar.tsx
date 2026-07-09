@@ -9,7 +9,6 @@ export function ToffeeNavbar() {
 
     const links = [
         { href: '/', label: 'Home', icon: Home, activeIconColor: 'text-white', defaultIconColor: 'text-[#D2691E]' },
-        { href: '/catalog', label: 'Catalog', icon: Palette, activeIconColor: 'text-white', defaultIconColor: 'text-[#CD853F]' },
         { href: '/oc-planner', label: 'OC Planner', icon: Sparkles, activeIconColor: 'text-white', defaultIconColor: 'text-[#E67E22]' },
         { href: '/commissions', label: 'Commissions', icon: Calendar, activeIconColor: 'text-white', defaultIconColor: 'text-[#A0522D]' },
         { href: '/order-tracker', label: 'Order Tracker', icon: SlidersHorizontal, activeIconColor: 'text-white', defaultIconColor: 'text-[#8B4513]' },

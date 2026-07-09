@@ -96,7 +96,6 @@
         function Navbar() {
             const links = [
                 { href: '/', label: 'Home', icon: Icons.Home },
-                { href: '/catalog', label: 'Catalog', icon: Icons.Palette },
                 { href: '/oc-planner', label: 'AI OC Planner', icon: Icons.Sparkles },
                 { href: '/commissions', label: 'Commissions', icon: Icons.Calendar },
                 { href: '/order-tracker', label: 'Order Tracker', icon: Icons.Sliders },
