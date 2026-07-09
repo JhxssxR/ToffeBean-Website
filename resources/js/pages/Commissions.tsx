@@ -4,42 +4,56 @@ import { Head } from '@inertiajs/react';
 import React, { useState } from 'react';
 import { Settings, Check, Hourglass, Calculator, Star } from 'lucide-react';
 
-export default function Commissions() {
-    const [style, setStyle] = useState('sticker');
+export default function Commissions({ initialCommissions = [] }: { initialCommissions?: any[] }) {
     const [addons, setAddons] = useState({ print: false, rush: false });
     const [quantity, setQuantity] = useState(1);
+    
+    // Form state
+    const [form, setForm] = useState({
+        species: '',
+        character_name: '',
+        theme: '',
+        notes: '',
+        client_email: '',
+        client_social: ''
+    });
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitSuccess, setSubmitSuccess] = useState(false);
 
     interface StyleItem {
         id: string;
         title: string;
         desc: string;
         price: number;
+        priceMax?: number;
         eta: string;
     }
 
-    const styles: Record<string, StyleItem> = {
-        sticker: {
-            id: 'sticker',
-            title: 'Cute Custom Sticker',
-            desc: 'Includes 1 dynamic chibi custom sticker doodle of your character in high resolutions, ready to print.',
-            price: 2.50,
-            eta: '1-2 weeks'
-        },
-        reference: {
-            id: 'reference',
-            title: 'Character Reference Sheet',
-            desc: 'Full front body guide, 1 side detail view, plus 3 custom sticker doodles. Comes with custom fall borders.',
-            price: 4500,
-            eta: '2-3 weeks'
-        },
-        keyart: {
-            id: 'keyart',
-            title: 'Stylized Character Key Art',
-            desc: 'A fully illustrated scenic painting of your character interacting with a cozy autumn environment.',
-            price: 3000,
-            eta: '1-2 weeks'
-        }
+    const defaultStyles: Record<string, StyleItem> = {
+        sticker: { id: 'sticker', title: 'Cute Custom Sticker', desc: '...', price: 2.50, eta: '1-2 weeks' },
+        reference: { id: 'reference', title: 'Character Reference Sheet', desc: '...', price: 10, priceMax: 50, eta: '2-3 weeks' },
+        keyart: { id: 'keyart', title: 'Illustration/Poster', desc: '...', price: 3000, eta: '1-2 weeks' }
     };
+
+    const styles: Record<string, StyleItem> = {};
+    if (initialCommissions.length > 0) {
+        initialCommissions.forEach(c => {
+            styles[c.id.toString()] = {
+                id: c.id.toString(),
+                title: c.title,
+                desc: c.description,
+                price: parseFloat(c.base_price),
+                // Handle price ranges if price_display has a dash
+                priceMax: c.price_display?.includes('-') ? parseFloat(c.price_display.split('-')[1].replace(/[^0-9.]/g, '')) : undefined,
+                eta: '1-2 weeks' // Hardcoded for now
+            };
+        });
+    } else {
+        Object.assign(styles, defaultStyles);
+    }
+
+    const firstStyleId = Object.keys(styles)[0] || 'sticker';
+    const [style, setStyle] = useState(firstStyleId);
 
     const addonPrices = {
         print: 200,
@@ -47,13 +61,63 @@ export default function Commissions() {
     };
 
     const selectedStyle = styles[style];
-    const basePrice = selectedStyle.price * (style === 'sticker' ? quantity : 1);
+    const mult = style === 'sticker' ? quantity : 1;
+    const basePrice = selectedStyle.price * mult;
+    const basePriceMax = selectedStyle.priceMax ? selectedStyle.priceMax * mult : undefined;
+    
     let totalAddons = 0;
     if (addons.print) totalAddons += addonPrices.print;
     if (addons.rush) totalAddons += addonPrices.rush;
     const grandTotal = basePrice + totalAddons;
+    const grandTotalMax = basePriceMax ? basePriceMax + totalAddons : undefined;
 
     const formatMoney = (amount: number) => amount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+    const renderPrice = (min: number, max?: number) => {
+        if (max !== undefined) return `${formatMoney(min)} - $${formatMoney(max)}`;
+        return formatMoney(min);
+    };
+
+    const handleSubmit = async () => {
+        if (!form.client_email) {
+            alert('Please provide a contact email.');
+            return;
+        }
+        
+        setIsSubmitting(true);
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+        
+        try {
+            const res = await fetch('/api/orders', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    commission_id: parseInt(selectedStyle.id) || 1, // fallback for now if id is not a number, but in DB they are numbers
+                    ...form,
+                    quantity: mult,
+                    addons: addons,
+                    total_price: grandTotal
+                })
+            });
+
+            if (res.ok) {
+                setSubmitSuccess(true);
+                setForm({ species: '', character_name: '', theme: '', notes: '', client_email: '', client_social: '' });
+                setAddons({ print: false, rush: false });
+                setQuantity(1);
+            } else {
+                alert('Something went wrong. Please try again.');
+            }
+        } catch (err) {
+            alert('Something went wrong. Please try again.');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     return (
         <div className="min-h-screen flex flex-col font-sans text-[#4a2c11] bg-[#fef1df]">
@@ -100,7 +164,7 @@ export default function Commissions() {
                                         <div className="flex justify-between items-start mb-2">
                                             <h4 className="font-bold text-[17px]">{item.title}</h4>
                                             <div className="text-right flex items-center gap-2">
-                                                <span className="font-bold text-[#E67E22] text-lg">${formatMoney(item.price)} <span className="text-[10px] text-[#4a2c11]/60 uppercase ml-0.5">USD</span></span>
+                                                <span className="font-bold text-[#E67E22] text-lg">${renderPrice(item.price, item.priceMax)} <span className="text-[10px] text-[#4a2c11]/60 uppercase ml-0.5">USD</span></span>
                                                 {isSelected && <Check width={20} height={20} className="text-[#f08967]" />}
                                             </div>
                                         </div>
@@ -135,19 +199,19 @@ export default function Commissions() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
                             <div className="space-y-1.5">
                                 <label className="text-[11px] font-bold tracking-wider uppercase">Species (E.G. Fox)</label>
-                                <input type="text" placeholder="Red panda/kitten..." className="w-full bg-white border-[3px] border-[#4a2c11] rounded-xl px-4 py-3 font-medium outline-none focus:border-[#E67E22] transition-colors" />
+                                <input type="text" value={form.species} onChange={e => setForm({...form, species: e.target.value})} placeholder="Red panda/kitten..." className="w-full bg-white border-[3px] border-[#4a2c11] rounded-xl px-4 py-3 font-medium outline-none focus:border-[#E67E22] transition-colors" />
                             </div>
                             <div className="space-y-1.5">
                                 <label className="text-[11px] font-bold tracking-wider uppercase">Character Name</label>
-                                <input type="text" placeholder="E.g. Maple" className="w-full bg-white border-[3px] border-[#4a2c11] rounded-xl px-4 py-3 font-medium outline-none focus:border-[#E67E22] transition-colors" />
+                                <input type="text" value={form.character_name} onChange={e => setForm({...form, character_name: e.target.value})} placeholder="E.g. Maple" className="w-full bg-white border-[3px] border-[#4a2c11] rounded-xl px-4 py-3 font-medium outline-none focus:border-[#E67E22] transition-colors" />
                             </div>
                             <div className="space-y-1.5 md:col-span-2">
                                 <label className="text-[11px] font-bold tracking-wider uppercase">Aesthetic & Theme</label>
-                                <input type="text" placeholder="E.g. Warm pumpkin cafe overalls, gold keychains" className="w-full bg-white border-[3px] border-[#4a2c11] rounded-xl px-4 py-3 font-medium outline-none focus:border-[#E67E22] transition-colors" />
+                                <input type="text" value={form.theme} onChange={e => setForm({...form, theme: e.target.value})} placeholder="E.g. Warm pumpkin cafe overalls, gold keychains" className="w-full bg-white border-[3px] border-[#4a2c11] rounded-xl px-4 py-3 font-medium outline-none focus:border-[#E67E22] transition-colors" />
                             </div>
                             <div className="space-y-1.5 md:col-span-2">
                                 <label className="text-[11px] font-bold tracking-wider uppercase">Description Notes & Specifications</label>
-                                <textarea rows={4} placeholder="Details of poses, clothes, expressions, and accessories..." className="w-full bg-white border-[3px] border-[#4a2c11] rounded-xl px-4 py-3 font-medium outline-none focus:border-[#E67E22] transition-colors resize-none"></textarea>
+                                <textarea value={form.notes} onChange={e => setForm({...form, notes: e.target.value})} rows={4} placeholder="Details of poses, clothes, expressions, and accessories..." className="w-full bg-white border-[3px] border-[#4a2c11] rounded-xl px-4 py-3 font-medium outline-none focus:border-[#E67E22] transition-colors resize-none"></textarea>
                             </div>
                         </div>
 
@@ -193,19 +257,26 @@ export default function Commissions() {
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
                                     Contact Email
                                 </label>
-                                <input type="email" placeholder="your_name@example.com" className="w-full bg-white border-[3px] border-[#4a2c11] rounded-xl px-4 py-3 font-medium outline-none focus:border-[#E67E22] transition-colors" />
+                                <input type="email" value={form.client_email} onChange={e => setForm({...form, client_email: e.target.value})} placeholder="your_name@example.com" className="w-full bg-white border-[3px] border-[#4a2c11] rounded-xl px-4 py-3 font-medium outline-none focus:border-[#E67E22] transition-colors" />
                             </div>
                             <div className="space-y-1.5">
                                 <label className="text-[11px] font-bold tracking-wider uppercase flex items-center gap-1">
                                     Instagram / Twitter (X)
                                 </label>
-                                <input type="text" placeholder="@your_username" className="w-full bg-white border-[3px] border-[#4a2c11] rounded-xl px-4 py-3 font-medium outline-none focus:border-[#E67E22] transition-colors" />
+                                <input type="text" value={form.client_social} onChange={e => setForm({...form, client_social: e.target.value})} placeholder="@your_username" className="w-full bg-white border-[3px] border-[#4a2c11] rounded-xl px-4 py-3 font-medium outline-none focus:border-[#E67E22] transition-colors" />
                             </div>
                         </div>
 
-                        <button className="w-full mt-8 bg-[#E67E22] text-white font-bold text-lg rounded-xl py-4 border-[3px] border-[#4a2c11] shadow-brutal hover:-translate-y-1 transition-transform">
-                            Confirm Custom Order & Enter Waitlist! 📦
-                        </button>
+                        {submitSuccess ? (
+                            <div className="w-full mt-8 bg-[#edfbf3] text-[#2ecc71] font-bold text-lg rounded-xl py-4 border-[3px] border-[#2ecc71] shadow-brutal text-center flex items-center justify-center gap-2">
+                                <Check width={24} height={24} />
+                                Order Submitted Successfully!
+                            </div>
+                        ) : (
+                            <button onClick={handleSubmit} disabled={isSubmitting} className="w-full mt-8 bg-[#E67E22] text-white font-bold text-lg rounded-xl py-4 border-[3px] border-[#4a2c11] shadow-brutal hover:-translate-y-1 transition-transform disabled:opacity-70 disabled:hover:translate-y-0">
+                                {isSubmitting ? 'Submitting...' : 'Confirm Custom Order & Enter Waitlist! 📦'}
+                            </button>
+                        )}
                     </div>
 
                     {/* RIGHT COLUMN: PRICE ESTIMATOR */}
@@ -219,9 +290,9 @@ export default function Commissions() {
                             <div className="space-y-3 mb-6">
                                 <div className="flex justify-between items-start">
                                     <span className="font-bold text-[14px] text-[#4a2c11]/80 max-w-[180px] leading-tight">
-                                        {selectedStyle.title.replace('Cute Custom Sticker', 'Stickers Base Artwork').replace('Character Reference Sheet', 'Reference Base Artwork').replace('Stylized Character Key Art', 'Key Art Base Artwork')} {style === 'sticker' ? `(x${quantity})` : ''}
+                                        {selectedStyle.title.replace('Cute Custom Sticker', 'Stickers Base Artwork').replace('Character Reference Sheet', 'Reference Base Artwork').replace('Illustration/Poster', 'Poster Base Artwork')} {style === 'sticker' ? `(x${quantity})` : ''}
                                     </span>
-                                    <span className="font-bold text-[15px]">${formatMoney(basePrice)} <span className="text-[10px] text-[#4a2c11]/60 uppercase ml-0.5">USD</span></span>
+                                    <span className="font-bold text-[15px]">${renderPrice(basePrice, basePriceMax)} <span className="text-[10px] text-[#4a2c11]/60 uppercase ml-0.5">USD</span></span>
                                 </div>
                                 
                                 {addons.print && (
@@ -247,7 +318,7 @@ export default function Commissions() {
                                 <div className="flex justify-between items-end">
                                     <span className="font-bold text-[17px]">Grand Total Price</span>
                                     <div className="text-right">
-                                        <span className="font-black text-3xl text-[#E67E22] tracking-tight">${formatMoney(grandTotal)}</span>
+                                        <span className="font-black text-2xl text-[#E67E22] tracking-tight">${renderPrice(grandTotal, grandTotalMax)}</span>
                                         <span className="block text-[10px] font-bold text-[#4a2c11]/60 uppercase mt-1 text-right">USD</span>
                                     </div>
                                 </div>

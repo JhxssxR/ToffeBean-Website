@@ -121,9 +121,6 @@
                     </div>
                     
                     <div className="flex items-center gap-4">
-                        <button className="w-11 h-11 bg-white rounded-full border-[3px] border-[#4a2c11] shadow-brutal flex items-center justify-center hover:-translate-y-1 transition-transform">
-                            <Icons.ShoppingBag width={20} height={20} className="text-[#4a2c11]" />
-                        </button>
                         <a href="/login" className="flex items-center gap-2 px-6 py-2 bg-white rounded-full border-[3px] border-[#4a2c11] shadow-brutal text-[#4a2c11] font-bold hover:bg-[#fff8f0] hover:text-[#4a2c11] hover:-translate-y-1 transition-all">
                             <Icons.User width={18} height={18} />
                             Sign In
@@ -194,12 +191,13 @@
                     id: 'reference',
                     title: 'Character Reference Sheet',
                     desc: 'Full front body guide, 1 side detail view, plus 3 custom sticker doodles. Comes with custom fall borders.',
-                    price: 4500,
+                    price: 10,
+                    priceMax: 50,
                     eta: '2-3 weeks'
                 },
                 keyart: {
                     id: 'keyart',
-                    title: 'Stylized Character Key Art',
+                    title: 'Illustration/Poster',
                     desc: 'A fully illustrated scenic painting of your character interacting with a cozy autumn environment.',
                     price: 3000,
                     eta: '1-2 weeks'
@@ -212,13 +210,22 @@
             };
 
             const selectedStyle = styles[style];
-            const basePrice = selectedStyle.price * (style === 'sticker' ? quantity : 1);
+            const mult = style === 'sticker' ? quantity : 1;
+            const basePrice = selectedStyle.price * mult;
+            const basePriceMax = selectedStyle.priceMax ? selectedStyle.priceMax * mult : undefined;
+            
             let totalAddons = 0;
             if (addons.print) totalAddons += addonPrices.print;
             if (addons.rush) totalAddons += addonPrices.rush;
             const grandTotal = basePrice + totalAddons;
+            const grandTotalMax = basePriceMax ? basePriceMax + totalAddons : undefined;
 
             const formatMoney = (amount) => amount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+            const renderPrice = (min, max) => {
+                if (max !== undefined) return `${formatMoney(min)} - $${formatMoney(max)}`;
+                return formatMoney(min);
+            };
 
             return (
                 <div className="min-h-screen flex flex-col font-sans text-[#4a2c11] bg-[#fef1df]">
@@ -267,7 +274,7 @@
                                                 <div className="flex justify-between items-start mb-2">
                                                     <h4 className="font-bold text-[17px]">{item.title}</h4>
                                                     <div className="text-right flex items-center gap-2">
-                                                        <span className="font-bold text-[#ff7ab8] text-lg">${formatMoney(item.price)} <span className="text-[10px] text-[#4a2c11]/60 uppercase ml-0.5">USD</span></span>
+                                                        <span className="font-bold text-[#ff7ab8] text-lg">${renderPrice(item.price, item.priceMax)} <span className="text-[10px] text-[#4a2c11]/60 uppercase ml-0.5">USD</span></span>
                                                         {isSelected && <Icons.Check width={20} height={20} className="text-[#f08967]" />}
                                                     </div>
                                                 </div>
@@ -387,9 +394,9 @@
                                     <div className="space-y-3 mb-6">
                                         <div className="flex justify-between items-start">
                                             <span className="font-bold text-[14px] text-[#4a2c11]/80 max-w-[180px] leading-tight">
-                                                {selectedStyle.title.replace('Cute Custom Sticker', 'Stickers Base Artwork').replace('Character Reference Sheet', 'Reference Base Artwork').replace('Stylized Character Key Art', 'Key Art Base Artwork')} {style === 'sticker' ? `(x${quantity})` : ''}
+                                                {selectedStyle.title.replace('Cute Custom Sticker', 'Stickers Base Artwork').replace('Character Reference Sheet', 'Reference Base Artwork').replace('Illustration/Poster', 'Poster Base Artwork')} {style === 'sticker' ? `(x${quantity})` : ''}
                                             </span>
-                                            <span className="font-bold text-[15px]">${formatMoney(basePrice)} <span className="text-[10px] text-[#4a2c11]/60 uppercase ml-0.5">USD</span></span>
+                                            <span className="font-bold text-[15px]">${renderPrice(basePrice, basePriceMax)} <span className="text-[10px] text-[#4a2c11]/60 uppercase ml-0.5">USD</span></span>
                                         </div>
                                         
                                         {addons.print && (
@@ -415,7 +422,7 @@
                                         <div className="flex justify-between items-end">
                                             <span className="font-bold text-[17px]">Grand Total Price</span>
                                             <div className="text-right">
-                                                <span className="font-black text-3xl text-[#ff7ab8] tracking-tight">${formatMoney(grandTotal)}</span>
+                                                <span className="font-black text-2xl text-[#E67E22] tracking-tight">${renderPrice(grandTotal, grandTotalMax)}</span>
                                                 <span className="block text-[10px] font-bold text-[#4a2c11]/60 uppercase mt-1 text-right">USD</span>
                                             </div>
                                         </div>

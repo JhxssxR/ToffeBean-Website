@@ -117,9 +117,6 @@
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <button className="w-11 h-11 bg-white rounded-full border-[3px] border-[#4a2c11] shadow-brutal flex items-center justify-center hover:-translate-y-1 transition-transform">
-                            <Icons.ShoppingBag width={20} height={20} className="text-[#4a2c11]" />
-                        </button>
                         <a href="/login" className="flex items-center gap-2 px-6 py-2 bg-white rounded-full border-[3px] border-[#4a2c11] shadow-brutal text-[#4a2c11] font-bold hover:bg-[#fff8f0] hover:text-[#4a2c11] hover:-translate-y-1 transition-all">
                             <Icons.User width={18} height={18} />
                             Sign In
