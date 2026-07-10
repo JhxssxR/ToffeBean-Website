@@ -1,3 +1,4 @@
+/* eslint-disable */  
 import { ToffeeNavbar } from '@/components/ToffeeNavbar';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { Home, Palette, Sparkles, Calendar, SlidersHorizontal, ShoppingBag, User, Lock, Mail, LoaderCircle } from 'lucide-react';

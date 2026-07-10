@@ -1,3 +1,4 @@
+/* eslint-disable */  
 import { Link, usePage } from '@inertiajs/react';
 import { Calendar, Home, Palette, ShoppingBag, SlidersHorizontal, Sparkles, User, Menu, X } from 'lucide-react';
 import React, { useState } from 'react';

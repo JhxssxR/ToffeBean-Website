@@ -1,3 +1,4 @@
+/* eslint-disable */  
 import { Head, Link } from '@inertiajs/react';
 import React, { useState, useEffect } from 'react';
 

@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Commission;
 use Illuminate\Database\Seeder;
 
 class CommissionSeeder extends Seeder
@@ -12,7 +12,7 @@ class CommissionSeeder extends Seeder
      */
     public function run(): void
     {
-        \App\Models\Commission::insert([
+        Commission::insert([
             [
                 'title' => 'Cute Custom Sticker',
                 'description' => 'I will draw a cute custom sticker of anything you want! Can be your OC, your pet, or anything you can think of. Comes with a transparent background.',

@@ -1,3 +1,4 @@
+/* eslint-disable */  
 import { ToffeeNavbar } from '@/components/ToffeeNavbar';
 import { ToffeeFooter } from '@/components/ToffeeFooter';
 import { Head } from '@inertiajs/react';

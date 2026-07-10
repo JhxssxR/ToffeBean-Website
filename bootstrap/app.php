@@ -21,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
             if (auth()->check() && auth()->user()->role === 'admin') {
                 return route('dashboard');
             }
+
             return route('customer.dashboard');
         });
     })

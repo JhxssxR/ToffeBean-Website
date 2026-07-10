@@ -1,7 +1,7 @@
-import { SVGAttributes } from 'react';
+import { ImgHTMLAttributes } from 'react';
 
-export default function AppLogoIcon(props: SVGAttributes<SVGElement>) {
+export default function AppLogoIcon(props: ImgHTMLAttributes<HTMLImageElement>) {
     return (
-        <img src="/logo.png" alt="ToffeeBean Logo" {...props as any} />
+        <img src="/logo.png" alt="ToffeeBean Logo" {...props} />
     );
 }

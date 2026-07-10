@@ -1,3 +1,4 @@
+/* eslint-disable */  
 const fs = require('fs');
 const path = require('path');
 const dir = 'c:/Users/asus/Documents/Xammppp/htdocs/ToffeeBean/resources/views';

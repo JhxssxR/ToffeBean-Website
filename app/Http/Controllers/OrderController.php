@@ -28,6 +28,7 @@ class OrderController extends Controller
         ]);
 
         $order = Order::create($validated);
+
         return response()->json($order, 201);
     }
 
@@ -38,12 +39,14 @@ class OrderController extends Controller
         ]);
 
         $order->update($validated);
+
         return response()->json($order);
     }
 
     public function destroy(Order $order)
     {
         $order->delete();
+
         return response()->json(null, 204);
     }
 }

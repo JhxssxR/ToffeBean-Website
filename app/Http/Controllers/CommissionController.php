@@ -25,6 +25,7 @@ class CommissionController extends Controller
         ]);
 
         $commission = Commission::create($validated);
+
         return response()->json($commission, 201);
     }
 
@@ -46,12 +47,14 @@ class CommissionController extends Controller
         ]);
 
         $commission->update($validated);
+
         return response()->json($commission);
     }
 
     public function destroy(Commission $commission)
     {
         $commission->delete();
+
         return response()->json(null, 204);
     }
 }
