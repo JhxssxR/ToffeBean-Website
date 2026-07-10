@@ -1,7 +1,7 @@
-/* eslint-disable */  
+/* eslint-disable */
 import { ToffeeNavbar } from '@/components/ToffeeNavbar';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { Home, Palette, Sparkles, Calendar, SlidersHorizontal, ShoppingBag, User, Lock, Mail, LoaderCircle } from 'lucide-react';
+import { User, Lock, Mail, LoaderCircle, Eye, EyeOff } from 'lucide-react';
 import { FormEventHandler, useState } from 'react';
 
 interface RegisterForm {
@@ -33,15 +33,52 @@ export default function Register() {
 
     const selectedAvatar = avatarOptions.findIndex(a => a.emoji === data.avatar) ?? 0;
     const [agreedToTerms, setAgreedToTerms] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [clientErrors, setClientErrors] = useState<{ name?: string; email?: string; password?: string; password_confirmation?: string }>({});
+
+    const validate = (): boolean => {
+        const newErrors: { name?: string; email?: string; password?: string; password_confirmation?: string } = {};
+
+        if (!data.name.trim()) {
+            newErrors.name = 'Username is required.';
+        } else if (data.name.trim().length < 2) {
+            newErrors.name = 'Username must be at least 2 characters.';
+        }
+
+        if (!data.email.trim()) {
+            newErrors.email = 'Email is required.';
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+            newErrors.email = 'Please enter a valid email address.';
+        }
+
+        if (!data.password) {
+            newErrors.password = 'Password is required.';
+        } else if (data.password.length < 8) {
+            newErrors.password = 'Password must be at least 8 characters.';
+        }
+
+        if (!data.password_confirmation) {
+            newErrors.password_confirmation = 'Please confirm your password.';
+        } else if (data.password !== data.password_confirmation) {
+            newErrors.password_confirmation = 'Passwords do not match.';
+        }
+
+        setClientErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const clearError = (field: string) => {
+        setClientErrors(prev => ({ ...prev, [field]: undefined }));
+    };
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
+        if (!validate()) return;
         post(route('register'), {
             onFinish: () => reset('password', 'password_confirmation'),
         });
     };
-
-
 
     return (
         <>
@@ -78,9 +115,9 @@ export default function Register() {
                             </div>
                         </div>
 
-                        <h1 className="text-2xl font-bold text-center mb-2">Toffee's Private Workshop Room</h1>
+                        <h1 className="text-4xl md:text-5xl font-display text-[#4a2c11] text-center mb-3 tracking-wide">Toffee's Private Workshop Room</h1>
                         <p className="text-[13px] font-medium text-[#4a2c11]/60 text-center max-w-sm mx-auto leading-relaxed mb-6">
-                            Register an account to reserve vinyl sticker packs, simulate patron GCash wallets, or view Toffee's administrative controls panel.
+                            Create an account to place custom art commissions, plan your original character designs, and track your orders all in one cozy space.
                         </p>
 
                         {/* Tab switcher */}
@@ -104,13 +141,12 @@ export default function Register() {
                                     id="register-name"
                                     type="text"
                                     value={data.name}
-                                    onChange={(e) => setData('name', e.target.value)}
+                                    onChange={(e) => { setData('name', e.target.value); clearError('name'); }}
                                     placeholder="E.g., HoneyBunny"
-                                    className="w-full border-[2px] border-[#d4b896] rounded-xl px-4 py-2.5 text-[13px] font-semibold text-[#4a2c11] bg-white focus:outline-none focus:border-[#4a2c11] transition-colors placeholder:text-[#4a2c11]/30"
-                                    required
+                                    className={`w-full border-[2px] rounded-xl px-4 py-2.5 text-[13px] font-semibold text-[#4a2c11] bg-white focus:outline-none focus:border-[#4a2c11] transition-colors placeholder:text-[#4a2c11]/30 ${(errors.name || clientErrors.name) ? 'border-red-400' : 'border-[#d4b896]'}`}
                                     autoFocus
                                 />
-                                {errors.name && <p className="text-red-500 text-[11px] font-semibold mt-1">{errors.name}</p>}
+                                {(clientErrors.name || errors.name) && <p className="text-red-500 text-[11px] font-semibold mt-1">{clientErrors.name || errors.name}</p>}
                             </div>
 
                             <div>
@@ -122,12 +158,11 @@ export default function Register() {
                                     id="register-email"
                                     type="email"
                                     value={data.email}
-                                    onChange={(e) => setData('email', e.target.value)}
+                                    onChange={(e) => { setData('email', e.target.value); clearError('email'); }}
                                     placeholder="name@gmail.com"
-                                    className="w-full border-[2px] border-[#d4b896] rounded-xl px-4 py-2.5 text-[13px] font-semibold text-[#4a2c11] bg-white focus:outline-none focus:border-[#4a2c11] transition-colors placeholder:text-[#4a2c11]/30"
-                                    required
+                                    className={`w-full border-[2px] rounded-xl px-4 py-2.5 text-[13px] font-semibold text-[#4a2c11] bg-white focus:outline-none focus:border-[#4a2c11] transition-colors placeholder:text-[#4a2c11]/30 ${(errors.email || clientErrors.email) ? 'border-red-400' : 'border-[#d4b896]'}`}
                                 />
-                                {errors.email && <p className="text-red-500 text-[11px] font-semibold mt-1">{errors.email}</p>}
+                                {(clientErrors.email || errors.email) && <p className="text-red-500 text-[11px] font-semibold mt-1">{clientErrors.email || errors.email}</p>}
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
@@ -136,32 +171,48 @@ export default function Register() {
                                         <Lock size={12} strokeWidth={3} />
                                         Password
                                     </label>
-                                    <input
-                                        id="register-password"
-                                        type="password"
-                                        value={data.password}
-                                        onChange={(e) => setData('password', e.target.value)}
-                                        placeholder="••••••••"
-                                        className="w-full border-[2px] border-[#d4b896] rounded-xl px-4 py-2.5 text-[13px] font-semibold text-[#4a2c11] bg-white focus:outline-none focus:border-[#4a2c11] transition-colors placeholder:text-[#4a2c11]/30"
-                                        required
-                                    />
-                                    {errors.password && <p className="text-red-500 text-[11px] font-semibold mt-1">{errors.password}</p>}
+                                    <div className="relative">
+                                        <input
+                                            id="register-password"
+                                            type={showPassword ? 'text' : 'password'}
+                                            value={data.password}
+                                            onChange={(e) => { setData('password', e.target.value); clearError('password'); }}
+                                            placeholder="••••••••"
+                                            className={`w-full border-[2px] rounded-xl px-4 py-2.5 pr-10 text-[13px] font-semibold text-[#4a2c11] bg-white focus:outline-none focus:border-[#4a2c11] transition-colors placeholder:text-[#4a2c11]/30 ${(errors.password || clientErrors.password) ? 'border-red-400' : 'border-[#d4b896]'}`}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#4a2c11]/40 hover:text-[#4a2c11] transition-colors"
+                                        >
+                                            {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                                        </button>
+                                    </div>
+                                    {(clientErrors.password || errors.password) && <p className="text-red-500 text-[11px] font-semibold mt-1">{clientErrors.password || errors.password}</p>}
                                 </div>
                                 <div>
                                     <label className="flex items-center gap-1.5 text-[10px] font-bold tracking-[0.12em] uppercase text-[#4a2c11] mb-2">
                                         <Lock size={12} strokeWidth={3} />
                                         Confirm Password
                                     </label>
-                                    <input
-                                        id="register-password-confirm"
-                                        type="password"
-                                        value={data.password_confirmation}
-                                        onChange={(e) => setData('password_confirmation', e.target.value)}
-                                        placeholder="••••••••"
-                                        className="w-full border-[2px] border-[#d4b896] rounded-xl px-4 py-2.5 text-[13px] font-semibold text-[#4a2c11] bg-white focus:outline-none focus:border-[#4a2c11] transition-colors placeholder:text-[#4a2c11]/30"
-                                        required
-                                    />
-                                    {errors.password_confirmation && <p className="text-red-500 text-[11px] font-semibold mt-1">{errors.password_confirmation}</p>}
+                                    <div className="relative">
+                                        <input
+                                            id="register-password-confirm"
+                                            type={showConfirmPassword ? 'text' : 'password'}
+                                            value={data.password_confirmation}
+                                            onChange={(e) => { setData('password_confirmation', e.target.value); clearError('password_confirmation'); }}
+                                            placeholder="••••••••"
+                                            className={`w-full border-[2px] rounded-xl px-4 py-2.5 pr-10 text-[13px] font-semibold text-[#4a2c11] bg-white focus:outline-none focus:border-[#4a2c11] transition-colors placeholder:text-[#4a2c11]/30 ${(errors.password_confirmation || clientErrors.password_confirmation) ? 'border-red-400' : 'border-[#d4b896]'}`}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#4a2c11]/40 hover:text-[#4a2c11] transition-colors"
+                                        >
+                                            {showConfirmPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                                        </button>
+                                    </div>
+                                    {(clientErrors.password_confirmation || errors.password_confirmation) && <p className="text-red-500 text-[11px] font-semibold mt-1">{clientErrors.password_confirmation || errors.password_confirmation}</p>}
                                 </div>
                             </div>
 

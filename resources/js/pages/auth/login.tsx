@@ -1,8 +1,8 @@
 import { ToffeeNavbar } from '@/components/ToffeeNavbar';
 import { ToffeeFooter } from '@/components/ToffeeFooter';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { User, Lock, LoaderCircle } from 'lucide-react';
-import { FormEventHandler } from 'react';
+import { User, Lock, LoaderCircle, Eye, EyeOff } from 'lucide-react';
+import { FormEventHandler, useState } from 'react';
 
 interface LoginForm {
     email: string;
@@ -22,14 +22,35 @@ export default function Login({ status }: LoginProps) {
         remember: false,
     });
 
+    const [showPassword, setShowPassword] = useState(false);
+    const [clientErrors, setClientErrors] = useState<{ email?: string; password?: string }>({});
+
+    const validate = (): boolean => {
+        const newErrors: { email?: string; password?: string } = {};
+
+        if (!data.email.trim()) {
+            newErrors.email = 'Email is required.';
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+            newErrors.email = 'Please enter a valid email address.';
+        }
+
+        if (!data.password) {
+            newErrors.password = 'Password is required.';
+        } else if (data.password.length < 8) {
+            newErrors.password = 'Password must be at least 8 characters.';
+        }
+
+        setClientErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
+        if (!validate()) return;
         post('/login', {
             onFinish: () => reset('password'),
         });
     };
-
-
 
     return (
         <>
@@ -65,9 +86,9 @@ export default function Login({ status }: LoginProps) {
                             </div>
                         </div>
 
-                        <h1 className="text-2xl font-bold text-center mb-2">Toffee's Private Workshop Room</h1>
+                        <h1 className="text-4xl md:text-5xl font-display text-[#4a2c11] text-center mb-3 tracking-wide">Toffee's Private Workshop Room</h1>
                         <p className="text-[13px] font-medium text-[#4a2c11]/60 text-center max-w-sm mx-auto leading-relaxed mb-6">
-                            Register an account to reserve vinyl sticker packs, simulate patron GCash wallets, or view Toffee's administrative controls panel.
+                            Welcome back! Log in to track your custom art commissions, manage your OC design plans, and check your order status.
                         </p>
 
                         {/* Tab switcher */}
@@ -80,8 +101,6 @@ export default function Login({ status }: LoginProps) {
                             </Link>
                         </div>
 
-
-
                         {/* Login Form */}
                         <form onSubmit={submit} className="space-y-5">
                             <div>
@@ -93,13 +112,12 @@ export default function Login({ status }: LoginProps) {
                                     id="login-email"
                                     type="email"
                                     value={data.email}
-                                    onChange={(e) => setData('email', e.target.value)}
+                                    onChange={(e) => { setData('email', e.target.value); setClientErrors(prev => ({ ...prev, email: undefined })); }}
                                     placeholder="E.g., toffee@toffeebean.art"
-                                    className="w-full border-[2px] border-[#d4b896] rounded-xl px-4 py-2.5 text-[13px] font-semibold text-[#4a2c11] bg-white focus:outline-none focus:border-[#4a2c11] transition-colors placeholder:text-[#4a2c11]/30"
-                                    required
+                                    className={`w-full border-[2px] rounded-xl px-4 py-2.5 text-[13px] font-semibold text-[#4a2c11] bg-white focus:outline-none focus:border-[#4a2c11] transition-colors placeholder:text-[#4a2c11]/30 ${(errors.email || clientErrors.email) ? 'border-red-400' : 'border-[#d4b896]'}`}
                                     autoFocus
                                 />
-                                {errors.email && <p className="text-red-500 text-[11px] font-semibold mt-1">{errors.email}</p>}
+                                {(clientErrors.email || errors.email) && <p className="text-red-500 text-[11px] font-semibold mt-1">{clientErrors.email || errors.email}</p>}
                             </div>
 
                             <div>
@@ -107,16 +125,24 @@ export default function Login({ status }: LoginProps) {
                                     <Lock size={12} strokeWidth={3} />
                                     Password Secret Key
                                 </label>
-                                <input
-                                    id="login-password"
-                                    type="password"
-                                    value={data.password}
-                                    onChange={(e) => setData('password', e.target.value)}
-                                    placeholder="••••••••"
-                                    className="w-full border-[2px] border-[#d4b896] rounded-xl px-4 py-2.5 text-[13px] font-semibold text-[#4a2c11] bg-white focus:outline-none focus:border-[#4a2c11] transition-colors placeholder:text-[#4a2c11]/30"
-                                    required
-                                />
-                                {errors.password && <p className="text-red-500 text-[11px] font-semibold mt-1">{errors.password}</p>}
+                                <div className="relative">
+                                    <input
+                                        id="login-password"
+                                        type={showPassword ? 'text' : 'password'}
+                                        value={data.password}
+                                        onChange={(e) => { setData('password', e.target.value); setClientErrors(prev => ({ ...prev, password: undefined })); }}
+                                        placeholder="••••••••"
+                                        className={`w-full border-[2px] rounded-xl px-4 py-2.5 pr-11 text-[13px] font-semibold text-[#4a2c11] bg-white focus:outline-none focus:border-[#4a2c11] transition-colors placeholder:text-[#4a2c11]/30 ${(errors.password || clientErrors.password) ? 'border-red-400' : 'border-[#d4b896]'}`}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[#4a2c11]/40 hover:text-[#4a2c11] transition-colors"
+                                    >
+                                        {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                    </button>
+                                </div>
+                                {(clientErrors.password || errors.password) && <p className="text-red-500 text-[11px] font-semibold mt-1">{clientErrors.password || errors.password}</p>}
                             </div>
 
                             {/* Tip */}

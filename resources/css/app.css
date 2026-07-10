@@ -165,6 +165,7 @@
 /* ToffeeBean Custom Styles */
 @theme {
     --font-sans: 'Fredoka', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Chewy', 'Fredoka', cursive;
     --shadow-brutal: 4px 4px 0px 0px rgba(74, 44, 17, 1);
     --shadow-brutal-lg: 8px 8px 0px 0px rgba(74, 44, 17, 1);
     --shadow-brutal-sm: 2px 2px 0px 0px rgba(74, 44, 17, 1);
