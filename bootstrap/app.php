@@ -17,6 +17,12 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
         ]);
+        $middleware->redirectUsersTo(function () {
+            if (auth()->check() && auth()->user()->role === 'admin') {
+                return route('dashboard');
+            }
+            return route('customer.dashboard');
+        });
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

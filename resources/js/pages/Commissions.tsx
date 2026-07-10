@@ -61,7 +61,8 @@ export default function Commissions({ initialCommissions = [] }: { initialCommis
     };
 
     const selectedStyle = styles[style];
-    const mult = style === 'sticker' ? quantity : 1;
+    const isSticker = style === 'sticker' || style === '1' || (selectedStyle && selectedStyle.title.toLowerCase().includes('sticker'));
+    const mult = isSticker ? quantity : 1;
     const basePrice = selectedStyle.price * mult;
     const basePriceMax = selectedStyle.priceMax ? selectedStyle.priceMax * mult : undefined;
     
@@ -176,7 +177,7 @@ export default function Commissions({ initialCommissions = [] }: { initialCommis
                                                 <Hourglass width={12} height={12} className="text-[#f08967]" />
                                                 Est. Deliver: {item.eta}
                                             </span>
-                                            {isSelected && item.id === 'sticker' && (
+                                            {isSelected && (item.id === 'sticker' || item.id === '1' || item.title.toLowerCase().includes('sticker')) && (
                                                 <div className="flex items-center gap-2 bg-[#fef1df] border-[2px] border-[#4a2c11] rounded-full px-2 py-0.5">
                                                     <span className="text-[10px] font-bold uppercase ml-1">QTY:</span>
                                                     <button 
@@ -290,7 +291,7 @@ export default function Commissions({ initialCommissions = [] }: { initialCommis
                             <div className="space-y-3 mb-6">
                                 <div className="flex justify-between items-start">
                                     <span className="font-bold text-[14px] text-[#4a2c11]/80 max-w-[180px] leading-tight">
-                                        {selectedStyle.title.replace('Cute Custom Sticker', 'Stickers Base Artwork').replace('Character Reference Sheet', 'Reference Base Artwork').replace('Illustration/Poster', 'Poster Base Artwork')} {style === 'sticker' ? `(x${quantity})` : ''}
+                                        {selectedStyle.title.replace('Cute Custom Sticker', 'Stickers Base Artwork').replace('Character Reference Sheet', 'Reference Base Artwork').replace('Illustration/Poster', 'Poster Base Artwork')} {isSticker ? `(x${quantity})` : ''}
                                     </span>
                                     <span className="font-bold text-[15px]">${renderPrice(basePrice, basePriceMax)} <span className="text-[10px] text-[#4a2c11]/60 uppercase ml-0.5">USD</span></span>
                                 </div>

@@ -35,5 +35,17 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsAdmin::class])->grou
 // Allow anyone to create an order
 Route::post('api/orders', [App\Http\Controllers\OrderController::class, 'store']);
 
+Route::middleware(['auth'])->group(function () {
+    Route::get('/customer/dashboard', function () {
+        $orders = \App\Models\Order::where('client_email', auth()->user()->email)
+            ->orderBy('created_at', 'desc')
+            ->get();
+            
+        return Inertia::render('CustomerDashboard', [
+            'orders' => $orders
+        ]);
+    })->name('customer.dashboard');
+});
+
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

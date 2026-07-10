@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import React, { useState, useEffect } from 'react';
 
 // ── Icons ────────────────────────────────────────────────────────────
@@ -90,10 +90,10 @@ function Sidebar({ active, setActive, collapsed, setCollapsed }: any) {
                     <Icons.Eye width={18} height={18} className="shrink-0" />
                     {!collapsed && 'View Site'}
                 </a>
-                <a href="/logout" className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-all font-bold text-[13px] ${collapsed ? 'justify-center' : ''}`}>
+                <Link href="/logout" method="post" as="button" className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-all font-bold text-[13px] ${collapsed ? 'justify-center' : ''}`}>
                     <Icons.Logout width={18} height={18} className="shrink-0" />
                     {!collapsed && 'Logout'}
-                </a>
+                </Link>
                 <button
                     onClick={() => setCollapsed(!collapsed)}
                     className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-gray-500 hover:text-white hover:bg-white/10 transition-all font-bold text-[12px] ${collapsed ? 'justify-center' : ''}`}

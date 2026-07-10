@@ -34,11 +34,13 @@ class RegisteredUserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'avatar' => 'nullable|string|max:50',
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'avatar' => $request->avatar,
             'password' => Hash::make($request->password),
         ]);
 
@@ -46,6 +48,10 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return to_route('dashboard');
+        if ($user->role === 'admin') {
+            return to_route('dashboard');
+        }
+
+        return to_route('customer.dashboard');
     }
 }

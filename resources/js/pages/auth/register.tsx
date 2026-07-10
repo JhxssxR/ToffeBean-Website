@@ -8,6 +8,7 @@ interface RegisterForm {
     email: string;
     password: string;
     password_confirmation: string;
+    avatar: string;
 }
 
 const avatarOptions = [
@@ -26,9 +27,10 @@ export default function Register() {
         email: '',
         password: '',
         password_confirmation: '',
+        avatar: '🦊',
     });
 
-    const [selectedAvatar, setSelectedAvatar] = useState(0);
+    const selectedAvatar = avatarOptions.findIndex(a => a.emoji === data.avatar) ?? 0;
     const [agreedToTerms, setAgreedToTerms] = useState(false);
 
     const submit: FormEventHandler = (e) => {
@@ -172,7 +174,7 @@ export default function Register() {
                                         <button
                                             key={i}
                                             type="button"
-                                            onClick={() => setSelectedAvatar(i)}
+                                            onClick={() => setData('avatar', avatar.emoji)}
                                             className={`w-11 h-11 rounded-xl border-[2px] flex items-center justify-center text-xl transition-all ${
                                                 selectedAvatar === i
                                                     ? 'border-[#4a2c11] scale-110'
