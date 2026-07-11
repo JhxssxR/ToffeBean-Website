@@ -10,93 +10,70 @@ export function ToffeeFooter() {
                 backgroundPosition: 'center bottom'
             }}></div>
 
-            <footer className="bg-[#161413] text-gray-400 pt-10 pb-6 px-6">
-                <div className="max-w-2xl mx-auto text-center space-y-4">
+            <footer className="bg-[#121110] text-gray-400 pt-16 pb-8 px-6 border-t border-[#2a1f18]">
+                <div className="max-w-5xl mx-auto flex flex-col items-center">
+                    
+                    {/* Top Section */}
+                    <div className="w-full flex flex-col md:flex-row justify-between items-center md:items-start gap-10 mb-12">
+                        
+                        {/* Brand & Description */}
+                        <div className="flex flex-col items-center md:items-start space-y-4 max-w-lg text-center md:text-left">
+                            <img src="/logo.png" alt="ToffeeBean" className="h-16 w-auto object-contain transition-transform hover:scale-105" />
+                            <p className="text-sm text-gray-300 font-medium leading-relaxed">
+                                Creating soft, super-colorful, and character-packed digital illustrations inspired by kemono and cute pastel cartoon designs. Specializing in high-quality stickers, acrylic keychains, and custom character reference guides in a warm autumn workspace style!
+                            </p>
+                        </div>
 
-                    {/* Logo */}
-                    <img src="/logo.png" alt="ToffeeBean" className="h-14 w-auto mx-auto object-contain" />
-
-                    {/* Tagline */}
-                    <div className="space-y-1">
-                        <p className="text-[13px] font-semibold text-gray-300">
-                            Cute kemono character illustrations, stickers & guides 🎨
-                        </p>
-                        <p className="text-[12px] font-medium text-gray-500">
-                            Warm autumn-inspired designs by ToffeeBean
-                        </p>
+                        {/* Social & Contact */}
+                        <div className="flex flex-col items-center md:items-start space-y-4 shrink-0">
+                            <h3 className="text-sm font-bold tracking-widest text-gray-200 uppercase">Connect</h3>
+                            <div className="flex gap-4">
+                                <a href="https://www.instagram.com/toffeebean.art" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-[#1e1c1b] flex items-center justify-center hover:bg-[#2a2624] hover:text-white transition-all hover:-translate-y-1 group border border-gray-800">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-pink-500 transition-colors">
+                                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                                    </svg>
+                                </a>
+                                <a href="https://www.facebook.com/eyulf.nightveil" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-[#1e1c1b] flex items-center justify-center hover:bg-[#2a2624] hover:text-white transition-all hover:-translate-y-1 group border border-gray-800">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" className="text-gray-400 group-hover:text-blue-500 transition-colors">
+                                        <path d="M9.19795 21.5V12.5H6.5V9.5H9.19795V7.5C9.19795 4.5 11.198 3.5 13.698 3.5C14.698 3.5 15.698 3.5 15.698 3.5V6.5H14.198C13.198 6.5 12.698 7.5 12.698 8.5V9.5H15.698L15.198 12.5H12.698V21.5H9.19795Z" />
+                                    </svg>
+                                </a>
+                                <a href="https://x.com/ToffeeBean31" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-[#1e1c1b] flex items-center justify-center hover:bg-[#2a2624] hover:text-white transition-all hover:-translate-y-1 group border border-gray-800">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" className="text-gray-400 group-hover:text-gray-100 transition-colors">
+                                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                                    </svg>
+                                </a>
+                                <a href="mailto:meepy031@gmail.com" className="w-10 h-10 rounded-full bg-[#1e1c1b] flex items-center justify-center hover:bg-[#2a2624] hover:text-white transition-all hover:-translate-y-1 group border border-gray-800">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-green-400 transition-colors">
+                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Divider */}
-                    <div className="border-t border-gray-800 w-24 mx-auto"></div>
+                    <div className="w-full border-t border-gray-800/80 mb-8"></div>
 
-                    {/* Contact row */}
-                    <div className="flex items-center justify-center gap-2 flex-wrap">
-                        <span className="text-[11px] font-bold text-gray-500">📩 Contact:</span>
-                        <div className="flex items-center gap-3">
-                            <a href="https://www.instagram.com/toffeebean.art" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 group">
-                                <div className="w-5 h-5 rounded flex items-center justify-center shrink-0" style={{ background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)' }}>
-                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-                                    </svg>
-                                </div>
-                                <span className="text-[11px] font-semibold text-gray-400 group-hover:text-white transition">Instagram</span>
-                            </a>
+                    {/* Bottom Section */}
+                    <div className="w-full flex flex-col md:flex-row justify-between items-center gap-6">
+                        
+                        <p className="text-xs text-gray-500 font-medium text-center md:text-left">
+                            © {new Date().getFullYear()} ToffeeBean Digital Workshop. All rights reserved.
+                        </p>
 
-                            <span className="text-gray-700">·</span>
-
-                            <a href="https://www.facebook.com/eyulf.nightveil" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 group">
-                                <div className="w-5 h-5 rounded bg-[#1877F2] flex items-center justify-center shrink-0">
-                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M9.19795 21.5V12.5H6.5V9.5H9.19795V7.5C9.19795 4.5 11.198 3.5 13.698 3.5C14.698 3.5 15.698 3.5 15.698 3.5V6.5H14.198C13.198 6.5 12.698 7.5 12.698 8.5V9.5H15.698L15.198 12.5H12.698V21.5H9.19795Z" />
-                                    </svg>
-                                </div>
-                                <span className="text-[11px] font-semibold text-gray-400 group-hover:text-white transition">Facebook</span>
-                            </a>
-
-                            <span className="text-gray-700">·</span>
-
-                            <a href="#" className="flex items-center gap-1.5 group">
-                                <div className="w-5 h-5 rounded bg-black border border-gray-700 flex items-center justify-center shrink-0">
-                                    <svg width="9" height="9" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                                    </svg>
-                                </div>
-                                <span className="text-[11px] font-semibold text-gray-400 group-hover:text-white transition">Twitter</span>
-                            </a>
-
-                            <span className="text-gray-700">·</span>
-
-                            <a href="mailto:meepy031@gmail.com" className="flex items-center gap-1.5 group">
-                                <div className="w-5 h-5 rounded bg-white flex items-center justify-center shrink-0">
-                                    <svg width="12" height="9" viewBox="0 0 512 399" xmlns="http://www.w3.org/2000/svg">
-                                        <g fill="none">
-                                            <path d="M34.3 399h88.7V193.8L0 93v272c0 18.8 15.3 34 34.3 34z" fill="#4285F4" />
-                                            <path d="M389 399h88.7c19 0 34.3-15.2 34.3-34V93l-123 100.8z" fill="#34A853" />
-                                            <path d="M389 34.2V193.8L512 93V58.5c0-42-48-66-81.4-40.8z" fill="#FBBC04" />
-                                            <path d="M123 193.8V34.2L256 136.4 389 34.2v159.6L256 295.6z" fill="#EA4335" />
-                                            <path d="M0 58.5V93l123 100.8V34.2L81.4 17.7C48-7.5 0 16.5 0 58.5z" fill="#C5221F" />
-                                        </g>
-                                    </svg>
-                                </div>
-                                <span className="text-[11px] font-semibold text-gray-400 group-hover:text-white transition">Email</span>
-                            </a>
+                        <div className="flex items-center gap-4 flex-wrap justify-center">
+                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Accepted Payments</span>
+                            <div className="flex gap-3 items-center bg-white/5 rounded-lg px-4 py-2 border border-white/10">
+                                {/* PayPal Logo */}
+                                <img src="/images/paypal-logo.svg" alt="PayPal" className="h-6 object-contain" />
+                                {/* Divider */}
+                                <div className="h-4 w-px bg-gray-700 mx-1"></div>
+                                {/* GCash Logo */}
+                                <img src="/images/gcash-logo.svg" alt="GCash" className="h-5 object-contain opacity-90 hover:opacity-100 transition-opacity" />
+                            </div>
                         </div>
                     </div>
-
-                    {/* Payments row */}
-                    <div className="flex items-center justify-center gap-2">
-                        <span className="text-[11px] font-bold text-gray-500">💳 Payments:</span>
-                        <div className="flex items-center gap-2">
-                            <span className="text-[10px] font-bold tracking-wider border border-gray-700 px-2 py-0.5 rounded bg-[#1e1c1b] text-gray-400">PAYPAL</span>
-                            <span className="text-gray-700">·</span>
-                            <span className="text-[10px] font-bold tracking-wider border border-gray-700 px-2 py-0.5 rounded bg-[#1e1c1b] text-gray-400">GCASH</span>
-                        </div>
-                    </div>
-
-                    {/* Copyright */}
-                    <p className="text-[10px] font-medium text-gray-600 pt-2">
-                        © 2026 ToffeeBean Digital Workshop. All rights reserved.
-                    </p>
                 </div>
             </footer>
         </div>
