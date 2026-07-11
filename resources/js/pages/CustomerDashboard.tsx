@@ -1,8 +1,8 @@
 import { ToffeeNavbar } from '@/components/ToffeeNavbar';
 import { ToffeeFooter } from '@/components/ToffeeFooter';
 import { Head, Link, usePage } from '@inertiajs/react';
-import React from 'react';
-import { ClipboardList, Package, Clock, CheckCircle, Sparkles, Pencil, ArrowRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { ClipboardList, Package, Clock, CheckCircle, Sparkles, Pencil, ArrowRight, Eye, X } from 'lucide-react';
 
 interface Order {
     id: number;
@@ -13,6 +13,9 @@ interface Order {
     created_at: string;
     species: string;
     quantity: number;
+    notes: string;
+    client_social: string;
+    commission?: { title: string; avatar: string };
 }
 
 interface OcPlan {
@@ -25,6 +28,7 @@ interface OcPlan {
 }
 
 interface PageProps {
+    [key: string]: unknown;
     auth: {
         user: {
             name: string;
@@ -52,6 +56,7 @@ export default function CustomerDashboard() {
     const user = auth.user;
     const avatarEmoji = user.avatar || '🦊';
     const avatarColor = avatarBgColors[avatarEmoji] || '#f08967';
+    const [viewOrder, setViewOrder] = useState<Order | null>(null);
 
     const getStatusColor = (status: string) => {
         switch (status) {
@@ -198,6 +203,13 @@ export default function CustomerDashboard() {
                                                 <p className="text-[11px] font-medium text-[#4a2c11]/40">
                                                     {new Date(order.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                                                 </p>
+                                                <button 
+                                                    onClick={() => setViewOrder(order)}
+                                                    className="flex items-center gap-1 px-3 py-1 bg-[#E67E22]/10 text-[#E67E22] rounded-full text-[11px] font-bold hover:bg-[#E67E22]/20 transition-colors"
+                                                >
+                                                    <Eye width={12} height={12} />
+                                                    View
+                                                </button>
                                             </div>
                                         </div>
                                     ))}
@@ -301,6 +313,61 @@ export default function CustomerDashboard() {
             </main>
             
             <ToffeeFooter />
+
+            {viewOrder && (
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setViewOrder(null)}>
+                    <div className="bg-[#fef1df] border-[3px] border-[#4a2c11] rounded-[2rem] p-6 max-w-lg w-full relative" style={{ boxShadow: '6px 6px 0px 0px rgba(74, 44, 17, 1)' }} onClick={e => e.stopPropagation()}>
+                        <button onClick={() => setViewOrder(null)} className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white border-[2px] border-[#4a2c11] text-[#4a2c11]/60 hover:text-[#4a2c11] transition-colors" style={{ boxShadow: '2px 2px 0px 0px rgba(74, 44, 17, 1)' }}>
+                            <X width={16} height={16} />
+                        </button>
+                        <h3 className="font-bold text-lg text-[#4a2c11] mb-4 flex items-center gap-2">
+                            <Eye width={18} height={18} className="text-[#E67E22]" />
+                            Order #{viewOrder.id}
+                        </h3>
+                        <div className="bg-white border-[2px] border-[#d4b896] rounded-2xl p-5" style={{ boxShadow: '2px 2px 0px 0px rgba(212, 184, 150, 1)' }}>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p className="text-[10px] font-bold text-[#4a2c11]/50 uppercase tracking-wider mb-1">Character Name</p>
+                                    <p className="text-[13px] font-bold text-[#4a2c11]">{viewOrder.character_name || 'Unnamed'}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-bold text-[#4a2c11]/50 uppercase tracking-wider mb-1">Commission Type</p>
+                                    <p className="text-[13px] font-bold text-[#4a2c11]">{viewOrder.commission?.title || 'N/A'}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-bold text-[#4a2c11]/50 uppercase tracking-wider mb-1">Species</p>
+                                    <p className="text-[13px] font-bold text-[#4a2c11]">{viewOrder.species || '—'}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-bold text-[#4a2c11]/50 uppercase tracking-wider mb-1">Theme / Vibe</p>
+                                    <p className="text-[13px] font-bold text-[#4a2c11]">{viewOrder.theme || '—'}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-bold text-[#4a2c11]/50 uppercase tracking-wider mb-1">Quantity</p>
+                                    <p className="text-[13px] font-bold text-[#4a2c11]">×{viewOrder.quantity}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-bold text-[#4a2c11]/50 uppercase tracking-wider mb-1">Status</p>
+                                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold ${getStatusColor(viewOrder.status)} ${getStatusBg(viewOrder.status)}`}>
+                                        {viewOrder.status === 'Completed' ? <CheckCircle width={12} height={12} /> : <Clock width={12} height={12} />}
+                                        {viewOrder.status}
+                                    </span>
+                                </div>
+                                <div className="col-span-2">
+                                    <p className="text-[10px] font-bold text-[#4a2c11]/50 uppercase tracking-wider mb-1">Notes & References</p>
+                                    <p className="text-[13px] font-semibold text-[#4a2c11] whitespace-pre-wrap">{viewOrder.notes || '—'}</p>
+                                </div>
+                                <div className="col-span-2 pt-3 border-t border-[#fef1df] flex justify-between items-center">
+                                    <p className="text-[11px] font-medium text-[#4a2c11]/40">
+                                        Ordered {new Date(viewOrder.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                    </p>
+                                    <p className="text-xl font-black text-[#E67E22]">₱{viewOrder.total_price}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

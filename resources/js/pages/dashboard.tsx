@@ -16,6 +16,7 @@ const Icons = {
     Menu:       (p: any) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...p}><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>,
     Close:      (p: any) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...p}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
     Eye:        (p: any) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>,
+    Trash:      (p: any) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...p}><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>,
     Logout:     (p: any) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>,
     Notification:(p: any) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>,
 };
@@ -126,7 +127,7 @@ function StatCard({ stat }: { stat: typeof stats[0] }) {
 }
 
 // ── Orders Table ──────────────────────────────────────────────────────
-function OrdersTable({ data, onStatusChange, onDelete }: { data: any[], onStatusChange?: (id: number, status: string) => void, onDelete?: (id: number) => void }) {
+function OrdersTable({ data, onStatusChange, onDelete, onView }: { data: any[], onStatusChange?: (id: number, status: string) => void, onDelete?: (id: number) => void, onView?: (order: any) => void }) {
     const formatMoney = (amount: number) => amount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
 
     return (
@@ -172,10 +173,15 @@ function OrdersTable({ data, onStatusChange, onDelete }: { data: any[], onStatus
                                 <td className="px-4 py-3.5 font-black text-[#E67E22]">${formatMoney(order.total_price)}</td>
                                 <td className="px-4 py-3.5"><StatusBadge status={order.status} /></td>
                                 <td className="px-4 py-3.5">
-                                    <div className="flex gap-2">
+                                    <div className="flex items-center gap-1.5">
+                                        {onView && (
+                                            <button onClick={() => onView(order)} title="View Details" className="w-7 h-7 flex items-center justify-center rounded-lg bg-[#fff4e6] border border-[#E67E22]/30 text-[#E67E22] hover:bg-[#E67E22] hover:text-white transition-all">
+                                                <Icons.Eye width={14} height={14} />
+                                            </button>
+                                        )}
                                         {onStatusChange && (
                                             <select 
-                                                className="text-[11px] font-bold bg-white border border-[#4a2c11]/30 rounded px-1 py-1 outline-none focus:border-[#E67E22]"
+                                                className="text-[11px] font-bold bg-white border border-[#4a2c11]/30 rounded-lg px-1.5 py-1 outline-none focus:border-[#E67E22] h-7"
                                                 value={order.status} 
                                                 onChange={e => onStatusChange(order.id, e.target.value)}
                                             >
@@ -185,7 +191,9 @@ function OrdersTable({ data, onStatusChange, onDelete }: { data: any[], onStatus
                                             </select>
                                         )}
                                         {onDelete && (
-                                            <button onClick={() => onDelete(order.id)} className="text-[11px] font-bold text-rose-500 hover:text-rose-700">Delete</button>
+                                            <button onClick={() => onDelete(order.id)} title="Delete Order" className="w-7 h-7 flex items-center justify-center rounded-lg bg-rose-50 border border-rose-200 text-rose-400 hover:bg-rose-500 hover:text-white transition-all">
+                                                <Icons.Trash width={14} height={14} />
+                                            </button>
                                         )}
                                     </div>
                                 </td>
@@ -509,6 +517,8 @@ export default function AdminDashboard() {
     const [collapsed, setCollapsed] = useState(false);
     const [orders, setOrders] = useState<any[]>([]);
     const [orderFilter, setOrderFilter] = useState('All');
+    const [viewOrder, setViewOrder] = useState<any>(null);
+    const [showNotifications, setShowNotifications] = useState(false);
 
     useEffect(() => {
         fetch('/api/orders')
@@ -573,11 +583,43 @@ export default function AdminDashboard() {
                     <div className="flex items-center gap-3">
                         {/* Notifications */}
                         <div className="relative">
-                            <button className="w-10 h-10 bg-[#fef1df] rounded-xl border-[2px] border-[#4a2c11] flex items-center justify-center hover:bg-[#fff4e6] transition-colors">
+                            <button onClick={() => setShowNotifications(!showNotifications)} className="w-10 h-10 bg-[#fef1df] rounded-xl border-[2px] border-[#4a2c11] flex items-center justify-center hover:bg-[#fff4e6] transition-colors">
                                 <Icons.Notification width={18} height={18} className="text-[#4a2c11]" />
                             </button>
                             {waitingCount > 0 && (
                                 <span className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 text-white text-[9px] font-black rounded-full flex items-center justify-center border border-white">{waitingCount}</span>
+                            )}
+                            {showNotifications && (
+                                <div className="absolute top-full right-0 mt-2 w-80 bg-white border-[3px] border-[#4a2c11] rounded-2xl shadow-[4px_4px_0px_#4a2c11] z-50 overflow-hidden">
+                                    <div className="px-4 py-3 border-b-[2px] border-[#fef1df] flex items-center justify-between">
+                                        <h4 className="font-black text-[13px] text-[#4a2c11] flex items-center gap-2">
+                                            <Icons.Notification width={14} height={14} className="text-[#E67E22]" />
+                                            Notifications
+                                        </h4>
+                                        <span className="text-[10px] font-bold text-[#4a2c11]/40 bg-[#fef1df] px-2 py-0.5 rounded-full">{orders.filter(o => o.status !== 'Completed').length}</span>
+                                    </div>
+                                    <div className="max-h-[300px] overflow-y-auto">
+                                        {orders.filter(o => o.status !== 'Completed').length === 0 ? (
+                                            <div className="px-4 py-8 text-center text-[#4a2c11]/40 font-bold text-[12px]">No new notifications 🍂</div>
+                                        ) : (
+                                            orders.filter(o => o.status !== 'Completed').map(order => (
+                                                <button key={order.id} onClick={() => { setViewOrder(order); setShowNotifications(false); }} className="w-full px-4 py-3 flex items-center gap-3 hover:bg-[#fef1df]/60 transition-colors text-left border-b border-[#fef1df] last:border-b-0">
+                                                    <div className={`w-2 h-2 rounded-full shrink-0 ${order.status === 'Waiting' ? 'bg-rose-500' : 'bg-amber-500'}`} />
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-[12px] font-bold text-[#4a2c11] truncate">Order #{order.id} — {order.client_email}</p>
+                                                        <p className="text-[10px] font-medium text-[#4a2c11]/50">{order.status === 'Waiting' ? '⏳ Waiting for review' : '🎨 In Progress'}</p>
+                                                    </div>
+                                                    <Icons.Eye width={14} height={14} className="text-[#4a2c11]/30 shrink-0" />
+                                                </button>
+                                            ))
+                                        )}
+                                    </div>
+                                    {orders.filter(o => o.status !== 'Completed').length > 0 && (
+                                        <div className="px-4 py-2.5 border-t-[2px] border-[#fef1df] bg-[#fffcf7]">
+                                            <button onClick={() => { setActiveTab('orders'); setShowNotifications(false); }} className="w-full text-center text-[11px] font-bold text-[#E67E22] hover:text-[#d35400] transition-colors">View All Orders →</button>
+                                        </div>
+                                    )}
+                                </div>
                             )}
                         </div>
                         {/* Avatar */}
@@ -614,7 +656,7 @@ export default function AdminDashboard() {
                             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
                                 <div className="xl:col-span-2 space-y-6">
                                     <RevenueChart />
-                                    <OrdersTable data={orders.slice(0, 5)} onStatusChange={handleStatusUpdate} onDelete={handleDeleteOrder} />
+                                    <OrdersTable data={orders.slice(0, 5)} onStatusChange={handleStatusUpdate} onDelete={handleDeleteOrder} onView={setViewOrder} />
                                 </div>
                                 <div className="space-y-6">
                                     <OrderBreakdown />
@@ -648,7 +690,7 @@ export default function AdminDashboard() {
                                     </button>
                                 ))}
                             </div>
-                            <OrdersTable data={orderFilter === 'All' ? orders : orders.filter(o => o.status === orderFilter)} onStatusChange={handleStatusUpdate} onDelete={handleDeleteOrder} />
+                            <OrdersTable data={orderFilter === 'All' ? orders : orders.filter(o => o.status === orderFilter)} onStatusChange={handleStatusUpdate} onDelete={handleDeleteOrder} onView={setViewOrder} />
                         </div>
                     )}
 
@@ -700,6 +742,66 @@ export default function AdminDashboard() {
                     )}
                 </main>
             </div>
+
+            {viewOrder && (
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setViewOrder(null)}>
+                    <div className="bg-[#fef1df] border-[3px] border-[#4a2c11] rounded-2xl p-6 shadow-[4px_4px_0px_#4a2c11] max-w-lg w-full relative" onClick={e => e.stopPropagation()}>
+                        <button onClick={() => setViewOrder(null)} className="absolute top-4 right-4 text-[#4a2c11]/50 hover:text-[#4a2c11] transition-colors">
+                            <Icons.Close width={20} height={20} />
+                        </button>
+                        <h3 className="font-black text-[#4a2c11] text-lg mb-4 flex items-center gap-2">
+                            <Icons.Eye width={18} height={18} className="text-[#E67E22]" />
+                            Order Details #{viewOrder.id}
+                        </h3>
+                        <div className="space-y-4 bg-white border-[2px] border-[#d4b896] rounded-xl p-5 shadow-[2px_2px_0_0_#d4b896]">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p className="text-[10px] font-bold text-[#4a2c11]/50 uppercase tracking-wider mb-1">Client Email</p>
+                                    <p className="text-[13px] font-bold text-[#4a2c11] break-all">{viewOrder.client_email}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-bold text-[#4a2c11]/50 uppercase tracking-wider mb-1">Social Handle</p>
+                                    <p className="text-[13px] font-bold text-[#4a2c11] break-all">{viewOrder.client_social || '—'}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-bold text-[#4a2c11]/50 uppercase tracking-wider mb-1">Commission Type</p>
+                                    <p className="text-[13px] font-bold text-[#4a2c11]">{viewOrder.commission?.title || 'Unknown'}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-bold text-[#4a2c11]/50 uppercase tracking-wider mb-1">Status</p>
+                                    <StatusBadge status={viewOrder.status} />
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-bold text-[#4a2c11]/50 uppercase tracking-wider mb-1">Species</p>
+                                    <p className="text-[13px] font-bold text-[#4a2c11]">{viewOrder.species || '—'}</p>
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-bold text-[#4a2c11]/50 uppercase tracking-wider mb-1">Theme / Vibe</p>
+                                    <p className="text-[13px] font-bold text-[#4a2c11]">{viewOrder.theme || '—'}</p>
+                                </div>
+                                <div className="col-span-2">
+                                    <p className="text-[10px] font-bold text-[#4a2c11]/50 uppercase tracking-wider mb-1">Character Name</p>
+                                    <p className="text-[13px] font-bold text-[#4a2c11]">{viewOrder.character_name || '—'}</p>
+                                </div>
+                                <div className="col-span-2">
+                                    <p className="text-[10px] font-bold text-[#4a2c11]/50 uppercase tracking-wider mb-1">Notes & References</p>
+                                    <p className="text-[13px] font-semibold text-[#4a2c11] whitespace-pre-wrap">{viewOrder.notes || '—'}</p>
+                                </div>
+                                <div className="col-span-2 pt-3 border-t border-[#fef1df] flex justify-between items-center">
+                                    <div>
+                                        <p className="text-[10px] font-bold text-[#4a2c11]/50 uppercase tracking-wider">Quantity</p>
+                                        <p className="text-[13px] font-black text-[#4a2c11]">×{viewOrder.quantity}</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-[10px] font-bold text-[#4a2c11]/50 uppercase tracking-wider">Total Amount</p>
+                                        <p className="text-xl font-black text-[#E67E22]">${parseFloat(viewOrder.total_price).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

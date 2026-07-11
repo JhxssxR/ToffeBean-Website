@@ -51,6 +51,21 @@ class HandleInertiaRequests extends Middleware
                         ->count()
                     : 0,
             ],
+            'activeOrders' => $request->user()
+                ? Order::where('client_email', $request->user()->email)
+                    ->whereIn('status', ['Waiting', 'In Progress', 'Completed'])
+                    ->with('commission:id,title')
+                    ->latest()
+                    ->limit(10)
+                    ->get()
+                    ->map(fn ($o) => [
+                        'id' => $o->id,
+                        'status' => $o->status,
+                        'commission_title' => $o->commission?->title ?? 'Commission',
+                        'total_price' => $o->total_price,
+                        'created_at' => $o->created_at,
+                    ])
+                : [],
         ]);
     }
 }
