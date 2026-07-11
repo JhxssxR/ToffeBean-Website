@@ -15,6 +15,15 @@ interface Order {
     quantity: number;
 }
 
+interface OcPlan {
+    id: number;
+    species: string;
+    vibe: string;
+    colors: string;
+    quirks: string;
+    created_at: string;
+}
+
 interface PageProps {
     auth: {
         user: {
@@ -25,6 +34,7 @@ interface PageProps {
         };
     };
     orders: Order[];
+    ocPlans: OcPlan[];
 }
 
 const avatarBgColors: Record<string, string> = {
@@ -38,7 +48,7 @@ const avatarBgColors: Record<string, string> = {
 };
 
 export default function CustomerDashboard() {
-    const { auth, orders } = usePage<PageProps>().props;
+    const { auth, orders, ocPlans } = usePage<PageProps>().props;
     const user = auth.user;
     const avatarEmoji = user.avatar || '🦊';
     const avatarColor = avatarBgColors[avatarEmoji] || '#f08967';
@@ -231,6 +241,28 @@ export default function CustomerDashboard() {
                                 </Link>
                             </div>
                         </div>
+
+                        {/* Saved OC Plans */}
+                        {ocPlans && ocPlans.length > 0 && (
+                            <div className="bg-white border-[3px] border-[#4a2c11] rounded-[1.5rem] p-6" style={{ boxShadow: '4px 4px 0px 0px rgba(74, 44, 17, 1)' }}>
+                                <div className="flex items-center gap-2 mb-4">
+                                    <Sparkles width={16} height={16} className="text-[#f08967]" />
+                                    <h3 className="font-bold text-[12px] tracking-[0.15em] uppercase">Saved Concepts</h3>
+                                </div>
+                                <div className="space-y-4">
+                                    {ocPlans.map(plan => (
+                                        <div key={plan.id} className="border-[2px] border-[#d4b896] rounded-xl p-3">
+                                            <p className="font-bold text-[13px] capitalize">{plan.species || 'Custom Species'}</p>
+                                            <p className="text-[11px] font-medium text-[#4a2c11]/60 mb-2">{plan.vibe || 'Custom Vibe'}</p>
+                                            <p className="text-[11px] font-bold uppercase tracking-wider text-[#4a2c11]/50 mb-0.5">Colors</p>
+                                            <p className="text-[12px] font-semibold text-[#4a2c11] mb-2">{plan.colors}</p>
+                                            <p className="text-[11px] font-bold uppercase tracking-wider text-[#4a2c11]/50 mb-0.5">Quirks</p>
+                                            <p className="text-[12px] font-semibold text-[#4a2c11]">{plan.quirks}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
                         {/* Account Information */}
                         <div className="bg-white border-[3px] border-[#4a2c11] rounded-[1.5rem] p-6" style={{ boxShadow: '4px 4px 0px 0px rgba(74, 44, 17, 1)' }}>

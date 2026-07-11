@@ -1,6 +1,6 @@
 import { ToffeeNavbar } from '@/components/ToffeeNavbar';
 import { ToffeeFooter } from '@/components/ToffeeFooter';
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import React, { useState } from 'react';
 import { Pencil } from 'lucide-react';
 
@@ -21,6 +21,9 @@ function SpeciesPill({ label, selected, onClick }: { label: string, selected: bo
 }
 
 export default function OcPlanner() {
+    const { props } = usePage<any>();
+    const auth = props.auth || { user: null };
+
     const speciesOptions = [
         'Forest Red Fox', 'Calico Cat',
         'Mischievous Squirrel', 'Sleepy Sea Otter',
@@ -44,10 +47,12 @@ export default function OcPlanner() {
     const [customVibe, setCustomVibe]           = useState('');
     const [colors, setColors]   = useState('Warm Caramel, Pumpkin Orange, and Butter Cream');
     const [quirks, setQuirks]   = useState('Carries a small acorn bag, wears big round glasses, and is easily startled but loves cinnamon bread.');
+    const [clientEmail, setClientEmail] = useState(auth.user ? auth.user.email : '');
     const [imageRefs, setImageRefs] = useState<File[]>([]);
     const [imagePreviews, setImagePreviews] = useState<string[]>([]);
     const [imageError, setImageError] = useState<string | null>(null);
     const [submitted, setSubmitted] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
         setImageError(null);
@@ -87,9 +92,44 @@ export default function OcPlanner() {
         }
     }
 
-    function handlePlan(e: React.FormEvent<HTMLFormElement>) {
+    async function handlePlan(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        setSubmitted(true);
+        
+        if (!clientEmail) {
+            alert('Please provide an email to save your character concept!');
+            return;
+        }
+
+        setIsSubmitting(true);
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+        
+        try {
+            const res = await fetch('/api/oc-plans', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    client_email: clientEmail,
+                    species: selectedSpecies === 'Other custom…' ? customSpecies : selectedSpecies,
+                    vibe: vibe === 'Other custom…' ? customVibe : vibe,
+                    colors: colors,
+                    quirks: quirks,
+                })
+            });
+
+            if (res.ok) {
+                setSubmitted(true);
+            } else {
+                alert('Something went wrong saving your plan.');
+            }
+        } catch (err) {
+            alert('Something went wrong saving your plan.');
+        } finally {
+            setIsSubmitting(false);
+        }
     }
 
     return (
@@ -222,14 +262,29 @@ export default function OcPlanner() {
                                         Selected {imageRefs.length} image{imageRefs.length > 1 ? 's' : ''} ({(imageRefs.reduce((acc, file) => acc + file.size, 0) / (1024 * 1024)).toFixed(2)} MB total)
                                     </p>
                                 )}
-                            </div>
+                            {!auth.user && (
+                                <div>
+                                    <div className="flex items-center justify-between mb-2">
+                                        <label className="text-[11px] font-bold tracking-[0.12em] uppercase text-[#4a2c11]">Contact Email</label>
+                                        <span className="text-[10px] font-bold text-[#E67E22] uppercase tracking-wider">To save your concept</span>
+                                    </div>
+                                    <input
+                                        type="email"
+                                        value={clientEmail}
+                                        onChange={e => setClientEmail(e.target.value)}
+                                        placeholder="your_name@example.com"
+                                        className="w-full border-[2px] border-[#d4b896] rounded-xl px-4 py-2.5 text-[13px] font-semibold text-[#4a2c11] bg-white focus:outline-none focus:border-[#4a2c11] transition-colors placeholder:text-[#4a2c11]/30"
+                                    />
+                                </div>
+                            )}
 
                             <button
                                 type="submit"
-                                className="w-full bg-[#E67E22] text-white font-bold rounded-full py-3.5 border-[3px] border-[#4a2c11] shadow-[3px_3px_0_0_#4a2c11] hover:-translate-y-0.5 active:translate-y-0 transition-transform flex items-center justify-center gap-2 text-[14px]"
+                                disabled={isSubmitting}
+                                className="w-full bg-[#E67E22] text-white font-bold rounded-full py-3.5 border-[3px] border-[#4a2c11] shadow-[3px_3px_0_0_#4a2c11] hover:-translate-y-0.5 active:translate-y-0 transition-transform flex items-center justify-center gap-2 text-[14px] disabled:opacity-70 disabled:hover:translate-y-0"
                             >
                                 <Pencil width={16} height={16} />
-                                Plan Character Concept! 🍂
+                                {isSubmitting ? 'Saving...' : 'Plan Character Concept! 🍂'}
                             </button>
                         </form>
                     </div>

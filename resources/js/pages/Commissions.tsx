@@ -1,11 +1,14 @@
 /* eslint-disable */  
 import { ToffeeNavbar } from '@/components/ToffeeNavbar';
 import { ToffeeFooter } from '@/components/ToffeeFooter';
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import React, { useState } from 'react';
 import { Settings, Check, Hourglass, Calculator, Star } from 'lucide-react';
 
 export default function Commissions({ initialCommissions = [] }: { initialCommissions?: any[] }) {
+    const { props } = usePage<any>();
+    const auth = props.auth || { user: null };
+
     const [addons, setAddons] = useState({ print: false, rush: false });
     const [quantity, setQuantity] = useState(1);
     
@@ -15,7 +18,7 @@ export default function Commissions({ initialCommissions = [] }: { initialCommis
         character_name: '',
         theme: '',
         notes: '',
-        client_email: '',
+        client_email: auth.user ? auth.user.email : '',
         client_social: ''
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -108,7 +111,7 @@ export default function Commissions({ initialCommissions = [] }: { initialCommis
 
             if (res.ok) {
                 setSubmitSuccess(true);
-                setForm({ species: '', character_name: '', theme: '', notes: '', client_email: '', client_social: '' });
+                setForm({ species: '', character_name: '', theme: '', notes: '', client_email: auth.user ? auth.user.email : '', client_social: '' });
                 setAddons({ print: false, rush: false });
                 setQuantity(1);
             } else {

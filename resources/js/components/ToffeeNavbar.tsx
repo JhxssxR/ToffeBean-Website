@@ -1,6 +1,6 @@
 /* eslint-disable */  
 import { Link, usePage } from '@inertiajs/react';
-import { Calendar, Home, Palette, ShoppingBag, SlidersHorizontal, Sparkles, User, Menu, X } from 'lucide-react';
+import { Calendar, Home, Palette, ShoppingBag, SlidersHorizontal, Sparkles, User, Menu, X, Bell } from 'lucide-react';
 import React, { useState } from 'react';
 import { FallingLeaves } from './FallingLeaves';
 
@@ -48,6 +48,14 @@ export function ToffeeNavbar() {
                 <div className="hidden lg:flex items-center gap-3">
                     {auth.user ? (
                         <>
+                            {auth.active_orders_count > 0 && (
+                                <Link href={auth.user.role === 'admin' ? "/dashboard" : "/customer/dashboard"} className="relative flex items-center justify-center w-10 h-10 bg-white rounded-full border-[3px] border-[#4a2c11] shadow-brutal-sm text-[#4a2c11] hover:-translate-y-1 transition-transform">
+                                    <Bell size={18} strokeWidth={3} className="text-[#D2691E]" />
+                                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-[#fff8f0] flex items-center justify-center text-[10px] font-bold text-white">
+                                        {auth.active_orders_count}
+                                    </span>
+                                </Link>
+                            )}
                             <Link href={auth.user.role === 'admin' ? "/dashboard" : "/customer/dashboard"} className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/40 hover:bg-white text-[#4a2c11] font-bold transition-all">
                                 <User size={18} strokeWidth={3} className="text-[#D2691E]" />
                                 Dashboard
@@ -66,9 +74,19 @@ export function ToffeeNavbar() {
 
                 <div className="lg:hidden flex items-center gap-2">
                     {auth.user ? (
-                        <Link href={auth.user.role === 'admin' ? "/dashboard" : "/customer/dashboard"} className="flex items-center justify-center w-10 h-10 bg-white rounded-full border-[3px] border-[#4a2c11] shadow-brutal-sm text-[#4a2c11]">
-                            <User size={18} strokeWidth={3} className="text-[#D2691E]" />
-                        </Link>
+                        <>
+                            {auth.active_orders_count > 0 && (
+                                <Link href={auth.user.role === 'admin' ? "/dashboard" : "/customer/dashboard"} className="relative flex items-center justify-center w-10 h-10 bg-white rounded-full border-[3px] border-[#4a2c11] shadow-brutal-sm text-[#4a2c11]">
+                                    <Bell size={18} strokeWidth={3} className="text-[#D2691E]" />
+                                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white flex items-center justify-center text-[10px] font-bold text-white">
+                                        {auth.active_orders_count}
+                                    </span>
+                                </Link>
+                            )}
+                            <Link href={auth.user.role === 'admin' ? "/dashboard" : "/customer/dashboard"} className="flex items-center justify-center w-10 h-10 bg-white rounded-full border-[3px] border-[#4a2c11] shadow-brutal-sm text-[#4a2c11]">
+                                <User size={18} strokeWidth={3} className="text-[#D2691E]" />
+                            </Link>
+                        </>
                     ) : (
                         <Link href="/login" className="flex items-center justify-center w-10 h-10 bg-white rounded-full border-[3px] border-[#4a2c11] shadow-brutal-sm text-[#4a2c11]">
                             <User size={18} strokeWidth={3} className="text-[#D2691E]" />

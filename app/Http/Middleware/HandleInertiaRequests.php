@@ -44,6 +44,11 @@ class HandleInertiaRequests extends Middleware
             'quote' => ['message' => trim($message), 'author' => trim($author)],
             'auth' => [
                 'user' => $request->user(),
+                'active_orders_count' => $request->user() 
+                    ? \App\Models\Order::where('client_email', $request->user()->email)
+                        ->whereIn('status', ['In Progress', 'Completed'])
+                        ->count() 
+                    : 0,
             ],
         ]);
     }

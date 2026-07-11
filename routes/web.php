@@ -2,9 +2,11 @@
 
 use App\Http\Controllers\CommissionController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OcPlanController;
 use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Models\Commission;
 use App\Models\Order;
+use App\Models\OcPlan;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -40,14 +42,22 @@ Route::middleware(['auth', EnsureUserIsAdmin::class])->group(function () {
 // Allow anyone to create an order
 Route::post('api/orders', [OrderController::class, 'store']);
 
+// Allow anyone to create an OC plan
+Route::post('api/oc-plans', [OcPlanController::class, 'store']);
+
 Route::middleware(['auth'])->group(function () {
     Route::get('/customer/dashboard', function () {
         $orders = Order::where('client_email', auth()->user()->email)
             ->orderBy('created_at', 'desc')
             ->get();
 
+        $ocPlans = OcPlan::where('client_email', auth()->user()->email)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         return Inertia::render('CustomerDashboard', [
             'orders' => $orders,
+            'ocPlans' => $ocPlans,
         ]);
     })->name('customer.dashboard');
 });
