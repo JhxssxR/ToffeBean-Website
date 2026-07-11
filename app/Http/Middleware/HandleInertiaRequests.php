@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Order;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -44,10 +45,10 @@ class HandleInertiaRequests extends Middleware
             'quote' => ['message' => trim($message), 'author' => trim($author)],
             'auth' => [
                 'user' => $request->user(),
-                'active_orders_count' => $request->user() 
-                    ? \App\Models\Order::where('client_email', $request->user()->email)
+                'active_orders_count' => $request->user()
+                    ? Order::where('client_email', $request->user()->email)
                         ->whereIn('status', ['In Progress', 'Completed'])
-                        ->count() 
+                        ->count()
                     : 0,
             ],
         ]);

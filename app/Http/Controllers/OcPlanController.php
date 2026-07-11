@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\OcPlan;
 use Illuminate\Http\Request;
 
 class OcPlanController extends Controller
@@ -16,7 +17,7 @@ class OcPlanController extends Controller
             'quirks' => 'nullable|string',
         ]);
 
-        $ocPlan = \App\Models\OcPlan::create($validated);
+        $ocPlan = OcPlan::create($validated);
 
         return response()->json($ocPlan, 201);
     }

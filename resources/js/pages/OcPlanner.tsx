@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ToffeeNavbar } from '@/components/ToffeeNavbar';
 import { ToffeeFooter } from '@/components/ToffeeFooter';
 import { Head, usePage } from '@inertiajs/react';
@@ -125,7 +126,7 @@ export default function OcPlanner() {
             } else {
                 alert('Something went wrong saving your plan.');
             }
-        } catch (err) {
+        } catch {
             alert('Something went wrong saving your plan.');
         } finally {
             setIsSubmitting(false);
@@ -262,6 +263,7 @@ export default function OcPlanner() {
                                         Selected {imageRefs.length} image{imageRefs.length > 1 ? 's' : ''} ({(imageRefs.reduce((acc, file) => acc + file.size, 0) / (1024 * 1024)).toFixed(2)} MB total)
                                     </p>
                                 )}
+                            </div>
                             {!auth.user && (
                                 <div>
                                     <div className="flex items-center justify-between mb-2">
