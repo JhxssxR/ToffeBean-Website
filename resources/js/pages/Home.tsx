@@ -35,7 +35,18 @@ function Hero() {
     );
 }
 
-function Collections({ items = [] }: { items?: any[] }) {
+interface HomeServiceItem {
+    id: number;
+    title: string;
+    description?: string;
+    desc?: string;
+    img: string;
+    gallery?: string[];
+    is_active: boolean;
+    sort_order: number;
+}
+
+function Collections({ items = [] }: { items?: HomeServiceItem[] }) {
     const [selectedGallery, setSelectedGallery] = React.useState<{title: string, images: string[]} | null>(null);
     const [enlargedImageIndex, setEnlargedImageIndex] = React.useState<number | null>(null);
 
@@ -222,7 +233,7 @@ function About() {
     );
 }
 
-export default function Home({ initialServices }: { initialServices: any[] }) {
+export default function Home({ initialServices }: { initialServices: HomeServiceItem[] }) {
     return (
         <div className="min-h-screen flex flex-col font-sans text-[#4a2c11] bg-[#fef1df]">
             <Head title="Home" />
