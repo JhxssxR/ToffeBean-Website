@@ -7,11 +7,15 @@ use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Models\Commission;
 use App\Models\OcPlan;
 use App\Models\Order;
+use App\Models\HomeService;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
-    return Inertia::render('Home');
+    $services = HomeService::where('is_active', true)->orderBy('sort_order')->get();
+    return Inertia::render('Home', [
+        'initialServices' => $services
+    ]);
 })->name('home');
 
 Route::get('/commissions', function () {
@@ -36,6 +40,7 @@ Route::middleware(['auth', EnsureUserIsAdmin::class])->group(function () {
     })->name('dashboard');
 
     Route::apiResource('api/commissions', CommissionController::class);
+    Route::apiResource('api/home-services', \App\Http\Controllers\HomeServiceController::class);
     Route::apiResource('api/orders', OrderController::class)->except(['store']);
 });
 

@@ -9,7 +9,7 @@ export default function Commissions({ initialCommissions = [] }: { initialCommis
     const { props } = usePage<any>();
     const auth = props.auth || { user: null };
 
-    const [addons, setAddons] = useState({ print: false, rush: false });
+    const [addons, setAddons] = useState({ rush: false });
     const [quantity, setQuantity] = useState(1);
     
     // Form state
@@ -60,8 +60,7 @@ export default function Commissions({ initialCommissions = [] }: { initialCommis
     const [style, setStyle] = useState(firstStyleId);
 
     const addonPrices = {
-        print: 200,
-        rush: 500
+        rush: 5.00
     };
 
     const selectedStyle = styles[style];
@@ -71,7 +70,6 @@ export default function Commissions({ initialCommissions = [] }: { initialCommis
     const basePriceMax = selectedStyle.priceMax ? selectedStyle.priceMax * mult : undefined;
     
     let totalAddons = 0;
-    if (addons.print) totalAddons += addonPrices.print;
     if (addons.rush) totalAddons += addonPrices.rush;
     const grandTotal = basePrice + totalAddons;
     const grandTotalMax = basePriceMax ? basePriceMax + totalAddons : undefined;
@@ -112,7 +110,7 @@ export default function Commissions({ initialCommissions = [] }: { initialCommis
             if (res.ok) {
                 setSubmitSuccess(true);
                 setForm({ species: '', character_name: '', theme: '', notes: '', client_email: auth.user ? auth.user.email : '', client_social: '' });
-                setAddons({ print: false, rush: false });
+                setAddons({ rush: false });
                 setQuantity(1);
             } else {
                 alert('Something went wrong. Please try again.');
@@ -223,21 +221,6 @@ export default function Commissions({ initialCommissions = [] }: { initialCommis
                         <div className="space-y-4 mt-10">
                             <h3 className="font-bold text-[13px] tracking-wider uppercase">2. EXTRA ADD-ONS</h3>
                             
-                            <label className={`flex items-start gap-4 border-[3px] border-[#4a2c11] rounded-[1.5rem] p-5 cursor-pointer transition-colors ${addons.print ? 'bg-[#fef1df]' : 'bg-white hover:bg-[#fffcf7]'}`}>
-                                <input 
-                                    type="checkbox" 
-                                    className="mt-1 w-5 h-5 accent-[#f08967]" 
-                                    checked={addons.print} 
-                                    onChange={(e) => setAddons({...addons, print: e.target.checked})} 
-                                />
-                                <div className="flex-1">
-                                    <div className="flex justify-between items-center mb-1">
-                                        <h4 className="font-bold text-[15px]">Ship High-Res Physical Sticker Prints</h4>
-                                        <span className="font-bold text-[14px]">+$2.00 <span className="text-[10px] text-[#4a2c11]/60 uppercase ml-0.5">USD</span></span>
-                                    </div>
-                                    <p className="text-[12px] font-medium text-[#4a2c11]/70">We will print, laminate, and pack die-cut vinyl stickers of your delivery. Ships internationally!</p>
-                                </div>
-                            </label>
 
                             <label className={`flex items-start gap-4 border-[3px] border-[#4a2c11] rounded-[1.5rem] p-5 cursor-pointer transition-colors ${addons.rush ? 'bg-[#fef1df]' : 'bg-white hover:bg-[#fffcf7]'}`}>
                                 <input 
@@ -300,14 +283,7 @@ export default function Commissions({ initialCommissions = [] }: { initialCommis
                                     <span className="font-bold text-[15px]">${renderPrice(basePrice, basePriceMax)} <span className="text-[10px] text-[#4a2c11]/60 uppercase ml-0.5">USD</span></span>
                                 </div>
                                 
-                                {addons.print && (
-                                    <div className="flex justify-between items-start">
-                                        <span className="font-bold text-[14px] text-[#4a2c11]/80 max-w-[180px] leading-tight">
-                                            Physical Prints
-                                        </span>
-                                        <span className="font-bold text-[15px]">${formatMoney(addonPrices.print)} <span className="text-[10px] text-[#4a2c11]/60 uppercase ml-0.5">USD</span></span>
-                                    </div>
-                                )}
+
 
                                 {addons.rush && (
                                     <div className="flex justify-between items-start">

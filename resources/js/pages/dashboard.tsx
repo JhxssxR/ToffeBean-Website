@@ -41,6 +41,7 @@ const navItems = [
     { id: 'overview', label: 'Overview', icon: Icons.Dashboard },
     { id: 'orders', label: 'Orders', icon: Icons.Orders },
     { id: 'commissions', label: 'Commissions', icon: Icons.Palette },
+    { id: 'services', label: 'Services', icon: Icons.Sticker },
     { id: 'clients', label: 'Clients', icon: Icons.Users },
 ];
 
@@ -511,6 +512,289 @@ function ManageCommissions() {
     );
 }
 
+// ── Manage Services (Home Page) ───────────────────────────────────────
+function ManageServices() {
+    const [services, setServices] = useState<any[]>([]);
+    const [editingId, setEditingId] = useState<number | null>(null);
+    const [editForm, setEditForm] = useState<any>({});
+    const [showNewForm, setShowNewForm] = useState(false);
+    const [newForm, setNewForm] = useState<any>({ title: '', description: '', img_file: null, gallery_files: [], gallery: [], is_active: true, sort_order: 0 });
+    const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+    const showToast = (msg: string) => {
+        setToastMessage(msg);
+        setTimeout(() => setToastMessage(null), 3000);
+    };
+
+    const loadServices = () => {
+        fetch('/api/home-services')
+            .then(res => res.json())
+            .then(data => setServices(data));
+    };
+
+    useEffect(() => { loadServices(); }, []);
+
+    const handleSave = (id: number) => {
+        const formData = new FormData();
+        formData.append('_method', 'PUT');
+        formData.append('title', editForm.title || '');
+        formData.append('description', editForm.description || '');
+        formData.append('sort_order', editForm.sort_order?.toString() || '0');
+        formData.append('is_active', editForm.is_active ? '1' : '0');
+        
+        if (editForm.img_file) {
+            formData.append('img_file', editForm.img_file);
+        }
+        
+        (editForm.gallery || []).forEach((url: string) => {
+            formData.append('gallery_existing[]', url);
+        });
+        
+        (editForm.gallery_files || []).forEach((file: File) => {
+            formData.append('gallery_files[]', file);
+        });
+
+        fetch(`/api/home-services/${id}`, {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': csrfToken },
+            body: formData,
+        }).then(() => { setEditingId(null); loadServices(); showToast("Service updated successfully! ✨"); });
+    };
+
+    const handleCreate = () => {
+        const formData = new FormData();
+        formData.append('title', newForm.title || '');
+        formData.append('description', newForm.description || '');
+        formData.append('sort_order', newForm.sort_order?.toString() || '0');
+        formData.append('is_active', newForm.is_active ? '1' : '0');
+        
+        if (newForm.img_file) {
+            formData.append('img_file', newForm.img_file);
+        }
+        
+        (newForm.gallery_files || []).forEach((file: File) => {
+            formData.append('gallery_files[]', file);
+        });
+
+        fetch('/api/home-services', {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': csrfToken },
+            body: formData,
+        }).then(() => { setShowNewForm(false); setNewForm({ title: '', description: '', img_file: null, gallery_files: [], gallery: [], is_active: true, sort_order: 0 }); loadServices(); showToast("Service created successfully! 🎉"); });
+    };
+
+    const handleDelete = (id: number) => {
+        if (!confirm('Are you sure you want to delete this service?')) return;
+        fetch(`/api/home-services/${id}`, {
+            method: 'DELETE',
+            headers: { 'X-CSRF-TOKEN': csrfToken },
+        }).then(() => { loadServices(); showToast("Service deleted. 🗑️"); });
+    };
+
+    const handleToggleActive = (s: any) => {
+        fetch(`/api/home-services/${s.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+            body: JSON.stringify({ is_active: !s.is_active }),
+        }).then(() => { loadServices(); showToast(`Service is now ${!s.is_active ? 'visible' : 'hidden'}. 👀`); });
+    };
+
+    const handleFileChange = (e: any, target: 'new' | 'edit', field: 'img_file' | 'gallery_files') => {
+        const files = Array.from(e.target.files) as File[];
+        if (target === 'new') {
+            if (field === 'img_file') {
+                setNewForm({ ...newForm, img_file: files[0] || null });
+            } else {
+                setNewForm({ ...newForm, gallery_files: [...newForm.gallery_files, ...files] });
+            }
+        } else {
+            if (field === 'img_file') {
+                setEditForm({ ...editForm, img_file: files[0] || null });
+            } else {
+                setEditForm({ ...editForm, gallery_files: [...(editForm.gallery_files || []), ...files] });
+            }
+        }
+    };
+
+    const removeGalleryItem = (index: number, target: 'new' | 'edit', type: 'existing' | 'new_file') => {
+        if (target === 'new') {
+            setNewForm({ ...newForm, gallery_files: newForm.gallery_files.filter((_: any, i: number) => i !== index) });
+        } else {
+            if (type === 'existing') {
+                setEditForm({ ...editForm, gallery: (editForm.gallery || []).filter((_: any, i: number) => i !== index) });
+            } else {
+                setEditForm({ ...editForm, gallery_files: (editForm.gallery_files || []).filter((_: any, i: number) => i !== index) });
+            }
+        }
+    };
+
+    const inputClass = "w-full px-3 py-2 rounded-lg border-[2px] border-[#4a2c11]/30 text-sm font-bold text-[#4a2c11] focus:border-[#E67E22] focus:outline-none transition-colors bg-white";
+
+    return (
+        <div className="space-y-6 relative">
+            {/* Toast Notification */}
+            {toastMessage && (
+                <div className="fixed bottom-10 right-10 bg-[#4a2c11] text-white px-5 py-3 rounded-xl font-bold text-sm shadow-[4px_4px_0px_#E67E22] flex items-center gap-3 z-50 animate-[bounce_0.3s_ease-out]">
+                    <Icons.Check width={18} height={18} className="text-emerald-400" />
+                    {toastMessage}
+                </div>
+            )}
+
+            {/* Header card */}
+            <div className="bg-white border-[3px] border-[#4a2c11] rounded-2xl shadow-[4px_4px_0px_#4a2c11] overflow-hidden">
+                <div className="px-6 py-4 border-b-[2px] border-[#fef1df] flex items-center justify-between">
+                    <h3 className="font-black text-[#4a2c11] text-[15px] flex items-center gap-2">
+                        <Icons.Sticker width={16} height={16} className="text-[#E67E22]" />
+                        Manage Home Services
+                        <span className="ml-2 text-[11px] font-bold text-[#4a2c11]/40 bg-[#fef1df] px-3 py-1 rounded-full">{services.length} items</span>
+                    </h3>
+                    <button onClick={() => setShowNewForm(!showNewForm)} className="bg-[#E67E22] text-white px-4 py-1.5 rounded-full font-bold text-xs border-[2px] border-[#4a2c11] hover:-translate-y-0.5 shadow-[2px_2px_0px_#4a2c11] transition-transform">
+                        {showNewForm ? '✕ Cancel' : '+ New Service'}
+                    </button>
+                </div>
+
+                {/* New Service Form */}
+                {showNewForm && (
+                    <div className="p-6 bg-[#fffcf7] border-b-[2px] border-[#fef1df]">
+                        <h4 className="font-black text-[#4a2c11] text-sm mb-4">Create New Service</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className="text-[11px] font-bold text-[#4a2c11]/60 uppercase tracking-wider mb-1 block">Title</label>
+                                <input className={inputClass} value={newForm.title} onChange={e => setNewForm({...newForm, title: e.target.value})} placeholder="e.g. Poster/Illustration" />
+                            </div>
+                            <div>
+                                <label className="text-[11px] font-bold text-[#4a2c11]/60 uppercase tracking-wider mb-1 block">Sort Order</label>
+                                <input className={inputClass} type="number" value={newForm.sort_order} onChange={e => setNewForm({...newForm, sort_order: parseInt(e.target.value) || 0})} placeholder="0" />
+                            </div>
+                            <div className="md:col-span-2">
+                                <label className="text-[11px] font-bold text-[#4a2c11]/60 uppercase tracking-wider mb-1 block">Description</label>
+                                <textarea className={inputClass + " resize-none"} rows={2} value={newForm.description} onChange={e => setNewForm({...newForm, description: e.target.value})} placeholder="Short description shown on the card..." />
+                            </div>
+                            <div className="md:col-span-2">
+                                <label className="text-[11px] font-bold text-[#4a2c11]/60 uppercase tracking-wider mb-1 block">Thumbnail Image</label>
+                                <input type="file" accept="image/*" className={inputClass + " file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-[#fef1df] file:text-[#E67E22] hover:file:bg-[#fce5cd]"} onChange={(e) => handleFileChange(e, 'new', 'img_file')} />
+                            </div>
+                            <div className="md:col-span-2">
+                                <label className="text-[11px] font-bold text-[#4a2c11]/60 uppercase tracking-wider mb-1 block">Gallery Images (Multiple)</label>
+                                <input type="file" accept="image/*" multiple className={inputClass + " file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-[#fef1df] file:text-[#E67E22] hover:file:bg-[#fce5cd]"} onChange={(e) => handleFileChange(e, 'new', 'gallery_files')} />
+                                
+                                {newForm.gallery_files.length > 0 && (
+                                    <div className="space-y-1.5 max-h-[200px] overflow-y-auto mt-2">
+                                        {newForm.gallery_files.map((file: File, i: number) => (
+                                            <div key={i} className="flex items-center gap-2 bg-white border border-[#4a2c11]/20 rounded-lg px-3 py-1.5">
+                                                <span className="text-[11px] font-medium text-[#4a2c11]/70 truncate flex-1">{file.name}</span>
+                                                <button type="button" onClick={() => removeGalleryItem(i, 'new', 'new_file')} className="text-rose-400 hover:text-rose-600 shrink-0">
+                                                    <Icons.Close width={14} height={14} />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                        <div className="mt-4 flex justify-end">
+                            <button onClick={handleCreate} className="bg-emerald-500 text-white px-5 py-2 rounded-xl font-bold text-xs border-[2px] border-[#4a2c11] shadow-[2px_2px_0px_#4a2c11] hover:-translate-y-0.5 transition-transform">
+                                ✓ Create Service
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {/* Service Cards */}
+                <div className="p-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {services.map(s => (
+                            <div key={s.id} className={`border-[2px] rounded-xl overflow-hidden flex flex-col relative transition-all h-full ${s.is_active ? 'border-[#4a2c11] bg-white' : 'border-[#4a2c11]/20 bg-gray-50 opacity-60'}`}>
+                                {editingId === s.id ? (
+                                    /* Edit Mode */
+                                    <div className="flex flex-col h-full space-y-3 p-4">
+                                        <input className={inputClass} value={editForm.title} onChange={e => setEditForm({...editForm, title: e.target.value})} placeholder="Title" />
+                                        <textarea className={inputClass + " resize-none"} rows={2} value={editForm.description} onChange={e => setEditForm({...editForm, description: e.target.value})} placeholder="Description" />
+                                        <div>
+                                            <label className="text-[11px] font-bold text-[#4a2c11]/60 uppercase tracking-wider mb-1 block">Update Thumbnail</label>
+                                            <input type="file" accept="image/*" className={inputClass + " file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#fef1df] file:text-[#E67E22] hover:file:bg-[#fce5cd]"} onChange={(e) => handleFileChange(e, 'edit', 'img_file')} />
+                                        </div>
+                                        <div>
+                                            <label className="text-[11px] font-bold text-[#4a2c11]/60 uppercase tracking-wider mb-1 block">Sort Order</label>
+                                            <input className={inputClass} type="number" value={editForm.sort_order} onChange={e => setEditForm({...editForm, sort_order: parseInt(e.target.value) || 0})} />
+                                        </div>
+                                        <div>
+                                            <label className="text-[11px] font-bold text-[#4a2c11]/60 uppercase tracking-wider mb-1 block">Gallery Images</label>
+                                            <input type="file" accept="image/*" multiple className={inputClass + " mb-2 file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#fef1df] file:text-[#E67E22] hover:file:bg-[#fce5cd]"} onChange={(e) => handleFileChange(e, 'edit', 'gallery_files')} />
+                                            
+                                            <div className="space-y-1.5 max-h-[200px] overflow-y-auto">
+                                                {/* Existing Gallery URLs */}
+                                                {(editForm.gallery || []).map((url: string, i: number) => (
+                                                    <div key={`exist-${i}`} className="flex items-center gap-2 bg-[#fffcf7] border border-[#4a2c11]/20 rounded-lg px-3 py-1.5">
+                                                        <img src={url} alt="" className="w-8 h-8 rounded object-cover border border-[#4a2c11]/20 shrink-0" onError={e => (e.target as HTMLImageElement).style.display = 'none'} />
+                                                        <span className="text-[11px] font-medium text-[#4a2c11]/70 truncate flex-1">{url.split('/').pop()}</span>
+                                                        <button type="button" onClick={() => removeGalleryItem(i, 'edit', 'existing')} className="text-rose-400 hover:text-rose-600 shrink-0">
+                                                            <Icons.Close width={14} height={14} />
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                                {/* New Gallery Files */}
+                                                {(editForm.gallery_files || []).map((file: File, i: number) => (
+                                                    <div key={`new-${i}`} className="flex items-center gap-2 bg-white border border-[#4a2c11]/20 border-dashed rounded-lg px-3 py-1.5">
+                                                        <span className="w-8 h-8 rounded bg-[#fef1df] text-[#E67E22] flex items-center justify-center font-bold text-[10px] border border-[#4a2c11]/20 shrink-0">NEW</span>
+                                                        <span className="text-[11px] font-medium text-[#4a2c11]/70 truncate flex-1">{file.name}</span>
+                                                        <button type="button" onClick={() => removeGalleryItem(i, 'edit', 'new_file')} className="text-rose-400 hover:text-rose-600 shrink-0">
+                                                            <Icons.Close width={14} height={14} />
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-2 justify-end mt-auto pt-3">
+                                            <button onClick={() => setEditingId(null)} className="text-[11px] font-bold text-[#4a2c11]/60 px-3 py-1.5 rounded-lg hover:bg-[#fef1df] transition-colors">Cancel</button>
+                                            <button onClick={() => handleSave(s.id)} className="bg-emerald-500 text-white text-[11px] font-bold px-3 py-1.5 rounded-lg border-[2px] border-[#4a2c11] shadow-[1px_1px_0px_#4a2c11]">Save</button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    /* Display Mode */
+                                    <>
+                                        {/* Thumbnail */}
+                                        {s.img && (
+                                            <div className="h-[140px] bg-[#fef1df] overflow-hidden border-b-[2px] border-[#4a2c11]/20">
+                                                <img src={s.img} alt={s.title} className="w-full h-full object-cover" />
+                                            </div>
+                                        )}
+                                        <div className="p-4 flex flex-col flex-1">
+                                            {!s.is_active && <span className="text-[9px] font-bold text-rose-500 bg-rose-100 px-2 py-0.5 rounded-full border border-rose-300 self-start mb-2">HIDDEN</span>}
+                                            <h4 className="font-black text-[#4a2c11] text-lg">{s.title}</h4>
+                                            <p className="text-xs font-bold text-[#4a2c11]/60 flex-1 mt-1">{s.description}</p>
+                                            <div className="flex items-center gap-2 mt-2">
+                                                <span className="text-[10px] font-bold text-[#4a2c11]/40 bg-[#fef1df] px-2 py-0.5 rounded-full">
+                                                    📸 {(s.gallery || []).length} gallery images
+                                                </span>
+                                                <span className="text-[10px] font-bold text-[#4a2c11]/40 bg-[#fef1df] px-2 py-0.5 rounded-full">
+                                                    #{s.sort_order}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center justify-end mt-auto pt-3 border-t-[2px] border-[#fef1df]">
+                                                <div className="flex gap-2">
+                                                    <button onClick={() => { setEditingId(s.id); setEditForm({ title: s.title, description: s.description, img: s.img, gallery: s.gallery || [], gallery_files: [], sort_order: s.sort_order, is_active: s.is_active }); }} className="text-[11px] font-bold text-[#4a2c11]/60 hover:text-[#E67E22] transition-colors">Edit</button>
+                                                    <button onClick={() => handleToggleActive(s)} className="text-[11px] font-bold text-[#4a2c11]/60 hover:text-amber-500 transition-colors">{s.is_active ? 'Hide' : 'Show'}</button>
+                                                    <button onClick={() => handleDelete(s.id)} className="text-[11px] font-bold text-rose-400 hover:text-rose-600 transition-colors">Delete</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                    {services.length === 0 && (
+                        <div className="text-center py-10 text-[#4a2c11]/50 font-bold">No services found. Click "+ New Service" to create one.</div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+}
+
 // ── Main Page ─────────────────────────────────────────────────────────
 export default function AdminDashboard() {
     const [activeTab, setActiveTab] = useState('overview');
@@ -577,7 +861,7 @@ export default function AdminDashboard() {
                 {/* Top bar */}
                 <header className="flex items-center justify-between px-8 py-4 bg-white border-b-[3px] border-[#4a2c11] sticky top-0 z-10">
                     <div>
-                        <h1 className="font-black text-[18px] text-[#4a2c11] capitalize">{activeTab === 'overview' ? 'Dashboard Overview' : activeTab === 'commissions' ? 'Manage Commissions' : activeTab === 'orders' ? 'Manage Orders' : activeTab === 'clients' ? 'Client Directory' : activeTab}</h1>
+                        <h1 className="font-black text-[18px] text-[#4a2c11] capitalize">{activeTab === 'overview' ? 'Dashboard Overview' : activeTab === 'commissions' ? 'Manage Commissions' : activeTab === 'services' ? 'Manage Home Services' : activeTab === 'orders' ? 'Manage Orders' : activeTab === 'clients' ? 'Client Directory' : activeTab}</h1>
                         <p className="text-[11px] font-medium text-[#4a2c11]/50 mt-0.5">Welcome back, Admin 🍁</p>
                     </div>
                     <div className="flex items-center gap-3">
@@ -634,6 +918,8 @@ export default function AdminDashboard() {
                 <main className="flex-1 p-8">
 
                     {activeTab === 'commissions' && <ManageCommissions />}
+
+                    {activeTab === 'services' && <ManageServices />}
 
                     {activeTab === 'overview' && (
                         <>

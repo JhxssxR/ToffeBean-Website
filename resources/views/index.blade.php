@@ -181,7 +181,7 @@
         function Collections() {
             const items = [
                 { title: "Plushies!", desc: "Collect super-soft huggable plushies", img: "https://images.unsplash.com/photo-1559418386-35c82a03c200?w=500&h=300&fit=crop" },
-                { title: "Vinyl Stickers!", desc: "Weatherproof kiss-cut chibi sticker packs", img: "https://images.unsplash.com/photo-1572375992501-4b0892d50c69?w=500&h=300&fit=crop" },
+                { title: "Vinyl Stickers!", desc: "Weatherproof kiss-cut chibi sticker packs", img: "/images/services/custom-stickers-thumbnail.jpg" },
                 { title: "Reference Guides!", desc: "Custom layout front/back guides for commissions", img: "https://images.unsplash.com/photo-1618331835717-801e976710b2?w=500&h=300&fit=crop" }
             ];
 
