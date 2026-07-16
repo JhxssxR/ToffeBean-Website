@@ -15,7 +15,7 @@ interface LoginProps {
     canResetPassword: boolean;
 }
 
-export default function Login({ status }: LoginProps) {
+export default function Login({ status, canResetPassword }: LoginProps) {
     const { data, setData, post, processing, errors, reset } = useForm<LoginForm>({
         email: '',
         password: '',
@@ -123,7 +123,7 @@ export default function Login({ status }: LoginProps) {
                             <div>
                                 <label className="flex items-center gap-1.5 text-[10px] font-bold tracking-[0.12em] uppercase text-[#4a2c11] mb-2">
                                     <Lock size={12} strokeWidth={3} />
-                                    Password Secret Key
+                                    Password
                                 </label>
                                 <div className="relative">
                                     <input
@@ -143,6 +143,17 @@ export default function Login({ status }: LoginProps) {
                                     </button>
                                 </div>
                                 {(clientErrors.password || errors.password) && <p className="text-red-500 text-[11px] font-semibold mt-1">{clientErrors.password || errors.password}</p>}
+                                
+                                {canResetPassword && (
+                                    <div className="flex justify-end mt-1">
+                                        <Link
+                                            href="/forgot-password"
+                                            className="text-[11px] font-bold text-[#4a2c11]/70 hover:text-[#D2691E] transition-colors underline decoration-[#4a2c11]/30 hover:decoration-[#D2691E]"
+                                        >
+                                            Forgot password?
+                                        </Link>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Tip */}

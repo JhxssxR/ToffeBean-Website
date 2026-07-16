@@ -88,17 +88,18 @@ class HomeServiceController extends Controller
             $data['img'] = '/images/services/' . $filename;
         }
 
-        $gallery = $request->input('gallery_existing', []);
-
-        if ($request->hasFile('gallery_files')) {
-            foreach ($request->file('gallery_files') as $file) {
-                $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-                $file->move(public_path('images/services'), $filename);
-                $gallery[] = '/images/services/' . $filename;
+        // Handle Gallery (only update if title is present, indicating a full form submit)
+        if ($request->has('title')) {
+            $gallery = $request->input('gallery_existing', []);
+            if ($request->hasFile('gallery_files')) {
+                foreach ($request->file('gallery_files') as $file) {
+                    $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                    $file->move(public_path('images/services'), $filename);
+                    $gallery[] = '/images/services/' . $filename;
+                }
             }
+            $data['gallery'] = $gallery;
         }
-        
-        $data['gallery'] = $gallery;
 
         $homeService->update($data);
 

@@ -598,7 +598,11 @@ function ManageServices() {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
             body: JSON.stringify({ is_active: !s.is_active }),
-        }).then(() => { loadServices(); showToast(`Service is now ${!s.is_active ? 'visible' : 'hidden'}. 👀`); });
+        }).then(res => {
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return res.json();
+        }).then(() => { loadServices(); showToast(`Service is now ${!s.is_active ? 'visible' : 'hidden'}. 👀`); })
+        .catch(err => { console.error('Toggle failed:', err); showToast('Failed to toggle service! ❌'); });
     };
 
     const handleFileChange = (e: any, target: 'new' | 'edit', field: 'img_file' | 'gallery_files') => {
