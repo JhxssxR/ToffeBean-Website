@@ -27,7 +27,5 @@ USER www-data
 # Install PHP dependencies (production)
 RUN composer install --no-dev --optimize-autoloader
 
-# Run Laravel optimizations
-RUN php artisan config:cache && \
-    php artisan route:cache && \
-    php artisan view:cache
+# Note: We do NOT run config:cache here, because it will lock in empty build-time variables. 
+# Laravel will read your Render environment variables dynamically at runtime!
