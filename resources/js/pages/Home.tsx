@@ -236,7 +236,7 @@ function About() {
 
 export default function Home({ initialServices }: { initialServices: HomeServiceItem[] }) {
     return (
-        <div className="min-h-screen flex flex-col font-sans text-[#4a2c11] bg-[#fef1df]">
+        <div className="min-h-screen flex flex-col font-sans text-[#4a2c11] bg-[#fef1df] autumn-overlay-bg">
             <Head title="Home" />
 
             <ToffeeNavbar />
