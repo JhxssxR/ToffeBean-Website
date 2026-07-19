@@ -2,8 +2,8 @@
 import { ToffeeNavbar } from '@/components/ToffeeNavbar';
 import { ToffeeFooter } from '@/components/ToffeeFooter';
 import { Head, usePage } from '@inertiajs/react';
-import React, { useState } from 'react';
-import { Settings, Check, Hourglass, Calculator, Star } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Settings, Check, Hourglass, Calculator, Star, Paperclip, X } from 'lucide-react';
 
 export default function Commissions({ initialCommissions = [] }: { initialCommissions?: any[] }) {
     const { props } = usePage<any>();
@@ -11,6 +11,9 @@ export default function Commissions({ initialCommissions = [] }: { initialCommis
 
     const [addons, setAddons] = useState({ rush: false });
     const [quantity, setQuantity] = useState(1);
+    const [referenceImages, setReferenceImages] = useState<File[]>([]);
+    const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+    const fileInputRef = useRef<HTMLInputElement>(null);
     
     // Form state
     const [form, setForm] = useState({
@@ -35,8 +38,8 @@ export default function Commissions({ initialCommissions = [] }: { initialCommis
 
     const defaultStyles: Record<string, StyleItem> = {
         sticker: { id: 'sticker', title: 'Cute Custom Sticker', desc: '...', price: 2.50, eta: '1-2 weeks' },
-        reference: { id: 'reference', title: 'Character Reference Sheet', desc: '...', price: 10, priceMax: 50, eta: '2-3 weeks' },
-        keyart: { id: 'keyart', title: 'Illustration/Poster', desc: '...', price: 3000, eta: '1-2 weeks' }
+        reference: { id: 'reference', title: 'Character Reference Sheet', desc: '...', price: 25, priceMax: 50, eta: '2-3 weeks' },
+        keyart: { id: 'keyart', title: 'Illustration/Poster', desc: '...', price: 15, priceMax: 25, eta: '1-2 weeks' }
     };
 
     const styles: Record<string, StyleItem> = {};
@@ -81,6 +84,24 @@ export default function Commissions({ initialCommissions = [] }: { initialCommis
         return formatMoney(min);
     };
 
+    const handleImageAttach = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (!files) return;
+        const newFiles = Array.from(files).slice(0, 5 - referenceImages.length);
+        const updatedFiles = [...referenceImages, ...newFiles];
+        setReferenceImages(updatedFiles);
+
+        const newPreviews = newFiles.map(file => URL.createObjectURL(file));
+        setImagePreviews(prev => [...prev, ...newPreviews]);
+        if (fileInputRef.current) fileInputRef.current.value = '';
+    };
+
+    const removeImage = (index: number) => {
+        URL.revokeObjectURL(imagePreviews[index]);
+        setReferenceImages(prev => prev.filter((_, i) => i !== index));
+        setImagePreviews(prev => prev.filter((_, i) => i !== index));
+    };
+
     const handleSubmit = async () => {
         if (!form.client_email) {
             alert('Please provide a contact email.');
@@ -91,20 +112,28 @@ export default function Commissions({ initialCommissions = [] }: { initialCommis
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
         
         try {
+            const formData = new FormData();
+            formData.append('commission_id', (parseInt(selectedStyle.id) || 1).toString());
+            formData.append('species', form.species);
+            formData.append('character_name', form.character_name);
+            formData.append('theme', form.theme);
+            formData.append('notes', form.notes);
+            formData.append('client_email', form.client_email);
+            formData.append('client_social', form.client_social);
+            formData.append('quantity', mult.toString());
+            formData.append('addons', JSON.stringify(addons));
+            formData.append('total_price', grandTotal.toString());
+            referenceImages.forEach((file, i) => {
+                formData.append(`reference_images[${i}]`, file);
+            });
+
             const res = await fetch('/api/orders', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': csrfToken,
                     'Accept': 'application/json'
                 },
-                body: JSON.stringify({
-                    commission_id: parseInt(selectedStyle.id) || 1, // fallback for now if id is not a number, but in DB they are numbers
-                    ...form,
-                    quantity: mult,
-                    addons: addons,
-                    total_price: grandTotal
-                })
+                body: formData
             });
 
             if (res.ok) {
@@ -112,6 +141,9 @@ export default function Commissions({ initialCommissions = [] }: { initialCommis
                 setForm({ species: '', character_name: '', theme: '', notes: '', client_email: auth.user ? auth.user.email : '', client_social: '' });
                 setAddons({ rush: false });
                 setQuantity(1);
+                imagePreviews.forEach(url => URL.revokeObjectURL(url));
+                setReferenceImages([]);
+                setImagePreviews([]);
             } else {
                 alert('Something went wrong. Please try again.');
             }
@@ -215,6 +247,47 @@ export default function Commissions({ initialCommissions = [] }: { initialCommis
                             <div className="space-y-1.5 md:col-span-2">
                                 <label className="text-[11px] font-bold tracking-wider uppercase">Description Notes & Specifications</label>
                                 <textarea value={form.notes} onChange={e => setForm({...form, notes: e.target.value})} rows={4} placeholder="Details of poses, clothes, expressions, and accessories..." className="w-full bg-white border-[3px] border-[#4a2c11] rounded-xl px-4 py-3 font-medium outline-none focus:border-[#E67E22] transition-colors resize-none"></textarea>
+                            </div>
+
+                            {/* Attach Reference Images */}
+                            <div className="space-y-3 md:col-span-2">
+                                <label className="text-[11px] font-bold tracking-wider uppercase flex items-center gap-1">
+                                    <Paperclip width={14} height={14} className="text-[#E67E22]" />
+                                    Reference Images (optional, max 5)
+                                </label>
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept="image/*"
+                                    multiple
+                                    className="hidden"
+                                    onChange={handleImageAttach}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => fileInputRef.current?.click()}
+                                    disabled={referenceImages.length >= 5}
+                                    className="w-full border-[3px] border-dashed border-[#4a2c11]/30 rounded-xl py-4 px-4 flex items-center justify-center gap-2 font-bold text-[14px] text-[#4a2c11]/60 hover:border-[#E67E22] hover:text-[#E67E22] hover:bg-[#fef1df]/50 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                                >
+                                    <Paperclip width={18} height={18} />
+                                    {referenceImages.length > 0 ? `Add More Images (${referenceImages.length}/5)` : 'Attach Reference Images'}
+                                </button>
+                                {imagePreviews.length > 0 && (
+                                    <div className="flex flex-wrap gap-3 mt-3">
+                                        {imagePreviews.map((src, i) => (
+                                            <div key={i} className="relative group w-20 h-20 rounded-xl border-[3px] border-[#4a2c11] overflow-hidden shadow-brutal-sm">
+                                                <img src={src} alt={`Reference ${i + 1}`} className="w-full h-full object-cover" />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeImage(i)}
+                                                    className="absolute top-0.5 right-0.5 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                                >
+                                                    <X width={12} height={12} />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </div>
 
