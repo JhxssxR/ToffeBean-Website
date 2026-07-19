@@ -23,8 +23,10 @@ class OrderController extends Controller
             'theme' => 'nullable|string',
             'notes' => 'nullable|string',
             'quantity' => 'integer|min:1',
-            'addons' => 'nullable|array',
+            'addons' => 'nullable|string', // JSON string from frontend
             'total_price' => 'required|numeric',
+            'reference_images' => 'nullable|array|max:5',
+            'reference_images.*' => 'nullable|image|max:5120', // max 5MB per image
         ]);
 
         $order = Order::create($validated);

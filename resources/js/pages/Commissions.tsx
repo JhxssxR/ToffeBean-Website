@@ -89,7 +89,22 @@ export default function Commissions({ initialCommissions = [] }: { initialCommis
     const handleImageAttach = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
         if (!files) return;
-        const newFiles = Array.from(files).slice(0, 5 - referenceImages.length);
+        
+        const validFiles: File[] = [];
+        const MAX_SIZE_MB = 5;
+        const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+        
+        Array.from(files).forEach(file => {
+            if (file.size > MAX_SIZE_BYTES) {
+                alert(`File "${file.name}" exceeds the ${MAX_SIZE_MB}MB size limit.`);
+            } else {
+                validFiles.push(file);
+            }
+        });
+
+        if (validFiles.length === 0) return;
+
+        const newFiles = validFiles.slice(0, 5 - referenceImages.length);
         const updatedFiles = [...referenceImages, ...newFiles];
         setReferenceImages(updatedFiles);
 
