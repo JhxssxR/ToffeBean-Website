@@ -29,7 +29,7 @@ function EmptySlots() {
 
 export default function OrderTracker() {
     return (
-        <div className="min-h-screen flex flex-col font-sans text-[#4a2c11] bg-[#fef1df]">
+        <div className="min-h-screen flex flex-col font-sans text-[#4a2c11] bg-[#fef1df] autumn-overlay-bg">
             <Head title="Order Tracker" />
             <ToffeeNavbar />
             

@@ -55,7 +55,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
     return (
         <>
             <Head title="Sign In - ToffeeBean" />
-            <div className="min-h-screen flex flex-col font-sans text-[#4a2c11] bg-[#fef1df]">
+            <div className="min-h-screen flex flex-col font-sans text-[#4a2c11] bg-[#fef1df] autumn-overlay-bg">
                 <ToffeeNavbar />
 
                 {/* Wave divider */}

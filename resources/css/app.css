@@ -192,3 +192,10 @@
     font-size: 24px;
     opacity: 0;
 }
+
+.autumn-overlay-bg {
+    background-image: linear-gradient(rgba(254, 241, 223, 0.88), rgba(254, 241, 223, 0.88)), url('/images/autumn-leaves-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
