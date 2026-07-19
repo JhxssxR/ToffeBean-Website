@@ -26,6 +26,8 @@ export default function Commissions({ initialCommissions = [] }: { initialCommis
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitSuccess, setSubmitSuccess] = useState(false);
+    const [submitError, setSubmitError] = useState('');
+    const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
     interface StyleItem {
         id: string;
@@ -103,12 +105,21 @@ export default function Commissions({ initialCommissions = [] }: { initialCommis
     };
 
     const handleSubmit = async () => {
+        const errors: Record<string, string> = {};
         if (!form.client_email) {
-            alert('Please provide a contact email.');
-            return;
+            errors.client_email = 'Please provide a contact email.';
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.client_email)) {
+            errors.client_email = 'Please enter a valid email address.';
+        }
+        if (!form.character_name.trim()) {
+            errors.character_name = 'Please provide a character name.';
         }
         
+        setFormErrors(errors);
+        if (Object.keys(errors).length > 0) return;
+        
         setIsSubmitting(true);
+        setSubmitError('');
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
         
         try {
@@ -145,10 +156,10 @@ export default function Commissions({ initialCommissions = [] }: { initialCommis
                 setReferenceImages([]);
                 setImagePreviews([]);
             } else {
-                alert('Something went wrong. Please try again.');
+                setSubmitError('Something went wrong. Please try again.');
             }
         } catch (err) {
-            alert('Something went wrong. Please try again.');
+            setSubmitError('Something went wrong. Please try again.');
         } finally {
             setIsSubmitting(false);
         }
@@ -237,8 +248,8 @@ export default function Commissions({ initialCommissions = [] }: { initialCommis
                                 <input type="text" value={form.species} onChange={e => setForm({...form, species: e.target.value})} placeholder="Red panda/kitten..." className="w-full bg-white border-[3px] border-[#4a2c11] rounded-xl px-4 py-3 font-medium outline-none focus:border-[#E67E22] transition-colors" />
                             </div>
                             <div className="space-y-1.5">
-                                <label className="text-[11px] font-bold tracking-wider uppercase">Character Name</label>
-                                <input type="text" value={form.character_name} onChange={e => setForm({...form, character_name: e.target.value})} placeholder="E.g. Maple" className="w-full bg-white border-[3px] border-[#4a2c11] rounded-xl px-4 py-3 font-medium outline-none focus:border-[#E67E22] transition-colors" />
+                                <label className="text-[11px] font-bold tracking-wider uppercase">Character Name {formErrors.character_name && <span className="text-red-500 normal-case tracking-normal">— {formErrors.character_name}</span>}</label>
+                                <input type="text" value={form.character_name} onChange={e => { setForm({...form, character_name: e.target.value}); if (formErrors.character_name) setFormErrors(prev => ({...prev, character_name: ''})); }} placeholder="E.g. Maple" className={`w-full bg-white border-[3px] rounded-xl px-4 py-3 font-medium outline-none transition-colors ${formErrors.character_name ? 'border-red-400 focus:border-red-500 bg-red-50/30' : 'border-[#4a2c11] focus:border-[#E67E22]'}`} />
                             </div>
                             <div className="space-y-1.5 md:col-span-2">
                                 <label className="text-[11px] font-bold tracking-wider uppercase">Aesthetic & Theme</label>
@@ -316,9 +327,9 @@ export default function Commissions({ initialCommissions = [] }: { initialCommis
                             <div className="space-y-1.5">
                                 <label className="text-[11px] font-bold tracking-wider uppercase text-[#f08967] flex items-center gap-1">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-                                    Contact Email
+                                    Contact Email {formErrors.client_email && <span className="text-red-500 normal-case tracking-normal">— {formErrors.client_email}</span>}
                                 </label>
-                                <input type="email" value={form.client_email} onChange={e => setForm({...form, client_email: e.target.value})} placeholder="your_name@example.com" className="w-full bg-white border-[3px] border-[#4a2c11] rounded-xl px-4 py-3 font-medium outline-none focus:border-[#E67E22] transition-colors" />
+                                <input type="email" value={form.client_email} onChange={e => { setForm({...form, client_email: e.target.value}); if (formErrors.client_email) setFormErrors(prev => ({...prev, client_email: ''})); }} placeholder="your_name@example.com" className={`w-full bg-white border-[3px] rounded-xl px-4 py-3 font-medium outline-none transition-colors ${formErrors.client_email ? 'border-red-400 focus:border-red-500 bg-red-50/30' : 'border-[#4a2c11] focus:border-[#E67E22]'}`} />
                             </div>
                             <div className="space-y-1.5">
                                 <label className="text-[11px] font-bold tracking-wider uppercase flex items-center gap-1">
@@ -327,6 +338,12 @@ export default function Commissions({ initialCommissions = [] }: { initialCommis
                                 <input type="text" value={form.client_social} onChange={e => setForm({...form, client_social: e.target.value})} placeholder="@your_username" className="w-full bg-white border-[3px] border-[#4a2c11] rounded-xl px-4 py-3 font-medium outline-none focus:border-[#E67E22] transition-colors" />
                             </div>
                         </div>
+
+                        {submitError && (
+                            <div className="w-full mt-4 bg-red-50 text-red-600 font-bold text-[14px] rounded-xl py-3 px-4 border-[3px] border-red-300 text-center flex items-center justify-center gap-2">
+                                ⚠️ {submitError}
+                            </div>
+                        )}
 
                         {submitSuccess ? (
                             <div className="w-full mt-8 bg-[#edfbf3] text-[#2ecc71] font-bold text-lg rounded-xl py-4 border-[3px] border-[#2ecc71] shadow-brutal text-center flex items-center justify-center gap-2">
