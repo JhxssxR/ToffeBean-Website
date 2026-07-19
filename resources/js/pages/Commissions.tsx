@@ -91,7 +91,7 @@ export default function Commissions({ initialCommissions = [] }: { initialCommis
         if (!files) return;
         
         const validFiles: File[] = [];
-        const MAX_SIZE_MB = 5;
+        const MAX_SIZE_MB = 2;
         const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
         
         Array.from(files).forEach(file => {
@@ -291,7 +291,7 @@ export default function Commissions({ initialCommissions = [] }: { initialCommis
                             <div className="space-y-3 md:col-span-2">
                                 <label className="text-[11px] font-bold tracking-wider uppercase flex items-center gap-1">
                                     <Paperclip width={14} height={14} className="text-[#E67E22]" />
-                                    Reference Images (optional, max 5)
+                                    Reference Images (optional, max 5, up to 2MB each)
                                 </label>
                                 <input
                                     ref={fileInputRef}
