@@ -801,6 +801,74 @@ function ManageServices() {
     );
 }
 
+// ── Page Settings Helpers ─────────────────────────────────────────────
+const Section = ({ title, icon }: { title: string; icon: string }) => (
+    <div className="flex items-center gap-2 mb-5">
+        <span className="text-xl">{icon}</span>
+        <h3 className="font-black text-[16px] text-[#4a2c11]">{title}</h3>
+        <div className="flex-1 h-[2px] bg-[#fef1df] ml-2" />
+    </div>
+);
+
+const TextArea = ({ label, fieldKey, settings, handleChange }: { label: string; fieldKey: string; settings: any; handleChange: any }) => (
+    <div className="space-y-1.5">
+        <label className="text-[11px] font-bold uppercase tracking-wider text-[#4a2c11]/60">{label}</label>
+        <textarea
+            name={fieldKey}
+            rows={3}
+            value={settings[fieldKey] ?? ''}
+            onChange={e => handleChange(fieldKey, e.target.value)}
+            className="w-full border-[2px] border-[#4a2c11]/30 rounded-xl px-4 py-3 text-[13px] font-medium text-[#4a2c11] bg-[#fffcf7] focus:outline-none focus:border-[#E67E22] resize-none transition-colors"
+        />
+    </div>
+);
+
+const TextInput = ({ label, fieldKey, settings, handleChange }: { label: string; fieldKey: string; settings: any; handleChange: any }) => (
+    <div className="space-y-1.5">
+        <label className="text-[11px] font-bold uppercase tracking-wider text-[#4a2c11]/60">{label}</label>
+        <input
+            type="text"
+            name={fieldKey}
+            value={settings[fieldKey] ?? ''}
+            onChange={e => handleChange(fieldKey, e.target.value)}
+            className="w-full border-[2px] border-[#4a2c11]/30 rounded-xl px-4 py-3 text-[13px] font-medium text-[#4a2c11] bg-[#fffcf7] focus:outline-none focus:border-[#E67E22] transition-colors"
+        />
+    </div>
+);
+
+const ImageUpload = ({ label, fieldKey, circle = false, settings, previews, handleFileChange }: { label: string; fieldKey: string; circle?: boolean; settings: any; previews: any; handleFileChange: any }) => (
+    <div className="space-y-2">
+        <label className="text-[11px] font-bold uppercase tracking-wider text-[#4a2c11]/60">{label}</label>
+        <div className="flex items-center gap-5">
+            {/* Preview */}
+            <div className={`shrink-0 border-[3px] border-[#4a2c11] overflow-hidden bg-[#fffcf7] shadow-[3px_3px_0_0_#4a2c11] ${
+                circle ? 'w-24 h-24 rounded-full' : 'w-36 h-24 rounded-xl'
+            }`}>
+                <img
+                    src={previews[fieldKey] || settings[fieldKey] || '/images/placeholder.png'}
+                    alt={label}
+                    className="w-full h-full object-cover"
+                />
+            </div>
+            {/* Upload */}
+            <label className="flex-1 cursor-pointer">
+                <div className="border-[2px] border-dashed border-[#4a2c11]/30 rounded-xl p-4 text-center hover:border-[#E67E22] hover:bg-[#fff4e6] transition-all">
+                    <div className="text-2xl mb-1">📁</div>
+                    <p className="text-[12px] font-bold text-[#4a2c11]/60">Click to upload new image</p>
+                    <p className="text-[10px] text-[#4a2c11]/40 mt-0.5">JPG, PNG, WEBP — max 5MB</p>
+                </div>
+                <input
+                    type="file"
+                    name={fieldKey}
+                    accept="image/*"
+                    className="hidden"
+                    onChange={e => { if (e.target.files?.[0]) handleFileChange(fieldKey, e.target.files[0]); }}
+                />
+            </label>
+        </div>
+    </div>
+);
+
 // ── Page Settings ─────────────────────────────────────────────────────
 function PageSettings() {
     const [settings, setSettings] = useState<Record<string, string>>({});
@@ -839,73 +907,6 @@ function PageSettings() {
         setTimeout(() => setSuccess(false), 3000);
     };
 
-    const Section = ({ title, icon }: { title: string; icon: string }) => (
-        <div className="flex items-center gap-2 mb-5">
-            <span className="text-xl">{icon}</span>
-            <h3 className="font-black text-[16px] text-[#4a2c11]">{title}</h3>
-            <div className="flex-1 h-[2px] bg-[#fef1df] ml-2" />
-        </div>
-    );
-
-    const TextArea = ({ label, fieldKey }: { label: string; fieldKey: string }) => (
-        <div className="space-y-1.5">
-            <label className="text-[11px] font-bold uppercase tracking-wider text-[#4a2c11]/60">{label}</label>
-            <textarea
-                name={fieldKey}
-                rows={3}
-                value={settings[fieldKey] ?? ''}
-                onChange={e => handleChange(fieldKey, e.target.value)}
-                className="w-full border-[2px] border-[#4a2c11]/30 rounded-xl px-4 py-3 text-[13px] font-medium text-[#4a2c11] bg-[#fffcf7] focus:outline-none focus:border-[#E67E22] resize-none transition-colors"
-            />
-        </div>
-    );
-
-    const TextInput = ({ label, fieldKey }: { label: string; fieldKey: string }) => (
-        <div className="space-y-1.5">
-            <label className="text-[11px] font-bold uppercase tracking-wider text-[#4a2c11]/60">{label}</label>
-            <input
-                type="text"
-                name={fieldKey}
-                value={settings[fieldKey] ?? ''}
-                onChange={e => handleChange(fieldKey, e.target.value)}
-                className="w-full border-[2px] border-[#4a2c11]/30 rounded-xl px-4 py-3 text-[13px] font-medium text-[#4a2c11] bg-[#fffcf7] focus:outline-none focus:border-[#E67E22] transition-colors"
-            />
-        </div>
-    );
-
-    const ImageUpload = ({ label, fieldKey, circle = false }: { label: string; fieldKey: string; circle?: boolean }) => (
-        <div className="space-y-2">
-            <label className="text-[11px] font-bold uppercase tracking-wider text-[#4a2c11]/60">{label}</label>
-            <div className="flex items-center gap-5">
-                {/* Preview */}
-                <div className={`shrink-0 border-[3px] border-[#4a2c11] overflow-hidden bg-[#fffcf7] shadow-[3px_3px_0_0_#4a2c11] ${
-                    circle ? 'w-24 h-24 rounded-full' : 'w-36 h-24 rounded-xl'
-                }`}>
-                    <img
-                        src={previews[fieldKey] || settings[fieldKey] || '/images/placeholder.png'}
-                        alt={label}
-                        className="w-full h-full object-cover"
-                    />
-                </div>
-                {/* Upload */}
-                <label className="flex-1 cursor-pointer">
-                    <div className="border-[2px] border-dashed border-[#4a2c11]/30 rounded-xl p-4 text-center hover:border-[#E67E22] hover:bg-[#fff4e6] transition-all">
-                        <div className="text-2xl mb-1">📁</div>
-                        <p className="text-[12px] font-bold text-[#4a2c11]/60">Click to upload new image</p>
-                        <p className="text-[10px] text-[#4a2c11]/40 mt-0.5">JPG, PNG, WEBP — max 5MB</p>
-                    </div>
-                    <input
-                        type="file"
-                        name={fieldKey}
-                        accept="image/*"
-                        className="hidden"
-                        onChange={e => { if (e.target.files?.[0]) handleFileChange(fieldKey, e.target.files[0]); }}
-                    />
-                </label>
-            </div>
-        </div>
-    );
-
     return (
         <div className="w-full space-y-6">
             {success && (
@@ -924,11 +925,11 @@ function PageSettings() {
                         <Section title="Hero Section" icon="🦊" />
                         <div className="space-y-4">
                             <div className="grid grid-cols-2 gap-4">
-                                <TextInput label="Title Line 1" fieldKey="hero_title_1" />
-                                <TextInput label="Title Line 2 (orange)" fieldKey="hero_title_2" />
+                                <TextInput label="Title Line 1" fieldKey="hero_title_1" settings={settings} handleChange={handleChange} />
+                                <TextInput label="Title Line 2 (orange)" fieldKey="hero_title_2" settings={settings} handleChange={handleChange} />
                             </div>
-                            <TextArea label="Description" fieldKey="hero_description" />
-                            <ImageUpload label="Hero Banner Image" fieldKey="hero_image" />
+                            <TextArea label="Description" fieldKey="hero_description" settings={settings} handleChange={handleChange} />
+                            <ImageUpload label="Hero Banner Image" fieldKey="hero_image" settings={settings} previews={previews} handleFileChange={handleFileChange} />
                         </div>
                     </div>
 
@@ -936,8 +937,8 @@ function PageSettings() {
                     <div className="bg-white border-[3px] border-[#4a2c11] rounded-2xl p-6 shadow-[4px_4px_0px_#4a2c11]">
                         <Section title="Promo Banner" icon="😏" />
                         <div className="space-y-4">
-                            <TextInput label="Title" fieldKey="promo_title" />
-                            <TextArea label="Description" fieldKey="promo_description" />
+                            <TextInput label="Title" fieldKey="promo_title" settings={settings} handleChange={handleChange} />
+                            <TextArea label="Description" fieldKey="promo_description" settings={settings} handleChange={handleChange} />
                         </div>
                     </div>
                 </div>
@@ -947,13 +948,13 @@ function PageSettings() {
                     <Section title="About / Artist Section" icon="🧑‍🎨" />
                     <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                         <div className="space-y-4">
-                            <TextInput label="Title" fieldKey="about_title" />
-                            <TextArea label="Description Paragraph 1" fieldKey="about_description_1" />
-                            <TextArea label="Description Paragraph 2" fieldKey="about_description_2" />
+                            <TextInput label="Title" fieldKey="about_title" settings={settings} handleChange={handleChange} />
+                            <TextArea label="Description Paragraph 1" fieldKey="about_description_1" settings={settings} handleChange={handleChange} />
+                            <TextArea label="Description Paragraph 2" fieldKey="about_description_2" settings={settings} handleChange={handleChange} />
                         </div>
                         <div className="flex items-start">
                             <div className="w-full">
-                                <ImageUpload label="Artist Photo" fieldKey="about_image" circle={true} />
+                                <ImageUpload label="Artist Photo" fieldKey="about_image" circle={true} settings={settings} previews={previews} handleFileChange={handleFileChange} />
                             </div>
                         </div>
                     </div>
