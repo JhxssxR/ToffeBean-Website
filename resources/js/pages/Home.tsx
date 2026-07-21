@@ -23,7 +23,7 @@ function Hero() {
 
                 <div className="flex flex-wrap gap-4 pt-4">
                     <ToffeeButton variant="secondary" onClick={() => router.visit('/oc-planner')}>OC Design Planner &rarr;</ToffeeButton>
-                    <ToffeeButton variant="primary" onClick={() => router.visit('/commission')}>Commission &rarr;</ToffeeButton>
+                    <ToffeeButton variant="primary" onClick={() => router.visit('/commissions')}>Commission &rarr;</ToffeeButton>
                 </div>
             </div>
 
