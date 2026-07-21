@@ -907,50 +907,60 @@ function PageSettings() {
     );
 
     return (
-        <div className="max-w-3xl space-y-8">
+        <div className="w-full space-y-6">
             {success && (
                 <div className="bg-emerald-50 border-[2px] border-emerald-400 text-emerald-700 font-bold text-[13px] px-5 py-3 rounded-xl flex items-center gap-2">
                     ✅ Settings saved successfully!
                 </div>
             )}
 
-            <form onSubmit={handleSubmit} encType="multipart/form-data" className="space-y-8">
+            <form onSubmit={handleSubmit} encType="multipart/form-data" className="space-y-6">
 
-                {/* Hero Section */}
-                <div className="bg-white border-[3px] border-[#4a2c11] rounded-2xl p-6 shadow-[4px_4px_0px_#4a2c11]">
-                    <Section title="Hero Section" icon="🦊" />
-                    <div className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
-                            <TextInput label="Title Line 1" fieldKey="hero_title_1" />
-                            <TextInput label="Title Line 2 (orange)" fieldKey="hero_title_2" />
+                {/* Top row: Hero (left, larger) + Promo (right, smaller) */}
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+
+                    {/* Hero Section */}
+                    <div className="bg-white border-[3px] border-[#4a2c11] rounded-2xl p-6 shadow-[4px_4px_0px_#4a2c11]">
+                        <Section title="Hero Section" icon="🦊" />
+                        <div className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <TextInput label="Title Line 1" fieldKey="hero_title_1" />
+                                <TextInput label="Title Line 2 (orange)" fieldKey="hero_title_2" />
+                            </div>
+                            <TextArea label="Description" fieldKey="hero_description" />
+                            <ImageUpload label="Hero Banner Image" fieldKey="hero_image" />
                         </div>
-                        <TextArea label="Description" fieldKey="hero_description" />
-                        <ImageUpload label="Hero Banner Image" fieldKey="hero_image" />
+                    </div>
+
+                    {/* Promo Banner Section */}
+                    <div className="bg-white border-[3px] border-[#4a2c11] rounded-2xl p-6 shadow-[4px_4px_0px_#4a2c11]">
+                        <Section title="Promo Banner" icon="😏" />
+                        <div className="space-y-4">
+                            <TextInput label="Title" fieldKey="promo_title" />
+                            <TextArea label="Description" fieldKey="promo_description" />
+                        </div>
                     </div>
                 </div>
 
-                {/* Promo Banner Section */}
-                <div className="bg-white border-[3px] border-[#4a2c11] rounded-2xl p-6 shadow-[4px_4px_0px_#4a2c11]">
-                    <Section title="Promo Banner" icon="😏" />
-                    <div className="space-y-4">
-                        <TextInput label="Title" fieldKey="promo_title" />
-                        <TextArea label="Description" fieldKey="promo_description" />
-                    </div>
-                </div>
-
-                {/* About / Artist Section */}
+                {/* Bottom row: About / Artist (full width) */}
                 <div className="bg-white border-[3px] border-[#4a2c11] rounded-2xl p-6 shadow-[4px_4px_0px_#4a2c11]">
                     <Section title="About / Artist Section" icon="🧑‍🎨" />
-                    <div className="space-y-4">
-                        <TextInput label="Title" fieldKey="about_title" />
-                        <TextArea label="Description Paragraph 1" fieldKey="about_description_1" />
-                        <TextArea label="Description Paragraph 2" fieldKey="about_description_2" />
-                        <ImageUpload label="Artist Photo" fieldKey="about_image" circle={true} />
+                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                        <div className="space-y-4">
+                            <TextInput label="Title" fieldKey="about_title" />
+                            <TextArea label="Description Paragraph 1" fieldKey="about_description_1" />
+                            <TextArea label="Description Paragraph 2" fieldKey="about_description_2" />
+                        </div>
+                        <div className="flex items-start">
+                            <div className="w-full">
+                                <ImageUpload label="Artist Photo" fieldKey="about_image" circle={true} />
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 {/* Save button */}
-                <div className="flex items-center justify-end">
+                <div className="flex items-center justify-end pb-4">
                     <button
                         type="submit"
                         disabled={saving}
