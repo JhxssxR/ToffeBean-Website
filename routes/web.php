@@ -3,18 +3,22 @@
 use App\Http\Controllers\CommissionController;
 use App\Http\Controllers\OcPlanController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\SettingController;
 use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Models\Commission;
 use App\Models\OcPlan;
 use App\Models\Order;
 use App\Models\HomeService;
+use App\Models\Setting;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
     $services = HomeService::where('is_active', true)->orderBy('sort_order')->get();
+    $settings = Setting::all()->pluck('value', 'key');
     return Inertia::render('Home', [
-        'initialServices' => $services
+        'initialServices' => $services,
+        'settings' => $settings,
     ]);
 })->name('home');
 
@@ -42,6 +46,10 @@ Route::middleware(['auth', EnsureUserIsAdmin::class])->group(function () {
     Route::apiResource('api/commissions', CommissionController::class);
     Route::apiResource('api/home-services', \App\Http\Controllers\HomeServiceController::class);
     Route::apiResource('api/orders', OrderController::class)->except(['store']);
+    Route::post('api/settings', [SettingController::class, 'update'])->name('settings.update');
+    Route::get('api/settings-data', function () {
+        return response()->json(Setting::all()->pluck('value', 'key'));
+    });
 });
 
 // Allow anyone to create an order

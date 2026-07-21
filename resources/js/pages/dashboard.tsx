@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 // ── Icons ────────────────────────────────────────────────────────────
 const Icons = {
     Dashboard:  (p: any) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...p}><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>,
+    Settings:   (p: any) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...p}><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>,
     Orders:     (p: any) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect width="6" height="4" x="9" y="3" rx="1"/><path d="M9 12h6M9 16h4"/></svg>,
     Users:      (p: any) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>,
     Revenue:    (p: any) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...p}><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>,
@@ -43,6 +44,7 @@ const navItems = [
     { id: 'commissions', label: 'Commissions', icon: Icons.Palette },
     { id: 'services', label: 'Services', icon: Icons.Sticker },
     { id: 'clients', label: 'Clients', icon: Icons.Users },
+    { id: 'page-settings', label: 'Page Settings', icon: Icons.Settings },
 ];
 
 // ── Status Badge ──────────────────────────────────────────────────────
@@ -799,6 +801,169 @@ function ManageServices() {
     );
 }
 
+// ── Page Settings ─────────────────────────────────────────────────────
+function PageSettings() {
+    const [settings, setSettings] = useState<Record<string, string>>({});
+    const [saving, setSaving] = useState(false);
+    const [success, setSuccess] = useState(false);
+    const [previews, setPreviews] = useState<Record<string, string>>({});
+
+    useEffect(() => {
+        fetch('/api/settings-data')
+            .then(res => res.json())
+            .then(data => setSettings(data));
+    }, []);
+
+    const handleChange = (key: string, value: string) => {
+        setSettings(prev => ({ ...prev, [key]: value }));
+    };
+
+    const handleFileChange = (key: string, file: File) => {
+        const url = URL.createObjectURL(file);
+        setPreviews(prev => ({ ...prev, [key]: url }));
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setSaving(true);
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+        const form = e.target as HTMLFormElement;
+        const formData = new FormData(form);
+        await fetch('/api/settings', {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': csrfToken },
+            body: formData,
+        });
+        setSaving(false);
+        setSuccess(true);
+        setTimeout(() => setSuccess(false), 3000);
+    };
+
+    const Section = ({ title, icon }: { title: string; icon: string }) => (
+        <div className="flex items-center gap-2 mb-5">
+            <span className="text-xl">{icon}</span>
+            <h3 className="font-black text-[16px] text-[#4a2c11]">{title}</h3>
+            <div className="flex-1 h-[2px] bg-[#fef1df] ml-2" />
+        </div>
+    );
+
+    const TextArea = ({ label, fieldKey }: { label: string; fieldKey: string }) => (
+        <div className="space-y-1.5">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-[#4a2c11]/60">{label}</label>
+            <textarea
+                name={fieldKey}
+                rows={3}
+                value={settings[fieldKey] ?? ''}
+                onChange={e => handleChange(fieldKey, e.target.value)}
+                className="w-full border-[2px] border-[#4a2c11]/30 rounded-xl px-4 py-3 text-[13px] font-medium text-[#4a2c11] bg-[#fffcf7] focus:outline-none focus:border-[#E67E22] resize-none transition-colors"
+            />
+        </div>
+    );
+
+    const TextInput = ({ label, fieldKey }: { label: string; fieldKey: string }) => (
+        <div className="space-y-1.5">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-[#4a2c11]/60">{label}</label>
+            <input
+                type="text"
+                name={fieldKey}
+                value={settings[fieldKey] ?? ''}
+                onChange={e => handleChange(fieldKey, e.target.value)}
+                className="w-full border-[2px] border-[#4a2c11]/30 rounded-xl px-4 py-3 text-[13px] font-medium text-[#4a2c11] bg-[#fffcf7] focus:outline-none focus:border-[#E67E22] transition-colors"
+            />
+        </div>
+    );
+
+    const ImageUpload = ({ label, fieldKey, circle = false }: { label: string; fieldKey: string; circle?: boolean }) => (
+        <div className="space-y-2">
+            <label className="text-[11px] font-bold uppercase tracking-wider text-[#4a2c11]/60">{label}</label>
+            <div className="flex items-center gap-5">
+                {/* Preview */}
+                <div className={`shrink-0 border-[3px] border-[#4a2c11] overflow-hidden bg-[#fffcf7] shadow-[3px_3px_0_0_#4a2c11] ${
+                    circle ? 'w-24 h-24 rounded-full' : 'w-36 h-24 rounded-xl'
+                }`}>
+                    <img
+                        src={previews[fieldKey] || settings[fieldKey] || '/images/placeholder.png'}
+                        alt={label}
+                        className="w-full h-full object-cover"
+                    />
+                </div>
+                {/* Upload */}
+                <label className="flex-1 cursor-pointer">
+                    <div className="border-[2px] border-dashed border-[#4a2c11]/30 rounded-xl p-4 text-center hover:border-[#E67E22] hover:bg-[#fff4e6] transition-all">
+                        <div className="text-2xl mb-1">📁</div>
+                        <p className="text-[12px] font-bold text-[#4a2c11]/60">Click to upload new image</p>
+                        <p className="text-[10px] text-[#4a2c11]/40 mt-0.5">JPG, PNG, WEBP — max 5MB</p>
+                    </div>
+                    <input
+                        type="file"
+                        name={fieldKey}
+                        accept="image/*"
+                        className="hidden"
+                        onChange={e => { if (e.target.files?.[0]) handleFileChange(fieldKey, e.target.files[0]); }}
+                    />
+                </label>
+            </div>
+        </div>
+    );
+
+    return (
+        <div className="max-w-3xl space-y-8">
+            {success && (
+                <div className="bg-emerald-50 border-[2px] border-emerald-400 text-emerald-700 font-bold text-[13px] px-5 py-3 rounded-xl flex items-center gap-2">
+                    ✅ Settings saved successfully!
+                </div>
+            )}
+
+            <form onSubmit={handleSubmit} encType="multipart/form-data" className="space-y-8">
+
+                {/* Hero Section */}
+                <div className="bg-white border-[3px] border-[#4a2c11] rounded-2xl p-6 shadow-[4px_4px_0px_#4a2c11]">
+                    <Section title="Hero Section" icon="🦊" />
+                    <div className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                            <TextInput label="Title Line 1" fieldKey="hero_title_1" />
+                            <TextInput label="Title Line 2 (orange)" fieldKey="hero_title_2" />
+                        </div>
+                        <TextArea label="Description" fieldKey="hero_description" />
+                        <ImageUpload label="Hero Banner Image" fieldKey="hero_image" />
+                    </div>
+                </div>
+
+                {/* Promo Banner Section */}
+                <div className="bg-white border-[3px] border-[#4a2c11] rounded-2xl p-6 shadow-[4px_4px_0px_#4a2c11]">
+                    <Section title="Promo Banner" icon="😏" />
+                    <div className="space-y-4">
+                        <TextInput label="Title" fieldKey="promo_title" />
+                        <TextArea label="Description" fieldKey="promo_description" />
+                    </div>
+                </div>
+
+                {/* About / Artist Section */}
+                <div className="bg-white border-[3px] border-[#4a2c11] rounded-2xl p-6 shadow-[4px_4px_0px_#4a2c11]">
+                    <Section title="About / Artist Section" icon="🧑‍🎨" />
+                    <div className="space-y-4">
+                        <TextInput label="Title" fieldKey="about_title" />
+                        <TextArea label="Description Paragraph 1" fieldKey="about_description_1" />
+                        <TextArea label="Description Paragraph 2" fieldKey="about_description_2" />
+                        <ImageUpload label="Artist Photo" fieldKey="about_image" circle={true} />
+                    </div>
+                </div>
+
+                {/* Save button */}
+                <div className="flex items-center justify-end">
+                    <button
+                        type="submit"
+                        disabled={saving}
+                        className="flex items-center gap-2 bg-[#E67E22] text-white font-black px-8 py-3 rounded-xl border-[3px] border-[#4a2c11] shadow-[4px_4px_0px_#4a2c11] hover:-translate-y-0.5 transition-transform disabled:opacity-60 disabled:cursor-not-allowed text-[14px]"
+                    >
+                        {saving ? '⏳ Saving...' : '💾 Save All Changes'}
+                    </button>
+                </div>
+            </form>
+        </div>
+    );
+}
+
 // ── Main Page ─────────────────────────────────────────────────────────
 export default function AdminDashboard() {
     const [activeTab, setActiveTab] = useState('overview');
@@ -865,7 +1030,7 @@ export default function AdminDashboard() {
                 {/* Top bar */}
                 <header className="flex items-center justify-between px-8 py-4 bg-white border-b-[3px] border-[#4a2c11] sticky top-0 z-10">
                     <div>
-                        <h1 className="font-black text-[18px] text-[#4a2c11] capitalize">{activeTab === 'overview' ? 'Dashboard Overview' : activeTab === 'commissions' ? 'Manage Commissions' : activeTab === 'services' ? 'Manage Home Services' : activeTab === 'orders' ? 'Manage Orders' : activeTab === 'clients' ? 'Client Directory' : activeTab}</h1>
+                        <h1 className="font-black text-[18px] text-[#4a2c11] capitalize">{activeTab === 'overview' ? 'Dashboard Overview' : activeTab === 'commissions' ? 'Manage Commissions' : activeTab === 'services' ? 'Manage Home Services' : activeTab === 'orders' ? 'Manage Orders' : activeTab === 'clients' ? 'Client Directory' : activeTab === 'page-settings' ? 'Page Settings' : activeTab}</h1>
                         <p className="text-[11px] font-medium text-[#4a2c11]/50 mt-0.5">Welcome back, Admin 🍁</p>
                     </div>
                     <div className="flex items-center gap-3">
@@ -924,6 +1089,8 @@ export default function AdminDashboard() {
                     {activeTab === 'commissions' && <ManageCommissions />}
 
                     {activeTab === 'services' && <ManageServices />}
+
+                    {activeTab === 'page-settings' && <PageSettings />}
 
                     {activeTab === 'overview' && (
                         <>

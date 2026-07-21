@@ -4,7 +4,20 @@ import { ToffeeNavbar } from '@/components/ToffeeNavbar';
 import { Head, router } from '@inertiajs/react';
 import React from 'react';
 
-function Hero() {
+interface HomeSettings {
+    hero_title_1?: string;
+    hero_title_2?: string;
+    hero_description?: string;
+    hero_image?: string;
+    promo_title?: string;
+    promo_description?: string;
+    about_title?: string;
+    about_description_1?: string;
+    about_description_2?: string;
+    about_image?: string;
+}
+
+function Hero({ settings }: { settings: HomeSettings }) {
     return (
         <section className="flex flex-col md:flex-row items-center gap-12 pt-12 pb-8">
             <div className="flex-1 space-y-6">
@@ -13,12 +26,12 @@ function Hero() {
                 </div>
 
                 <h1 className="text-5xl md:text-6xl font-bold leading-[1.15] tracking-tight">
-                    <span className="text-[#4a2c11]">Cute illustrations,</span><br />
-                    <span className="text-[#E67E22]">creativity filled!</span>
+                    <span className="text-[#4a2c11]">{settings.hero_title_1 ?? 'Cute illustrations,'}</span><br />
+                    <span className="text-[#E67E22]">{settings.hero_title_2 ?? 'creativity filled!'}</span>
                 </h1>
 
                 <p className="text-base font-medium leading-relaxed max-w-md text-[#4a2c11]/80">
-                    Welcome to the cozy autumn corner of <span className="text-[#4a2c11] font-bold">**ToffeeBean**</span>! We specialize in custom kiss-cut sticker sheets, character guides, and expressive illustrations made to help clients express their Original Characters (OCs) affordably.
+                    {settings.hero_description ?? 'Welcome to the cozy autumn corner of ToffeeBean!'}
                 </p>
 
                 <div className="flex flex-wrap gap-4 pt-4">
@@ -29,7 +42,7 @@ function Hero() {
 
             <div className="flex-1 w-full">
                 <div className="rounded-[2rem] border-[4px] border-[#4a2c11] shadow-brutal-lg overflow-hidden bg-[#fffdfa] w-full h-[320px] md:h-[400px]">
-                    <img src="/images/hero-banner.png" alt="Autumn Sketch Club" className="w-full h-full object-cover" />
+                    <img src={settings.hero_image ?? '/images/hero-banner.png'} alt="Autumn Sketch Club" className="w-full h-full object-cover" />
                 </div>
             </div>
         </section>
@@ -176,17 +189,17 @@ function Collections({ items = [] }: { items?: HomeServiceItem[] }) {
     );
 }
 
-function PromoBanner() {
+function PromoBanner({ settings }: { settings: HomeSettings }) {
     return (
         <section className="bg-[#faead6] border-[4px] border-[#4a2c11] rounded-[2rem] p-8 md:p-10 shadow-brutal-lg relative overflow-hidden mt-16">
             <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
                 <div className="max-w-3xl space-y-4">
                     <h2 className="text-2xl font-bold flex items-center gap-2">
-                        Is this what you're here for? <span className="text-2xl">😏</span>
+                        {settings.promo_title ?? "Is this what you're here for? 😏"}
                     </h2>
                     <div className="bg-[#fef1df]/60 p-5 rounded-xl">
                         <p className="text-[15px] font-medium leading-relaxed text-[#4a2c11]/80">
-                            It's <span className="text-[#4a2c11] font-bold">**HER**</span>. The calico, slightly mischievous custom feline squadmate plushie. Equipped with custom bones stitching details, skeletal pattern elements, and multiple accessories. Fully available now for online Preorder reservations!
+                            {settings.promo_description ?? ""}
                         </p>
                     </div>
                 </div>
@@ -199,12 +212,12 @@ function PromoBanner() {
     );
 }
 
-function About() {
+function About({ settings }: { settings: HomeSettings }) {
     return (
         <section className="bg-white border-[4px] border-[#4a2c11] rounded-[2rem] p-8 md:p-12 shadow-brutal-lg flex flex-col md:flex-row gap-12 items-center mt-16 mb-24">
             <div className="relative shrink-0">
                 <div className="w-56 h-56 rounded-full border-[4px] border-[#4a2c11] shadow-brutal overflow-hidden bg-[#fffcf7]">
-                    <img src="/images/artist.jpg" alt="Toffee" className="w-full h-full object-cover" />
+                    <img src={settings.about_image ?? '/images/artist.jpg'} alt="Toffee" className="w-full h-full object-cover" />
                 </div>
                 <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-[#ffce54] text-[#4a2c11] text-[11px] font-bold px-5 py-1.5 rounded-full border-[3px] border-[#4a2c11] tracking-wider shadow-brutal-sm">
                     ARTIST
@@ -213,15 +226,11 @@ function About() {
 
             <div className="space-y-5">
                 <h2 className="text-3xl font-bold uppercase text-[#E67E22] flex items-center gap-2">
-                    HEY THERE! I'M TOFFEE! <span className="text-2xl">🧑‍🎨</span>
+                    {settings.about_title ?? "HEY THERE! I'M TOFFEE! 🧑‍🎨"}
                 </h2>
                 <div className="space-y-4 text-[15px] font-medium text-[#4a2c11]/80 leading-relaxed">
-                    <p>
-                        I'm the artist and organizer behind ToffeeBean! I create soft, super-colorful, and character-packed digital illustrations inspired by kemono and cute pastel cartoon designs. My absolute core goal is to make custom illustrations that feel lively, highly expressive, emotional, and easy to connect with.
-                    </p>
-                    <p>
-                        Whether you're looking for high-quality stickers to display on a sticker book, cute acrylic keychains, or planning the design properties for your very first original character (OC) with a full reference guide commission sheet, I can help you realize it beautifully in our warm autumn workspace style!
-                    </p>
+                    <p>{settings.about_description_1 ?? ""}</p>
+                    <p>{settings.about_description_2 ?? ""}</p>
                 </div>
 
                 <div className="flex flex-wrap gap-3 pt-3">
@@ -234,7 +243,7 @@ function About() {
     );
 }
 
-export default function Home({ initialServices }: { initialServices: HomeServiceItem[] }) {
+export default function Home({ initialServices, settings = {} }: { initialServices: HomeServiceItem[], settings: HomeSettings }) {
     return (
         <div className="min-h-screen flex flex-col font-sans text-[#4a2c11] bg-[#fef1df] autumn-overlay-bg">
             <Head title="Home" />
@@ -249,10 +258,10 @@ export default function Home({ initialServices }: { initialServices: HomeService
             }}></div>
 
             <main className="max-w-[1100px] mx-auto px-6 w-full flex-1">
-                <Hero />
+                <Hero settings={settings} />
                 <Collections items={initialServices} />
-                <PromoBanner />
-                <About />
+                <PromoBanner settings={settings} />
+                <About settings={settings} />
             </main>
 
             <ToffeeFooter />
