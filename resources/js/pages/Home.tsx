@@ -25,9 +25,9 @@ function Hero({ settings }: { settings: HomeSettings }) {
                     🍁 Digital Art & Stickers Workshop
                 </div>
 
-                <h1 className="text-5xl md:text-6xl font-bold leading-[1.15] tracking-tight">
-                    <span className="text-[#4a2c11]">{settings.hero_title_1 ?? 'Cute illustrations,'}</span><br />
-                    <span className="text-[#E67E22]">{settings.hero_title_2 ?? 'creativity filled!'}</span>
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.15] tracking-tight text-balance">
+                    <span className="text-[#4a2c11] block">{settings.hero_title_1 ?? 'Cute illustrations,'}</span>
+                    <span className="text-[#E67E22] block">{settings.hero_title_2 ?? 'creativity filled!'}</span>
                 </h1>
 
                 <p className="text-base font-medium leading-relaxed max-w-md text-[#4a2c11]/80">
