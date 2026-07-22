@@ -27,5 +27,8 @@ USER www-data
 # Install PHP dependencies (production)
 RUN composer install --no-dev --optimize-autoloader
 
+# Create the storage symlink so public/storage points to storage/app/public
+RUN php artisan storage:link
+
 # Note: We do NOT run config:cache here, because it will lock in empty build-time variables. 
 # Laravel will read your Render environment variables dynamically at runtime!
