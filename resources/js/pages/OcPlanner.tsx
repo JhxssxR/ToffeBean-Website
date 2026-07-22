@@ -26,10 +26,10 @@ export default function OcPlanner() {
     const auth = props.auth || { user: null };
 
     const speciesOptions = [
-        'Forest Red Fox', 'Calico Cat',
-        'Mischievous Squirrel', 'Sleepy Sea Otter',
-        'Fluffy Red Panda', 'Chubby Shiba Inu',
-        'Other custom…',
+        'Fox', 'Cat',
+        'Squirrel', 'Sea Otter',
+        'Red Panda', 'Shiba Inu',
+        'Dog', 'Other custom…',
     ];
 
     const vibeOptions = [
@@ -42,7 +42,7 @@ export default function OcPlanner() {
         'Other custom…',
     ];
 
-    const [selectedSpecies, setSelectedSpecies] = useState('Forest Red Fox');
+    const [selectedSpecies, setSelectedSpecies] = useState('Fox');
     const [customSpecies, setCustomSpecies]     = useState('');
     const [vibe, setVibe]       = useState('Pumpkin Spice Barista');
     const [customVibe, setCustomVibe]           = useState('');
@@ -153,7 +153,7 @@ export default function OcPlanner() {
                 <span style={{position:'absolute',top:'70%',right:'-1%',fontSize:'1.1rem',opacity:0.35,transform:'rotate(-8deg)',pointerEvents:'none'}}>✦</span>
 
                 <div className="text-center pt-10 pb-8">
-                    <h1 className="text-3xl font-bold text-[#4a2c11]">Cozy OC Planner 🍂</h1>
+                    <h1 className="text-3xl font-bold text-[#4a2c11]">OC Planner 🍂</h1>
                     <p className="text-[14px] font-medium text-[#4a2c11]/70 mt-2 max-w-md mx-auto leading-relaxed">
                         Co-create your dream Original Character (OC) or sticker collection! Describe fluffy details, and let Toffee sketch out initial concepts and details!
                     </p>
