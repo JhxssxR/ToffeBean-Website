@@ -46,7 +46,6 @@ export default function Login({ status, canResetPassword }: LoginProps) {
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        if (!validate()) return;
         post('/login', {
             onFinish: () => reset('password'),
         });
@@ -96,9 +95,9 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                             <span className="flex-1 py-2.5 text-center font-bold text-[13px] bg-gradient-to-r from-[#D2691E] to-[#E67E22] text-white cursor-default">
                                 Resident Login
                             </span>
-                            <Link href="/register" className="flex-1 py-2.5 text-center font-bold text-[13px] bg-white text-[#4a2c11] hover:bg-[#fff8f0] transition-colors">
+                            <a href="/register" className="flex-1 py-2.5 text-center font-bold text-[13px] bg-white text-[#4a2c11] hover:bg-[#fff8f0] transition-colors block">
                                 Create Account
-                            </Link>
+                            </a>
                         </div>
 
                         {/* Login Form */}
@@ -112,12 +111,13 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                     id="login-email"
                                     type="email"
                                     value={data.email}
-                                    onChange={(e) => { setData('email', e.target.value); setClientErrors(prev => ({ ...prev, email: undefined })); }}
+                                    onChange={(e) => setData('email', e.target.value)}
                                     placeholder="E.g., toffee@toffeebean.art"
-                                    className={`w-full border-[2px] rounded-xl px-4 py-2.5 text-[13px] font-semibold text-[#4a2c11] bg-white focus:outline-none focus:border-[#4a2c11] transition-colors placeholder:text-[#4a2c11]/30 ${(errors.email || clientErrors.email) ? 'border-red-400' : 'border-[#d4b896]'}`}
+                                    className={`w-full border-[2px] rounded-xl px-4 py-2.5 text-[13px] font-semibold text-[#4a2c11] bg-white focus:outline-none focus:border-[#4a2c11] transition-colors placeholder:text-[#4a2c11]/30 ${errors.email ? 'border-red-400' : 'border-[#d4b896]'}`}
                                     autoFocus
+                                    required
                                 />
-                                {(clientErrors.email || errors.email) && <p className="text-red-500 text-[11px] font-semibold mt-1">{clientErrors.email || errors.email}</p>}
+                                {errors.email && <p className="text-red-500 text-[11px] font-semibold mt-1">{errors.email}</p>}
                             </div>
 
                             <div>
@@ -130,9 +130,10 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                         id="login-password"
                                         type={showPassword ? 'text' : 'password'}
                                         value={data.password}
-                                        onChange={(e) => { setData('password', e.target.value); setClientErrors(prev => ({ ...prev, password: undefined })); }}
+                                        onChange={(e) => setData('password', e.target.value)}
                                         placeholder="••••••••"
-                                        className={`w-full border-[2px] rounded-xl px-4 py-2.5 pr-11 text-[13px] font-semibold text-[#4a2c11] bg-white focus:outline-none focus:border-[#4a2c11] transition-colors placeholder:text-[#4a2c11]/30 ${(errors.password || clientErrors.password) ? 'border-red-400' : 'border-[#d4b896]'}`}
+                                        className={`w-full border-[2px] rounded-xl px-4 py-2.5 pr-11 text-[13px] font-semibold text-[#4a2c11] bg-white focus:outline-none focus:border-[#4a2c11] transition-colors placeholder:text-[#4a2c11]/30 ${errors.password ? 'border-red-400' : 'border-[#d4b896]'}`}
+                                        required
                                     />
                                     <button
                                         type="button"
@@ -142,7 +143,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                         {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                                     </button>
                                 </div>
-                                {(clientErrors.password || errors.password) && <p className="text-red-500 text-[11px] font-semibold mt-1">{clientErrors.password || errors.password}</p>}
+                                {errors.password && <p className="text-red-500 text-[11px] font-semibold mt-1">{errors.password}</p>}
                                 
                                 {canResetPassword && (
                                     <div className="flex justify-end mt-1">
