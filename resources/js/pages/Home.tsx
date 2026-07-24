@@ -42,7 +42,7 @@ function Hero({ settings }: { settings: HomeSettings }) {
 
             <div className="flex-1 w-full">
                 <div className="rounded-[2rem] border-[4px] border-[#4a2c11] shadow-brutal-lg overflow-hidden bg-[#fffdfa] w-full h-[320px] md:h-[400px]">
-                    <img src={settings.hero_image ?? '/images/hero-banner.png'} alt="Autumn Sketch Club" className="w-full h-full object-cover" />
+                    <img src={settings.hero_image ?? '/images/hero-banner.png'} alt="Autumn Sketch Club" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = '/images/hero-banner.png'; }} />
                 </div>
             </div>
         </section>
@@ -217,7 +217,7 @@ function About({ settings }: { settings: HomeSettings }) {
         <section className="bg-white border-[4px] border-[#4a2c11] rounded-[2rem] p-8 md:p-12 shadow-brutal-lg flex flex-col md:flex-row gap-12 items-center mt-16 mb-24">
             <div className="relative shrink-0">
                 <div className="w-56 h-56 rounded-full border-[4px] border-[#4a2c11] shadow-brutal overflow-hidden bg-[#fffcf7]">
-                    <img src={settings.about_image ?? '/images/artist.jpg'} alt="Toffee" className="w-full h-full object-cover" />
+                    <img src={settings.about_image ?? '/images/artist.jpg'} alt="Toffee" className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = '/images/artist.jpg'; }} />
                 </div>
                 <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-[#ffce54] text-[#4a2c11] text-[11px] font-bold px-5 py-1.5 rounded-full border-[3px] border-[#4a2c11] tracking-wider shadow-brutal-sm">
                     ARTIST
