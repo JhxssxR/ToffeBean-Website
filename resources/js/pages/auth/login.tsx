@@ -53,6 +53,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
     };
 
     const handleGoogleLogin = async () => {
+        if (!supabase) return;
         await supabase.auth.signInWithOAuth({
             provider: 'google',
         });
