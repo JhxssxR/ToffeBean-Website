@@ -4,6 +4,8 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
+ENV VITE_SUPABASE_URL="https://rxghookgdrfopamqsknk.supabase.co"
+ENV VITE_SUPABASE_ANON_KEY="sb_publishable_Ip8ERkWsz8hb9q6g8Njrbw_ZRRPo2YF"
 RUN npm run build
 
 # Stage 2: Serve PHP/Laravel App
