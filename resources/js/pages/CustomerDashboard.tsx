@@ -2,7 +2,7 @@ import { ToffeeNavbar } from '@/components/ToffeeNavbar';
 import { ToffeeFooter } from '@/components/ToffeeFooter';
 import { Head, Link, usePage } from '@inertiajs/react';
 import React, { useState } from 'react';
-import { ClipboardList, Package, Clock, CheckCircle, Sparkles, Pencil, ArrowRight, Eye, X } from 'lucide-react';
+import { ClipboardList, Package, Clock, CheckCircle, Sparkles, Pencil, ArrowRight, Eye, X, Bell } from 'lucide-react';
 
 interface Order {
     id: number;
@@ -16,6 +16,8 @@ interface Order {
     notes: string;
     client_social: string;
     commission?: { title: string; avatar: string };
+    progress_image?: string | null;
+    progress_message?: string | null;
 }
 
 interface OcPlan {
@@ -57,6 +59,8 @@ export default function CustomerDashboard() {
     const avatarEmoji = user.avatar || '🦊';
     const avatarColor = avatarBgColors[avatarEmoji] || '#f08967';
     const [viewOrder, setViewOrder] = useState<Order | null>(null);
+
+    const ordersWithUpdates = orders.filter(o => o.status === 'In Progress' && (o.progress_image || o.progress_message));
 
     const getStatusColor = (status: string) => {
         switch (status) {
@@ -140,6 +144,19 @@ export default function CustomerDashboard() {
                     </div>
                 </div>
 
+                {/* NOTIFICATION BANNER */}
+                {ordersWithUpdates.length > 0 && (
+                    <div className="bg-[#fff4e6] border-[3px] border-[#E67E22] rounded-[1.5rem] p-4 md:p-5 mb-8 flex items-start sm:items-center gap-4" style={{ boxShadow: '4px 4px 0px 0px rgba(230, 126, 34, 1)' }}>
+                        <div className="w-12 h-12 rounded-full bg-[#E67E22] text-white flex items-center justify-center shrink-0 border-[2px] border-[#4a2c11] animate-bounce">
+                            <Bell size={24} />
+                        </div>
+                        <div className="flex-1">
+                            <h3 className="font-bold text-[#E67E22] text-[15px] mb-0.5">You have {ordersWithUpdates.length} order{ordersWithUpdates.length !== 1 ? 's' : ''} with new progress!</h3>
+                            <p className="text-[13px] font-medium text-[#4a2c11]/80">The artist has uploaded a sneak peek or message for your in-progress commissions.</p>
+                        </div>
+                    </div>
+                )}
+
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     
                     {/* LEFT COLUMN: Orders (spans 2 cols) */}
@@ -186,7 +203,14 @@ export default function CustomerDashboard() {
                                                         </p>
                                                     </div>
                                                 </div>
-                                                <p className="font-bold text-lg text-[#E67E22]">₱{order.total_price}</p>
+                                                <div className="text-right flex flex-col items-end gap-2">
+                                                    <p className="font-bold text-lg text-[#E67E22]">₱{order.total_price}</p>
+                                                    {ordersWithUpdates.some(u => u.id === order.id) && (
+                                                        <span className="inline-flex items-center gap-1 bg-[#E67E22] text-white text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full border border-[#4a2c11]">
+                                                            <Sparkles size={10} /> Update!
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </div>
                                             
                                             <div className="flex items-center justify-between pt-3 border-t-2 border-[#fef1df]">
@@ -364,6 +388,36 @@ export default function CustomerDashboard() {
                                     <p className="text-xl font-black text-[#E67E22]">₱{viewOrder.total_price}</p>
                                 </div>
                             </div>
+                            
+                            {/* PROGRESS UPDATE SECTION IN MODAL */}
+                            {viewOrder.status === 'In Progress' && (viewOrder.progress_image || viewOrder.progress_message) && (
+                                <div className="mt-6 pt-6 border-t-[2px] border-dashed border-[#d4b896]">
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <Sparkles width={18} height={18} className="text-[#E67E22]" />
+                                        <h4 className="font-black text-[14px] text-[#E67E22] uppercase tracking-wider">Latest Progress Update</h4>
+                                    </div>
+                                    <div className="bg-[#fff4e6] border-[2px] border-[#E67E22]/30 rounded-xl p-4">
+                                        {viewOrder.progress_image && (
+                                            <div className="mb-4">
+                                                <img 
+                                                    src={`/storage/${viewOrder.progress_image}`} 
+                                                    alt="Progress Snapshot" 
+                                                    className="w-full max-h-[300px] object-contain rounded-lg border-[2px] border-[#4a2c11] bg-white"
+                                                />
+                                            </div>
+                                        )}
+                                        {viewOrder.progress_message && (
+                                            <div className="bg-white border-[2px] border-[#4a2c11]/10 rounded-lg p-3">
+                                                <p className="text-[10px] font-bold text-[#E67E22] uppercase tracking-wider mb-1">Artist Note</p>
+                                                <p className="text-[13px] font-medium text-[#4a2c11] whitespace-pre-wrap leading-relaxed">
+                                                    "{viewOrder.progress_message}"
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+
                         </div>
                     </div>
                 </div>
