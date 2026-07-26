@@ -18,6 +18,8 @@ class Order extends Model
         'addons',
         'total_price',
         'status',
+        'progress_image',
+        'progress_message',
     ];
 
     protected $casts = [

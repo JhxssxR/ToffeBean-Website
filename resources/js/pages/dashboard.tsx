@@ -20,7 +20,14 @@ const Icons = {
     Trash:      (p: any) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...p}><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>,
     Logout:     (p: any) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>,
     Notification:(p: any) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>,
+    Upload:      (p: any) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>,
+    Image:       (p: any) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...p}><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>,
+    Send:        (p: any) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" {...p}><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>,
 };
+
+// ── Status Sequence ───────────────────────────────────────────────────
+const STATUS_SEQUENCE = ['Waiting', 'In Progress', 'Completed'] as const;
+const getStatusRank = (status: string) => STATUS_SEQUENCE.indexOf(status as any);
 
 // ── Mock Data ─────────────────────────────────────────────────────────
 const recentOrders: any[] = [];
@@ -130,7 +137,7 @@ function StatCard({ stat }: { stat: typeof stats[0] }) {
 }
 
 // ── Orders Table ──────────────────────────────────────────────────────
-function OrdersTable({ data, onStatusChange, onDelete, onView }: { data: any[], onStatusChange?: (id: number, status: string) => void, onDelete?: (id: number) => void, onView?: (order: any) => void }) {
+function OrdersTable({ data, onStatusChange, onDelete, onView }: { data: any[], onStatusChange?: (id: number, status: string, order: any) => void, onDelete?: (id: number) => void, onView?: (order: any) => void }) {
     const formatMoney = (amount: number) => amount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
 
     return (
@@ -162,7 +169,9 @@ function OrdersTable({ data, onStatusChange, onDelete, onView }: { data: any[], 
                                     No orders found.
                                 </td>
                             </tr>
-                        ) : data.map((order, i) => (
+                        ) : data.map((order, i) => {
+                            const currentRank = getStatusRank(order.status);
+                            return (
                             <tr key={order.id} className={`border-t border-[#fef1df] hover:bg-[#fffcf7] transition-colors ${i % 2 === 0 ? '' : 'bg-[#fffcf7]/40'}`}>
                                 <td className="px-6 py-3.5 font-bold text-[#4a2c11]">#{order.id}</td>
                                 <td className="px-4 py-3.5">
@@ -186,11 +195,13 @@ function OrdersTable({ data, onStatusChange, onDelete, onView }: { data: any[], 
                                             <select 
                                                 className="text-[11px] font-bold bg-white border border-[#4a2c11]/30 rounded-lg px-1.5 py-1 outline-none focus:border-[#E67E22] h-7"
                                                 value={order.status} 
-                                                onChange={e => onStatusChange(order.id, e.target.value)}
+                                                onChange={e => onStatusChange(order.id, e.target.value, order)}
                                             >
-                                                <option value="Waiting">Waiting</option>
-                                                <option value="In Progress">In Progress</option>
-                                                <option value="Completed">Completed</option>
+                                                {STATUS_SEQUENCE.map(s => (
+                                                    <option key={s} value={s} disabled={getStatusRank(s) < currentRank}>
+                                                        {s}{getStatusRank(s) < currentRank ? ' ✗' : ''}
+                                                    </option>
+                                                ))}
                                             </select>
                                         )}
                                         {onDelete && (
@@ -201,9 +212,111 @@ function OrdersTable({ data, onStatusChange, onDelete, onView }: { data: any[], 
                                     </div>
                                 </td>
                             </tr>
-                        ))}
+                            );
+                        })}
                     </tbody>
                 </table>
+            </div>
+        </div>
+    );
+}
+
+// ── Progress Update Modal ─────────────────────────────────────────────
+function ProgressUpdateModal({ order, onClose, onSubmit }: { order: any, onClose: () => void, onSubmit: (id: number, file: File | null, message: string) => void }) {
+    const [file, setFile] = useState<File | null>(null);
+    const [preview, setPreview] = useState<string | null>(null);
+    const [message, setMessage] = useState('');
+    const [sending, setSending] = useState(false);
+
+    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const selected = e.target.files?.[0] || null;
+        setFile(selected);
+        if (selected) {
+            setPreview(URL.createObjectURL(selected));
+        } else {
+            setPreview(null);
+        }
+    };
+
+    const handleSubmit = () => {
+        setSending(true);
+        onSubmit(order.id, file, message);
+    };
+
+    return (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={onClose}>
+            <div className="bg-[#fef1df] border-[3px] border-[#4a2c11] rounded-2xl shadow-[4px_4px_0px_#4a2c11] max-w-lg w-full relative" onClick={e => e.stopPropagation()}>
+                {/* Header */}
+                <div className="px-6 py-4 border-b-[2px] border-[#d4b896] flex items-center justify-between">
+                    <h3 className="font-black text-[#4a2c11] text-[16px] flex items-center gap-2">
+                        <Icons.Send width={18} height={18} className="text-[#E67E22]" />
+                        Update Client — Order #{order.id}
+                    </h3>
+                    <button onClick={onClose} className="text-[#4a2c11]/50 hover:text-[#4a2c11] transition-colors">
+                        <Icons.Close width={20} height={20} />
+                    </button>
+                </div>
+
+                {/* Body */}
+                <div className="p-6 space-y-5">
+                    {/* Info strip */}
+                    <div className="bg-amber-50 border-[2px] border-amber-300 rounded-xl px-4 py-3 flex items-center gap-3">
+                        <Icons.Pending width={16} height={16} className="text-amber-600 shrink-0" />
+                        <p className="text-[12px] font-bold text-amber-700">
+                            Changing status to <strong>In Progress</strong> for <strong>{order.client_email}</strong>. An email notification will be sent to the client.
+                        </p>
+                    </div>
+
+                    {/* Image Upload */}
+                    <div>
+                        <label className="text-[11px] font-bold uppercase tracking-wider text-[#4a2c11]/60 block mb-2">Attach Progress Image (optional)</label>
+                        {preview ? (
+                            <div className="relative">
+                                <img src={preview} alt="Preview" className="w-full max-h-[200px] object-contain rounded-xl border-[2px] border-[#4a2c11] bg-white" />
+                                <button onClick={() => { setFile(null); setPreview(null); }} className="absolute top-2 right-2 w-7 h-7 bg-rose-500 text-white rounded-full flex items-center justify-center border-[2px] border-[#4a2c11] hover:bg-rose-600 transition-colors">
+                                    <Icons.Close width={14} height={14} />
+                                </button>
+                            </div>
+                        ) : (
+                            <label className="cursor-pointer block">
+                                <div className="border-[2px] border-dashed border-[#4a2c11]/30 rounded-xl p-8 text-center hover:border-[#E67E22] hover:bg-[#fff4e6] transition-all">
+                                    <Icons.Image width={32} height={32} className="text-[#4a2c11]/30 mx-auto mb-2" />
+                                    <p className="text-[13px] font-bold text-[#4a2c11]/60">Click to upload an image</p>
+                                    <p className="text-[11px] text-[#4a2c11]/40 mt-1">JPG, PNG, WEBP — max 5MB</p>
+                                </div>
+                                <input type="file" accept="image/*" className="hidden" onChange={handleFileSelect} />
+                            </label>
+                        )}
+                    </div>
+
+                    {/* Message */}
+                    <div>
+                        <label className="text-[11px] font-bold uppercase tracking-wider text-[#4a2c11]/60 block mb-2">Message to Client (optional)</label>
+                        <textarea
+                            rows={3}
+                            value={message}
+                            onChange={e => setMessage(e.target.value)}
+                            placeholder="e.g. Hey! Here's a sneak peek of your sticker in progress 🎨"
+                            className="w-full border-[2px] border-[#4a2c11]/30 rounded-xl px-4 py-3 text-[13px] font-medium text-[#4a2c11] bg-white focus:outline-none focus:border-[#E67E22] resize-none transition-colors"
+                        />
+                    </div>
+                </div>
+
+                {/* Footer */}
+                <div className="px-6 py-4 border-t-[2px] border-[#d4b896] flex items-center justify-between">
+                    <button onClick={onClose} className="text-[12px] font-bold text-[#4a2c11]/60 hover:text-[#4a2c11] transition-colors px-4 py-2">Cancel</button>
+                    <button
+                        onClick={handleSubmit}
+                        disabled={sending}
+                        className="flex items-center gap-2 bg-[#E67E22] text-white font-bold text-[13px] px-5 py-2.5 rounded-xl border-[2px] border-[#4a2c11] shadow-[2px_2px_0px_#4a2c11] hover:-translate-y-0.5 transition-transform disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
+                        {sending ? (
+                            <><Icons.Pending width={14} height={14} className="animate-spin" /> Sending...</>
+                        ) : (
+                            <><Icons.Send width={14} height={14} /> Update & Notify Client</>
+                        )}
+                    </button>
+                </div>
             </div>
         </div>
     );
@@ -983,6 +1096,8 @@ export default function AdminDashboard() {
     const [orderFilter, setOrderFilter] = useState('All');
     const [viewOrder, setViewOrder] = useState<any>(null);
     const [showNotifications, setShowNotifications] = useState(false);
+    const [progressModal, setProgressModal] = useState<any>(null);
+    const [toastMessage, setToastMessage] = useState<string | null>(null);
 
     useEffect(() => {
         fetch('/api/orders')
@@ -1007,14 +1122,64 @@ export default function AdminDashboard() {
         }, {})
     ) as any[];
 
-    const handleStatusUpdate = (id: number, status: string) => {
+    const showToast = (msg: string) => {
+        setToastMessage(msg);
+        setTimeout(() => setToastMessage(null), 3000);
+    };
+
+    const handleStatusUpdate = (id: number, status: string, order?: any) => {
+        // If changing to "In Progress", open the progress modal instead
+        if (status === 'In Progress' && order) {
+            setProgressModal(order);
+            return;
+        }
+
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+        const formData = new FormData();
+        formData.append('_method', 'PUT');
+        formData.append('status', status);
+
         fetch(`/api/orders/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
-            body: JSON.stringify({ status })
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': csrfToken },
+            body: formData,
+        }).then(res => {
+            if (!res.ok) {
+                return res.json().then(err => { throw new Error(err.message || 'Failed to update'); });
+            }
+            return res.json();
         }).then(() => {
             setOrders(orders.map(o => o.id === id ? { ...o, status } : o));
+            showToast(`Order #${id} marked as ${status}! ✨`);
+        }).catch(err => {
+            showToast(`❌ ${err.message}`);
+        });
+    };
+
+    const handleProgressSubmit = (id: number, file: File | null, message: string) => {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+        const formData = new FormData();
+        formData.append('_method', 'PUT');
+        formData.append('status', 'In Progress');
+        if (file) formData.append('progress_image', file);
+        if (message) formData.append('progress_message', message);
+
+        fetch(`/api/orders/${id}`, {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': csrfToken },
+            body: formData,
+        }).then(res => {
+            if (!res.ok) {
+                return res.json().then(err => { throw new Error(err.message || 'Failed to update'); });
+            }
+            return res.json();
+        }).then(() => {
+            setOrders(orders.map(o => o.id === id ? { ...o, status: 'In Progress' } : o));
+            setProgressModal(null);
+            showToast(`Order #${id} is now In Progress! Email sent to client 📧`);
+        }).catch(err => {
+            setProgressModal(null);
+            showToast(`❌ ${err.message}`);
         });
     };
 
@@ -1031,6 +1196,22 @@ export default function AdminDashboard() {
 
     return (
         <div className="min-h-screen flex font-sans text-[#4a2c11] bg-[#fdf7ee]">
+            {/* Toast Notification */}
+            {toastMessage && (
+                <div className="fixed bottom-10 right-10 bg-[#4a2c11] text-white px-5 py-3 rounded-xl font-bold text-sm shadow-[4px_4px_0px_#E67E22] flex items-center gap-3 z-[60] animate-[bounce_0.3s_ease-out]">
+                    <Icons.Check width={18} height={18} className="text-emerald-400" />
+                    {toastMessage}
+                </div>
+            )}
+
+            {/* Progress Update Modal */}
+            {progressModal && (
+                <ProgressUpdateModal
+                    order={progressModal}
+                    onClose={() => setProgressModal(null)}
+                    onSubmit={handleProgressSubmit}
+                />
+            )}
             <Head title="Admin Dashboard — ToffeeBean" />
 
             <Sidebar active={activeTab} setActive={setActiveTab} collapsed={collapsed} setCollapsed={setCollapsed} />
