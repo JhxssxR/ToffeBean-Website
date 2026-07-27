@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ToffeeNavbar } from '@/components/ToffeeNavbar';
 import { ToffeeFooter } from '@/components/ToffeeFooter';
-import { Head, usePage } from '@inertiajs/react';
+import { Head, usePage, router } from '@inertiajs/react';
 import React, { useState } from 'react';
-import { Pencil } from 'lucide-react';
+import { Pencil, LogIn, Bookmark } from 'lucide-react';
 
 function SpeciesPill({ label, selected, onClick }: { label: string, selected: boolean, onClick: () => void }) {
     return (
@@ -48,12 +48,12 @@ export default function OcPlanner() {
     const [customVibe, setCustomVibe]           = useState('');
     const [colors, setColors]   = useState('Warm Caramel, Pumpkin Orange, and Butter Cream');
     const [quirks, setQuirks]   = useState('Carries a small acorn bag, wears big round glasses, and is easily startled but loves cinnamon bread.');
-    const [clientEmail, setClientEmail] = useState(auth.user ? auth.user.email : '');
     const [imageRefs, setImageRefs] = useState<File[]>([]);
     const [imagePreviews, setImagePreviews] = useState<string[]>([]);
     const [imageError, setImageError] = useState<string | null>(null);
     const [submitted, setSubmitted] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [saveToConcepts, setSaveToConcepts] = useState(true);
 
     function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
         setImageError(null);
@@ -96,8 +96,15 @@ export default function OcPlanner() {
     async function handlePlan(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         
-        if (!clientEmail) {
-            alert('Please provide an email to save your character concept!');
+        if (!auth.user) {
+            // Store current form data in sessionStorage so we can restore it after login
+            sessionStorage.setItem('oc_planner_draft', JSON.stringify({
+                species: selectedSpecies === 'Other custom…' ? customSpecies : selectedSpecies,
+                vibe: vibe === 'Other custom…' ? customVibe : vibe,
+                colors,
+                quirks,
+            }));
+            router.visit('/login');
             return;
         }
 
@@ -264,20 +271,40 @@ export default function OcPlanner() {
                                     </p>
                                 )}
                             </div>
+                            {/* Login prompt for guests */}
                             {!auth.user && (
-                                <div>
-                                    <div className="flex items-center justify-between mb-2">
-                                        <label className="text-[11px] font-bold tracking-[0.12em] uppercase text-[#4a2c11]">Contact Email</label>
-                                        <span className="text-[10px] font-bold text-[#E67E22] uppercase tracking-wider">To save your concept</span>
+                                <div className="bg-[#fff4e6] border-[2px] border-[#E67E22] rounded-xl p-4 flex items-start gap-3">
+                                    <div className="w-10 h-10 rounded-full bg-[#E67E22] text-white flex items-center justify-center shrink-0 border-[2px] border-[#4a2c11]">
+                                        <LogIn size={18} />
                                     </div>
-                                    <input
-                                        type="email"
-                                        value={clientEmail}
-                                        onChange={e => setClientEmail(e.target.value)}
-                                        placeholder="your_name@example.com"
-                                        className="w-full border-[2px] border-[#d4b896] rounded-xl px-4 py-2.5 text-[13px] font-semibold text-[#4a2c11] bg-white focus:outline-none focus:border-[#4a2c11] transition-colors placeholder:text-[#4a2c11]/30"
-                                    />
+                                    <div>
+                                        <p className="text-[13px] font-bold text-[#4a2c11] mb-1">Want to save this concept?</p>
+                                        <p className="text-[11px] font-medium text-[#4a2c11]/70 leading-relaxed">
+                                            Log in to save your character concept to your dashboard. You can revisit and use it when placing a commission!
+                                        </p>
+                                    </div>
                                 </div>
+                            )}
+
+                            {/* Save to concepts checkbox for logged-in users */}
+                            {auth.user && (
+                                <label className="flex items-center gap-3 bg-[#fef1df]/60 border-[2px] border-dashed border-[#d4b896] rounded-xl p-4 cursor-pointer hover:border-[#4a2c11] transition-colors">
+                                    <input
+                                        type="checkbox"
+                                        checked={saveToConcepts}
+                                        onChange={e => setSaveToConcepts(e.target.checked)}
+                                        className="w-5 h-5 accent-[#E67E22] shrink-0"
+                                    />
+                                    <div>
+                                        <p className="text-[13px] font-bold text-[#4a2c11] flex items-center gap-1.5">
+                                            <Bookmark size={14} className="text-[#E67E22]" />
+                                            Save this to my concepts?
+                                        </p>
+                                        <p className="text-[11px] font-medium text-[#4a2c11]/60 mt-0.5">
+                                            This will appear in your dashboard under Saved OCs.
+                                        </p>
+                                    </div>
+                                </label>
                             )}
 
                             <button
@@ -286,7 +313,7 @@ export default function OcPlanner() {
                                 className="w-full bg-[#E67E22] text-white font-bold rounded-full py-3.5 border-[3px] border-[#4a2c11] shadow-[3px_3px_0_0_#4a2c11] hover:-translate-y-0.5 active:translate-y-0 transition-transform flex items-center justify-center gap-2 text-[14px] disabled:opacity-70 disabled:hover:translate-y-0"
                             >
                                 <Pencil width={16} height={16} />
-                                {isSubmitting ? 'Saving...' : 'Plan Character Concept! 🍂'}
+                                {isSubmitting ? 'Saving...' : auth.user ? 'Save Character Concept! 🍂' : 'Log In & Save Concept! 🍂'}
                             </button>
                         </form>
                     </div>

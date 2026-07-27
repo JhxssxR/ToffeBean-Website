@@ -1,9 +1,9 @@
 /* eslint-disable */  
 import { ToffeeNavbar } from '@/components/ToffeeNavbar';
 import { ToffeeFooter } from '@/components/ToffeeFooter';
-import { Head, usePage } from '@inertiajs/react';
+import { Head, usePage, router } from '@inertiajs/react';
 import React, { useState, useRef } from 'react';
-import { Settings, Check, Hourglass, Calculator, Star, Paperclip, X } from 'lucide-react';
+import { Settings, Check, Hourglass, Calculator, Star, Paperclip, X, LogIn, Bookmark } from 'lucide-react';
 
 export default function Commissions({ initialCommissions = [] }: { initialCommissions?: any[] }) {
     const { props } = usePage<any>();
@@ -28,6 +28,7 @@ export default function Commissions({ initialCommissions = [] }: { initialCommis
     const [submitSuccess, setSubmitSuccess] = useState(false);
     const [submitError, setSubmitError] = useState('');
     const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+    const [saveToConcepts, setSaveToConcepts] = useState(true);
 
     interface StyleItem {
         id: string;
@@ -144,6 +145,21 @@ export default function Commissions({ initialCommissions = [] }: { initialCommis
         
         setFormErrors(errors);
         if (Object.keys(errors).length > 0) return;
+
+        // If user is not logged in, save form data and redirect to login
+        if (!auth.user) {
+            sessionStorage.setItem('commission_draft', JSON.stringify({
+                species: form.species,
+                character_name: form.character_name,
+                theme: form.theme,
+                notes: form.notes,
+                style,
+                quantity,
+                addons,
+            }));
+            router.visit('/login');
+            return;
+        }
         
         setIsSubmitting(true);
         setSubmitError('');
@@ -370,6 +386,42 @@ export default function Commissions({ initialCommissions = [] }: { initialCommis
                             <div className="w-full mt-4 bg-red-50 text-red-600 font-bold text-[14px] rounded-xl py-3 px-4 border-[3px] border-red-300 text-center flex items-center justify-center gap-2">
                                 ⚠️ {submitError}
                             </div>
+                        )}
+
+                        {/* Login prompt for guests */}
+                        {!auth.user && (
+                            <div className="mt-6 bg-[#fff4e6] border-[2px] border-[#E67E22] rounded-xl p-4 flex items-start gap-3">
+                                <div className="w-10 h-10 rounded-full bg-[#E67E22] text-white flex items-center justify-center shrink-0 border-[2px] border-[#4a2c11]">
+                                    <LogIn size={18} />
+                                </div>
+                                <div>
+                                    <p className="text-[13px] font-bold text-[#4a2c11] mb-1">Want to save this to your concepts?</p>
+                                    <p className="text-[11px] font-medium text-[#4a2c11]/70 leading-relaxed">
+                                        Log in to track your order from your dashboard and save your character details for future commissions!
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Save to concepts checkbox for logged-in users */}
+                        {auth.user && (
+                            <label className="mt-6 flex items-center gap-3 bg-[#fef1df]/60 border-[2px] border-dashed border-[#d4b896] rounded-xl p-4 cursor-pointer hover:border-[#4a2c11] transition-colors">
+                                <input
+                                    type="checkbox"
+                                    checked={saveToConcepts}
+                                    onChange={e => setSaveToConcepts(e.target.checked)}
+                                    className="w-5 h-5 accent-[#E67E22] shrink-0"
+                                />
+                                <div>
+                                    <p className="text-[13px] font-bold text-[#4a2c11] flex items-center gap-1.5">
+                                        <Bookmark size={14} className="text-[#E67E22]" />
+                                        Do you want to save this to your concept?
+                                    </p>
+                                    <p className="text-[11px] font-medium text-[#4a2c11]/60 mt-0.5">
+                                        This character will be saved to your OC Planner in the dashboard.
+                                    </p>
+                                </div>
+                            </label>
                         )}
 
                         {submitSuccess ? (
