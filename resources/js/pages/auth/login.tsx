@@ -8,6 +8,9 @@ export default function Login() {
         if (!supabase) return;
         await supabase.auth.signInWithOAuth({
             provider: 'google',
+            options: {
+                redirectTo: `${window.location.origin}/auth/callback`,
+            },
         });
     };
 
