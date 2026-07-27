@@ -1,14 +1,15 @@
 <?php
 
 use App\Http\Controllers\CommissionController;
+use App\Http\Controllers\HomeServiceController;
 use App\Http\Controllers\OcPlanController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\SettingController;
 use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Models\Commission;
+use App\Models\HomeService;
 use App\Models\OcPlan;
 use App\Models\Order;
-use App\Models\HomeService;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -16,6 +17,7 @@ use Inertia\Inertia;
 Route::get('/', function () {
     $services = HomeService::where('is_active', true)->orderBy('sort_order')->get();
     $settings = Setting::all()->pluck('value', 'key');
+
     return Inertia::render('Home', [
         'initialServices' => $services,
         'settings' => $settings,
@@ -44,7 +46,7 @@ Route::middleware(['auth', EnsureUserIsAdmin::class])->group(function () {
     })->name('dashboard');
 
     Route::apiResource('api/commissions', CommissionController::class);
-    Route::apiResource('api/home-services', \App\Http\Controllers\HomeServiceController::class);
+    Route::apiResource('api/home-services', HomeServiceController::class);
     Route::apiResource('api/orders', OrderController::class)->except(['store']);
     Route::post('api/settings', [SettingController::class, 'update'])->name('settings.update');
     Route::get('api/settings-data', function () {

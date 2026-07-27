@@ -11,9 +11,9 @@ use Illuminate\Support\Facades\Storage;
 class OrderController extends Controller
 {
     private const STATUS_ORDER = [
-        'Waiting'     => 0,
+        'Waiting' => 0,
         'In Progress' => 1,
-        'Completed'   => 2,
+        'Completed' => 2,
     ];
 
     public function index()
@@ -46,18 +46,18 @@ class OrderController extends Controller
     public function update(Request $request, Order $order)
     {
         $validated = $request->validate([
-            'status'           => 'required|in:Waiting,In Progress,Completed',
-            'progress_image'   => 'nullable|image|max:5120', // max 5MB
+            'status' => 'required|in:Waiting,In Progress,Completed',
+            'progress_image' => 'nullable|image|max:5120', // max 5MB
             'progress_message' => 'nullable|string|max:2000',
         ]);
 
         // Enforce forward-only status progression
         $currentRank = self::STATUS_ORDER[$order->status] ?? 0;
-        $newRank     = self::STATUS_ORDER[$validated['status']] ?? 0;
+        $newRank = self::STATUS_ORDER[$validated['status']] ?? 0;
 
         if ($newRank < $currentRank) {
             return response()->json([
-                'message' => 'Status cannot go backwards. Current status: ' . $order->status,
+                'message' => 'Status cannot go backwards. Current status: '.$order->status,
             ], 422);
         }
 
@@ -81,7 +81,7 @@ class OrderController extends Controller
                 Mail::to($order->client_email)->send(new OrderProgressUpdate($order));
             } catch (\Exception $e) {
                 // Log the error but don't fail the status update
-                \Log::warning('Failed to send progress email for order #' . $order->id . ': ' . $e->getMessage());
+                \Log::warning('Failed to send progress email for order #'.$order->id.': '.$e->getMessage());
             }
         }
 

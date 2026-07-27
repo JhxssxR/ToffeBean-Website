@@ -21,24 +21,24 @@ class SupabaseSyncController extends Controller
         $supabaseUrl = env('VITE_SUPABASE_URL');
         $supabaseKey = env('VITE_SUPABASE_ANON_KEY');
 
-        if (!$supabaseUrl || !$supabaseKey) {
+        if (! $supabaseUrl || ! $supabaseKey) {
             return response()->json(['message' => 'Supabase configuration is missing on the server.'], 500);
         }
 
         // Verify the token by calling Supabase's user endpoint
         $response = Http::withHeaders([
             'apikey' => $supabaseKey,
-            'Authorization' => 'Bearer ' . $request->access_token,
-        ])->get($supabaseUrl . '/auth/v1/user');
+            'Authorization' => 'Bearer '.$request->access_token,
+        ])->get($supabaseUrl.'/auth/v1/user');
 
         if ($response->failed()) {
             return response()->json(['message' => 'Invalid or expired Supabase token.'], 401);
         }
 
         $supabaseUser = $response->json();
-        
+
         $email = $supabaseUser['email'] ?? null;
-        if (!$email) {
+        if (! $email) {
             return response()->json(['message' => 'Email not found in Supabase user data.'], 400);
         }
 
@@ -66,7 +66,7 @@ class SupabaseSyncController extends Controller
 
         return response()->json([
             'message' => 'Successfully synced and logged in.',
-            'redirect' => $user->role === 'admin' ? route('dashboard', [], false) : route('customer.dashboard', [], false)
+            'redirect' => $user->role === 'admin' ? route('dashboard', [], false) : route('customer.dashboard', [], false),
         ]);
     }
 }

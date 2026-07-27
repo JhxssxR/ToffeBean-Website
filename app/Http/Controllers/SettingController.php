@@ -25,8 +25,8 @@ class SettingController extends Controller
                     }
 
                     $path = $request->file($key)->store('settings', 'public');
-                    $setting->value = '/storage/' . $path;
-                } else if ($value !== null) {
+                    $setting->value = '/storage/'.$path;
+                } elseif ($value !== null) {
                     $setting->value = $value;
                 }
                 $setting->save();

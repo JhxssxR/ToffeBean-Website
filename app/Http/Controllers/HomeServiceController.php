@@ -34,21 +34,21 @@ class HomeServiceController extends Controller
             'description' => $validated['description'],
             'is_active' => filter_var($request->is_active, FILTER_VALIDATE_BOOLEAN),
             'sort_order' => (int) $request->sort_order,
-            'gallery' => []
+            'gallery' => [],
         ];
 
         if ($request->hasFile('img_file')) {
             $file = $request->file('img_file');
-            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $filename = time().'_'.uniqid().'.'.$file->getClientOriginalExtension();
             $file->move(public_path('images/services'), $filename);
-            $data['img'] = '/images/services/' . $filename;
+            $data['img'] = '/images/services/'.$filename;
         }
 
         if ($request->hasFile('gallery_files')) {
             foreach ($request->file('gallery_files') as $file) {
-                $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $filename = time().'_'.uniqid().'.'.$file->getClientOriginalExtension();
                 $file->move(public_path('images/services'), $filename);
-                $data['gallery'][] = '/images/services/' . $filename;
+                $data['gallery'][] = '/images/services/'.$filename;
             }
         }
 
@@ -83,9 +83,9 @@ class HomeServiceController extends Controller
 
         if ($request->hasFile('img_file')) {
             $file = $request->file('img_file');
-            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $filename = time().'_'.uniqid().'.'.$file->getClientOriginalExtension();
             $file->move(public_path('images/services'), $filename);
-            $data['img'] = '/images/services/' . $filename;
+            $data['img'] = '/images/services/'.$filename;
         }
 
         // Handle Gallery (only update if title is present, indicating a full form submit)
@@ -93,9 +93,9 @@ class HomeServiceController extends Controller
             $gallery = $request->input('gallery_existing', []);
             if ($request->hasFile('gallery_files')) {
                 foreach ($request->file('gallery_files') as $file) {
-                    $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                    $filename = time().'_'.uniqid().'.'.$file->getClientOriginalExtension();
                     $file->move(public_path('images/services'), $filename);
-                    $gallery[] = '/images/services/' . $filename;
+                    $gallery[] = '/images/services/'.$filename;
                 }
             }
             $data['gallery'] = $gallery;

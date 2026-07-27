@@ -14,7 +14,9 @@ class OrderProgressUpdate extends Mailable
     use Queueable, SerializesModels;
 
     public Order $order;
+
     public ?string $progressMessage;
+
     public ?string $progressImageUrl;
 
     public function __construct(Order $order)
@@ -22,7 +24,7 @@ class OrderProgressUpdate extends Mailable
         $this->order = $order;
         $this->progressMessage = $order->progress_message;
         $this->progressImageUrl = $order->progress_image
-            ? asset('storage/' . $order->progress_image)
+            ? asset('storage/'.$order->progress_image)
             : null;
     }
 

@@ -7,9 +7,10 @@ use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
-use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Auth\SupabaseSyncController;
+use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
@@ -39,7 +40,7 @@ Route::middleware('guest')->group(function () {
 Route::post('auth/supabase-sync', [SupabaseSyncController::class, 'store']);
 
 Route::get('auth/callback', function () {
-    return \Inertia\Inertia::render('auth/callback');
+    return Inertia::render('auth/callback');
 })->name('auth.callback');
 
 Route::middleware('auth')->group(function () {
