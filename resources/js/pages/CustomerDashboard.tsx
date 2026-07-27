@@ -103,13 +103,17 @@ export default function CustomerDashboard() {
                     <div className="flex flex-col md:flex-row items-center gap-6">
                         {/* Avatar */}
                         <div 
-                            className="w-24 h-24 md:w-28 md:h-28 rounded-full border-[4px] border-[#4a2c11] flex items-center justify-center text-5xl md:text-6xl select-none shrink-0"
+                            className="w-24 h-24 md:w-28 md:h-28 rounded-full border-[4px] border-[#4a2c11] flex items-center justify-center text-5xl md:text-6xl select-none shrink-0 overflow-hidden"
                             style={{ 
                                 backgroundColor: avatarColor + '30',
                                 boxShadow: '4px 4px 0px 0px rgba(74, 44, 17, 1)'
                             }}
                         >
-                            {avatarEmoji}
+                            {user.avatar && user.avatar.startsWith('http') ? (
+                                <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover" />
+                            ) : (
+                                avatarEmoji
+                            )}
                         </div>
                         
                         {/* User info */}
@@ -190,8 +194,12 @@ export default function CustomerDashboard() {
                                         <div key={order.id} className="bg-white border-[3px] border-[#4a2c11] rounded-[1.5rem] p-5 hover:-translate-y-0.5 transition-all" style={{ boxShadow: '4px 4px 0px 0px rgba(74, 44, 17, 1)' }}>
                                             <div className="flex justify-between items-start mb-3">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-10 h-10 rounded-full bg-[#faead6] border-[2px] border-[#4a2c11] flex items-center justify-center text-lg select-none" style={{ boxShadow: '2px 2px 0px 0px rgba(74, 44, 17, 1)' }}>
-                                                        {avatarEmoji}
+                                                    <div className="w-10 h-10 rounded-full bg-[#faead6] border-[2px] border-[#4a2c11] flex items-center justify-center text-lg select-none overflow-hidden" style={{ boxShadow: '2px 2px 0px 0px rgba(74, 44, 17, 1)' }}>
+                                                        {user.avatar && user.avatar.startsWith('http') ? (
+                                                            <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover" />
+                                                        ) : (
+                                                            avatarEmoji
+                                                        )}
                                                     </div>
                                                     <div>
                                                         <h3 className="font-bold text-[15px]">
@@ -306,10 +314,14 @@ export default function CustomerDashboard() {
                             <div className="space-y-3">
                                 <div className="flex items-center gap-3">
                                     <div 
-                                        className="w-9 h-9 rounded-lg border-[2px] border-[#4a2c11] flex items-center justify-center text-lg select-none shrink-0"
+                                        className="w-9 h-9 rounded-lg border-[2px] border-[#4a2c11] flex items-center justify-center text-lg select-none shrink-0 overflow-hidden"
                                         style={{ backgroundColor: avatarColor + '30' }}
                                     >
-                                        {avatarEmoji}
+                                        {user.avatar && user.avatar.startsWith('http') ? (
+                                            <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover" />
+                                        ) : (
+                                            avatarEmoji
+                                        )}
                                     </div>
                                     <div>
                                         <p className="text-[10px] font-bold tracking-wider uppercase text-[#4a2c11]/40">Avatar</p>
