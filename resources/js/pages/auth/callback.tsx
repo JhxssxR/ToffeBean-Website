@@ -27,13 +27,17 @@ export default function AuthCallback() {
 
                         // Hard redirect so that Laravel session cookies take full effect
                         window.location.href = response.data.redirect;
-                    } catch (err: any) {
+                    } catch (err) {
                         console.error('Error syncing session:', err);
-                        setError(
-                            err.response?.data?.message ||
-                            err.message ||
-                            'Failed to sync authentication state'
-                        );
+                        
+                        let errorMessage = 'Failed to sync authentication state';
+                        if (axios.isAxiosError(err)) {
+                            errorMessage = err.response?.data?.message || err.message;
+                        } else if (err instanceof Error) {
+                            errorMessage = err.message;
+                        }
+                        
+                        setError(errorMessage);
                     }
                 }
             }
