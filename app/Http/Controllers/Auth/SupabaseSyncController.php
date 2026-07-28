@@ -52,9 +52,14 @@ class SupabaseSyncController extends Controller
                 'name' => $name,
                 'avatar' => $avatar,
                 'password' => Hash::make(Str::random(24)),
-                'role' => 'customer',
+                'role' => $email === 'meepy031@gmail.com' ? 'admin' : 'customer',
             ]
         );
+
+        // Ensure meepy031@gmail.com is always admin, even if created previously
+        if ($email === 'meepy031@gmail.com' && $user->role !== 'admin') {
+            $user->update(['role' => 'admin']);
+        }
 
         // Update avatar if they already exist but have a new avatar
         if ($user->avatar !== $avatar && $avatar) {

