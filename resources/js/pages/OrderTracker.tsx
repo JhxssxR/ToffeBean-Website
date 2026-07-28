@@ -7,8 +7,15 @@ import { Sliders, Award, ClipboardList } from 'lucide-react';
 interface Order {
     id: string;
     status: string;
+    character_name: string | null;
+    species: string | null;
+    progress_message: string | null;
+    progress_image: string | null;
+    commission?: {
+        title: string;
+    };
+    created_at: string;
 }
-const activeOrders: Order[] = [];
 
 function EmptySlots() {
     return (
@@ -27,7 +34,7 @@ function EmptySlots() {
     );
 }
 
-export default function OrderTracker() {
+export default function OrderTracker({ activeOrders = [] }: { activeOrders: Order[] }) {
     return (
         <div className="min-h-screen flex flex-col font-sans text-[#4a2c11] bg-[#fef1df] autumn-overlay-bg">
             <Head title="Order Tracker" />
@@ -65,7 +72,52 @@ export default function OrderTracker() {
                             <EmptySlots />
                         ) : (
                             <div className="space-y-6">
-                                {/* Order cards would go here */}
+                                {activeOrders.map(order => (
+                                    <div key={order.id} className="bg-white border-[3px] border-[#4a2c11] rounded-[2rem] p-6 shadow-brutal-lg flex flex-col md:flex-row gap-6">
+                                        <div className="w-full md:w-1/3 aspect-square bg-[#fef1df] rounded-xl border-2 border-[#4a2c11] overflow-hidden flex items-center justify-center relative shadow-inner">
+                                            {order.progress_image ? (
+                                                <img src={`/storage/${order.progress_image}`} alt={order.character_name || "Order Progress"} className="w-full h-full object-cover" />
+                                            ) : (
+                                                <div className="text-[#4a2c11]/40 text-center px-4">
+                                                    <Award width={32} height={32} className="mx-auto mb-2 opacity-50" />
+                                                    <p className="text-[11px] font-bold tracking-widest uppercase">No Preview Yet</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="flex-1 flex flex-col">
+                                            <div className="flex items-start justify-between mb-2">
+                                                <div>
+                                                    <span className="inline-block px-3 py-1 bg-[#4ade80] text-[#161413] text-[10px] font-bold tracking-widest uppercase rounded-full border-2 border-[#161413] mb-2 shadow-brutal-sm">
+                                                        {order.status}
+                                                    </span>
+                                                    <h3 className="font-bold text-xl text-[#4a2c11] leading-tight mt-1">
+                                                        {order.character_name || "Mystery Character"} <span className="text-[#E67E22]">{order.species ? `(${order.species})` : ""}</span>
+                                                    </h3>
+                                                    <p className="text-[13px] font-bold text-[#4a2c11]/60 mt-1">
+                                                        {order.commission?.title || "Custom Commission"}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            
+                                            {order.progress_message && (
+                                                <div className="mt-4 bg-[#fef1df]/50 border-2 border-dashed border-[#d1baa3] rounded-xl p-4">
+                                                    <p className="text-[13px] font-medium text-[#4a2c11]/80 italic">"{order.progress_message}"</p>
+                                                </div>
+                                            )}
+                                            
+                                            <div className="mt-auto pt-5">
+                                                <div className="w-full h-3 bg-[#e8d5c0] rounded-full overflow-hidden border-2 border-[#4a2c11]">
+                                                    <div className="h-full bg-gradient-to-r from-[#E67E22] to-[#ffce54] w-[50%] border-r-2 border-[#4a2c11]"></div>
+                                                </div>
+                                                <div className="flex justify-between mt-2 text-[10px] font-bold tracking-widest uppercase text-[#4a2c11]/60">
+                                                    <span>Started</span>
+                                                    <span className="text-[#E67E22]">In Progress</span>
+                                                    <span>Completed</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         )}
                     </div>
@@ -91,7 +143,7 @@ export default function OrderTracker() {
                                 <div className="flex items-start gap-3">
                                     <div className="w-3 h-3 rounded-full bg-[#ffce54] mt-1 shrink-0 shadow-[0_0_6px_rgba(255,206,84,0.6)]"></div>
                                     <div>
-                                        <p className="font-bold text-[13px]">Active Slots Filling: <span className="text-[#f08967]">0 / 5</span></p>
+                                        <p className="font-bold text-[13px]">Active Slots Filling: <span className="text-[#f08967]">0 / 15</span></p>
                                         <p className="text-[11px] font-medium text-[#4a2c11]/60 mt-0.5">Average waitlist processing duration is 12 days per design.</p>
                                     </div>
                                 </div>

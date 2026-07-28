@@ -33,7 +33,10 @@ Route::get('/commissions', function () {
 })->name('commissions');
 
 Route::get('/order-tracker', function () {
-    return Inertia::render('OrderTracker');
+    $activeOrders = Order::with('commission')->where('status', 'In Progress')->orderBy('created_at', 'desc')->get();
+    return Inertia::render('OrderTracker', [
+        'activeOrders' => $activeOrders
+    ]);
 })->name('order-tracker');
 
 Route::get('/oc-planner', function () {

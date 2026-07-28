@@ -280,7 +280,7 @@
                                         <div className="flex items-start gap-3">
                                             <div className="w-3 h-3 rounded-full bg-[#ffce54] mt-1 shrink-0 shadow-[0_0_6px_rgba(255,206,84,0.6)]"></div>
                                             <div>
-                                                <p className="font-bold text-[13px]">Active Slots Filling: <span className="text-[#f08967]">0 / 5</span></p>
+                                                <p className="font-bold text-[13px]">Active Slots Filling: <span className="text-[#f08967]">0 / 15</span></p>
                                                 <p className="text-[11px] font-medium text-[#4a2c11]/60 mt-0.5">Average waitlist processing duration is 12 days per design.</p>
                                             </div>
                                         </div>
