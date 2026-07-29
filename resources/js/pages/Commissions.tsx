@@ -476,8 +476,16 @@ export default function Commissions({ initialCommissions = [] }: { initialCommis
                         </div>
 
                         {/* Terms of Service Link */}
-                        <a href="/terms-of-service" className="block text-center text-[12px] font-bold text-[#4a2c11]/50 hover:text-[#E67E22] transition-colors tracking-wider uppercase py-2">
-                            📜 Commission Terms of Service
+                        <a href="/terms-of-service" className="block bg-white border-[3px] border-[#4a2c11] rounded-[1.5rem] p-5 shadow-[3px_3px_0_0_#4a2c11] hover:-translate-y-1 hover:shadow-[4px_4px_0_0_#4a2c11] transition-all group">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-[#E67E22] flex items-center justify-center text-white text-lg shrink-0 border-[2px] border-[#4a2c11]">
+                                    📜
+                                </div>
+                                <div>
+                                    <p className="text-[13px] font-bold text-[#4a2c11] group-hover:text-[#E67E22] transition-colors">Commission Terms of Service</p>
+                                    <p className="text-[10px] font-medium text-[#4a2c11]/50 mt-0.5">Read before ordering →</p>
+                                </div>
+                            </div>
                         </a>
 
                         {/* Quality Box */}
