@@ -43,6 +43,10 @@ Route::get('/oc-planner', function () {
     return Inertia::render('OcPlanner');
 })->name('oc-planner');
 
+Route::get('/terms-of-service', function () {
+    return Inertia::render('TermsOfService');
+})->name('terms-of-service');
+
 Route::middleware(['auth', EnsureUserIsAdmin::class])->group(function () {
     Route::get('/dashboard', function () {
         return Inertia::render('dashboard');

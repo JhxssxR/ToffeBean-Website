@@ -58,9 +58,14 @@ export function ToffeeFooter() {
                     {/* Bottom Section */}
                     <div className="w-full flex flex-col md:flex-row justify-between items-center gap-6">
                         
-                        <p className="text-xs text-gray-500 font-medium text-center md:text-left">
-                            © {new Date().getFullYear()} ToffeeBean Digital Workshop. All rights reserved.
-                        </p>
+                        <div className="flex flex-col md:flex-row items-center md:items-start gap-2">
+                            <p className="text-xs text-gray-500 font-medium text-center md:text-left">
+                                © {new Date().getFullYear()} ToffeeBean Digital Workshop. All rights reserved.
+                            </p>
+                            <a href="/terms-of-service" className="text-xs text-gray-500 hover:text-[#E67E22] transition-colors md:ml-4 font-medium">
+                                Terms of Service
+                            </a>
+                        </div>
 
                         <div className="flex items-center gap-4 flex-wrap justify-center">
                             <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Accepted Payments</span>
